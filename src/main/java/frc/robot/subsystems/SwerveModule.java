@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import com.revrobotics.SparkMaxPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
@@ -49,6 +50,12 @@ public class SwerveModule extends SubsystemBase {
 
   public SwerveModuleState getState() {
     return new SwerveModuleState(driveEncoder.getVelocity(), new Rotation2d(pivotEncoder.getPosition()));
+  }
+
+  public SwerveModulePosition getPosition() {
+    Rotation2d r = new Rotation2d(pivotEncoder.getPosition() * Constants.TICKS_PER_ROTATION);
+    return new SwerveModulePosition(driveEncoder.getPosition() * Constants.TICKS_PER_CM * 100, 
+    r);
   }
 
   public void setDesiredState(SwerveModuleState desiredState) {

@@ -33,10 +33,9 @@ public class DriveUtil extends SubsystemBase {
 
   private final SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(m_frontLeftLoc, m_frontRightLoc, m_backLeftLoc, m_backRightLoc);
 
-  private ChassisSpeeds speeds;
-
   //getPosition is just placeholder for getting distance with encoders even though wpilib uses it as an example
   // this took me like 30 min ot figure out
+  // convert encoders to m
   private final SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(m_kinematics, getHeading2d(), 
   new SwerveModulePosition[] {
     m_frontLeft.getPosition(),
@@ -78,6 +77,10 @@ public class DriveUtil extends SubsystemBase {
     return Rotation2d.fromDegrees(gyro.getYaw());
 }
 
+public Pose2d getPose(){
+  return m_odometry.getPoseMeters();
+}
+
   public double getHeading(){
     return gyro.getYaw();
   }
@@ -95,7 +98,7 @@ public class DriveUtil extends SubsystemBase {
     // This method will be called once per scheduler run
     var gyroAngle = getHeading2d();
 
-    Pose2d m_pose = m_odometry.update(gyroAngle,
+    m_odometry.update(gyroAngle,
     new SwerveModulePosition[] {
       m_frontLeft.getPosition(), m_frontRight.getPosition(),
       m_backLeft.getPosition(), m_backRight.getPosition()

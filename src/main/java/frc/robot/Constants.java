@@ -42,6 +42,10 @@ public final class Constants {
     /**
      * We define 0 degrees as what North
      * would be, and it goes clockwise
+     * 
+     * x-values can be wheel base /2
+     * y-values can be track/2
+     * keep signs
      */
     public static final double TOPLEFT_X = 0.5;
     public static final double TOPLEFT_Y = 0.5;
