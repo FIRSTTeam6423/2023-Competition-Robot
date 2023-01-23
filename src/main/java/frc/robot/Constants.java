@@ -36,8 +36,13 @@ public final class Constants {
     public static final double MODULEPIVOT_I = 0.5;
     public static final double MODULEPIVOT_D = 0.5;
 
-    public static final double TICKS_PER_CM = 2267.4512;
-    public static final double TICKS_PER_ROTATION = 1000;
+    //Pivot
+    public static final double COUNTS_PER_REV = 4096; //May need to be 1024 for scaling. test to see
+    public static final double RATIOED_COUNTS_PER_REV = COUNTS_PER_REV/13.71;
+    //Drive
+    public static final double METERS_PER_REV = 39.37 * 4 * Math.PI; //39.37 is factor for in to m
+    public static final double TICKS_PER_METER = 4096 / METERS_PER_REV;
+    //Ticks per rotation/360
 
     /**
      * We define 0 degrees as what North
@@ -47,17 +52,17 @@ public final class Constants {
      * y-values can be track/2
      * keep signs
      */
-    public static final double TOPLEFT_X = 0.5;
-    public static final double TOPLEFT_Y = 0.5;
+    public static final double TOPLEFT_X = 0.224;
+    public static final double TOPLEFT_Y = 0.224;
     public static final double TOPLEFT_ANGLE = 45;
-    public static final double TOPRIGHT_X = 0.5;
-    public static final double TOPRIGHT_Y = -0.5;
+    public static final double TOPRIGHT_X = 0.224;
+    public static final double TOPRIGHT_Y = -0.224;
     public static final double TOPRIGHT_ANGLE = 315;
-    public static final double BOTTOMLEFT_X = -0.5;
-    public static final double BOTTOMLEFT_Y = 0.5;
+    public static final double BOTTOMLEFT_X = -0.224;
+    public static final double BOTTOMLEFT_Y = 0.224;
     public static final double BOTTOMLEFT_ANGLE = 135;
-    public static final double BOTTOMRIGHT_X = -0.5;
-    public static final double BOTTOMRIGHT_Y = -0.5;
+    public static final double BOTTOMRIGHT_X = -0.224;
+    public static final double BOTTOMRIGHT_Y = -0.224;
     public static final double BOTTOMRIGHT_ANGLE = 225;
     /**
      * Controller Input Device Mapping
