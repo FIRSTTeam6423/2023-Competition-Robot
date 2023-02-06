@@ -11,7 +11,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.AnalogEncoder;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
@@ -24,7 +24,7 @@ public class SwerveModule extends SubsystemBase {
   private CANSparkMax driveMotor, pivotMotor;
 
   private RelativeEncoder driveEncoder;
-  private Encoder pivotPosEncoder;
+  private AnalogEncoder pivotPosEncoder;
 
   // Gains are for example purposes only - must be determined for your own robot!
   private PIDController drivePIDController, pivotPIDController;
@@ -44,7 +44,7 @@ public class SwerveModule extends SubsystemBase {
     driveEncoder.setVelocityConversionFactor(Constants.METERS_PER_REV/60);
     driveEncoder.setPosition(0);
 
-    pivotPosEncoder = new Encoder(1, 1);
+    pivotPosEncoder = new AnalogEncoder(1, 1);
     pivotPosEncoder.setDistancePerPulse(360/Constants.RATIOED_COUNTS_PER_REV);
     pivotPosEncoder.reset();
 

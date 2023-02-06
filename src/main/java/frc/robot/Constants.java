@@ -24,6 +24,9 @@ public final class Constants {
     public static final int BOTTOMLEFT_PIVOT = 6;
     public static final int BOTTOMRIGHT_DRIVE = 7;
     public static final int BOTTOMRIGHT_PIVOT = 8;
+    public static final int ARM_MOTOR = 9;
+    public static final int WRIST_MOTOR = 10;
+
 
     public static final double WHEEL_RADIUS = 0.5;
     public static final double MAX_ANGULAR_SPEED = Math.PI; //1/2 rotation per second
@@ -38,9 +41,9 @@ public final class Constants {
 
     //Pivot
     public static final double COUNTS_PER_REV = 4096; //May need to be 1024 for scaling. test to see
-    public static final double RATIOED_COUNTS_PER_REV = COUNTS_PER_REV/13.71;
+    public static final double RATIOED_COUNTS_PER_REV = COUNTS_PER_REV/13.71; //Takes gear reduction into account
     //Drive
-    public static final double METERS_PER_REV = 39.37 * 4 * Math.PI; //39.37 is factor for in to m
+    public static final double METERS_PER_REV = 39.37 * 4 * Math.PI; //39.37 is factor for inches to meters
     public static final double TICKS_PER_METER = 4096 / METERS_PER_REV;
     //Ticks per rotation/360
 
