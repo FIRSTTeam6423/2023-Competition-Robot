@@ -27,6 +27,10 @@ public final class Constants {
     public static final int ARM_MOTOR = 9;
     public static final int WRIST_MOTOR = 10;
 
+    public static final int TOPLEFT_ABS_ENCODER = 0;
+    public static final int TOPRIGHT_ABS_ENCODER = 1;
+    public static final int BOTTOMRIGHT_ABS_ENCODER = 2;
+    public static final int BOTTOMLEFT_ABS_ENCODER = 3;
 
     public static final double WHEEL_RADIUS = 0.5;
     public static final double MAX_ANGULAR_SPEED = Math.PI; //1/2 rotation per second

@@ -26,10 +26,10 @@ public class DriveUtil extends SubsystemBase {
   private final Translation2d m_backLeftLoc = new Translation2d(Constants.BOTTOMLEFT_X, Constants.TOPLEFT_Y);
   private final Translation2d m_backRightLoc = new Translation2d(Constants.BOTTOMRIGHT_X, Constants.BOTTOMRIGHT_Y);
 
-  private final SwerveModule m_frontLeft =  new SwerveModule(Constants.TOPLEFT_DRIVE, Constants.TOPLEFT_PIVOT);
-  private final SwerveModule m_frontRight =  new SwerveModule(Constants.TOPRIGHT_DRIVE, Constants.TOPRIGHT_PIVOT);
-  private final SwerveModule m_backLeft =  new SwerveModule(Constants.BOTTOMLEFT_DRIVE, Constants.BOTTOMLEFT_PIVOT);
-  private final SwerveModule m_backRight =  new SwerveModule(Constants.BOTTOMRIGHT_DRIVE, Constants.BOTTOMRIGHT_PIVOT);
+  private final SwerveModule m_frontLeft =  new SwerveModule(Constants.TOPLEFT_DRIVE, Constants.TOPLEFT_PIVOT, Constants.TOPLEFT_ABS_ENCODER);
+  private final SwerveModule m_frontRight =  new SwerveModule(Constants.TOPRIGHT_DRIVE, Constants.TOPRIGHT_PIVOT, Constants.TOPRIGHT_ABS_ENCODER);
+  private final SwerveModule m_backLeft =  new SwerveModule(Constants.BOTTOMLEFT_DRIVE, Constants.BOTTOMLEFT_PIVOT, Constants.BOTTOMLEFT_ABS_ENCODER);
+  private final SwerveModule m_backRight =  new SwerveModule(Constants.BOTTOMRIGHT_DRIVE, Constants.BOTTOMRIGHT_PIVOT, Constants.BOTTOMRIGHT_ABS_ENCODER);
 
   private final SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(m_frontLeftLoc, m_frontRightLoc, m_backLeftLoc, m_backRightLoc);
 

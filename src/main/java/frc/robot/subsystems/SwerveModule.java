@@ -31,7 +31,7 @@ public class SwerveModule extends SubsystemBase {
 
   private SwerveModuleState state;
 
-  public SwerveModule(int driveMotorID, int pivotMotorID){
+  public SwerveModule(int driveMotorID, int pivotMotorID, int encoderID){
     driveMotor = new CANSparkMax(driveMotorID, MotorType.kBrushless);
     pivotMotor = new CANSparkMax(pivotMotorID, MotorType.kBrushless);
 
@@ -44,8 +44,8 @@ public class SwerveModule extends SubsystemBase {
     driveEncoder.setVelocityConversionFactor(Constants.METERS_PER_REV/60);
     driveEncoder.setPosition(0);
 
-    pivotPosEncoder = new AnalogEncoder(1, 1);
-    pivotPosEncoder.setDistancePerPulse(360/Constants.RATIOED_COUNTS_PER_REV);
+    pivotPosEncoder = new AnalogEncoder(encoderID);
+    pivotPosEncoder.setDistancePerRotation(Constants.RATIOED_COUNTS_PER_REV/360);
     pivotPosEncoder.reset();
 
     drivePIDController = new PIDController(Constants.MODULEDRIVE_P, Constants.MODULEDRIVE_I, Constants.MODULEDRIVE_D);
@@ -60,11 +60,11 @@ public class SwerveModule extends SubsystemBase {
   }
 
   public SwerveModuleState getState() {
-    return new SwerveModuleState(driveEncoder.getVelocity(), new Rotation2d(pivotPosEncoder.getDistance()));
+    return new SwerveModuleState(driveEncoder.getVelocity(), new Rotation2d(pivotPosEncoder.getAbsolutePosition()));
   }
 
   public SwerveModulePosition getPosition() {
-    Rotation2d r = new Rotation2d(pivotPosEncoder.getDistance());
+    Rotation2d r = new Rotation2d(pivotPosEncoder.getAbsolutePosition());
     return new SwerveModulePosition(driveEncoder.getPosition() / Constants.TICKS_PER_METER, 
     r);
   }
@@ -75,7 +75,7 @@ public class SwerveModule extends SubsystemBase {
     // Different constant need for drivePIDController, convert m/s to rpm 
     driveMotor.set(drivePIDController.calculate(driveEncoder.getVelocity() , state.speedMetersPerSecond));
     // How to pass in encoder position from the analog encoder? Convert position to velocity that is then passed in here?
-    pivotMotor.set(pivotPIDController.calculate(pivotPosEncoder.getDistance(), state.angle.getDegrees()));
+    pivotMotor.set(pivotPIDController.calculate(pivotPosEncoder.getAbsolutePosition(), state.angle.getDegrees()));
   }
 
   public void stopModule(){
