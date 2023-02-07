@@ -27,30 +27,30 @@ public class DriveUtil extends SubsystemBase {
 	private final Translation2d m_backRightLoc = new Translation2d(Constants.BOTTOMRIGHT_X, Constants.BOTTOMRIGHT_Y);
 
 	private final SwerveModule m_frontLeft = new SwerveModule(
-			Constants.TOPLEFT_DRIVE,
-			Constants.TOPLEFT_PIVOT,
+			Constants.FRONTLEFT_DRIVE,
+			Constants.FRONTLEFT_PIVOT,
 			Constants.TOPLEFT_ABS_ENCODER);
 	private final SwerveModule m_frontRight = new SwerveModule(
-			Constants.TOPRIGHT_DRIVE,
-			Constants.TOPRIGHT_PIVOT,
+			Constants.FRONTRIGHT_DRIVE,
+			Constants.FRONTRIGHT_PIVOT,
 			Constants.TOPRIGHT_ABS_ENCODER);
 	private final SwerveModule m_backLeft = new SwerveModule(
-			Constants.BOTTOMLEFT_DRIVE,
-			Constants.BOTTOMLEFT_PIVOT,
+			Constants.BACKLEFT_DRIVE,
+			Constants.BACKLEFT_PIVOT,
 			Constants.BOTTOMLEFT_ABS_ENCODER);
 	private final SwerveModule m_backRight = new SwerveModule(
-			Constants.BOTTOMRIGHT_DRIVE,
-			Constants.BOTTOMRIGHT_PIVOT,
+			Constants.BACKRIGHT_DRIVE,
+			Constants.BACKRIGHT_PIVOT,
 			Constants.BOTTOMRIGHT_ABS_ENCODER);
 
-	private final SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(m_frontLeftLoc, m_frontRightLoc,
+	public SwerveDriveKinematics kinematics = new SwerveDriveKinematics(m_frontLeftLoc, m_frontRightLoc,
 			m_backLeftLoc, m_backRightLoc);
 
 	// getPosition is just placeholder for getting distance with encoders even
 	// though wpilib uses it as an example
 	// this took me like 30 min ot figure out
 	// convert encoders to m
-	private final SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(m_kinematics, getHeading2d(),
+	private final SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(kinematics, getHeading2d(),
 			new SwerveModulePosition[] {
 					m_frontLeft.getPosition(),
 					m_frontRight.getPosition(),
@@ -69,7 +69,7 @@ public class DriveUtil extends SubsystemBase {
 	}
 
 	public void driveRobot(boolean fieldRelative) {
-		var swerveModuleStates = m_kinematics.toSwerveModuleStates(
+		var swerveModuleStates = kinematics.toSwerveModuleStates(
 				fieldRelative
 						? ChassisSpeeds.fromFieldRelativeSpeeds(
 								RobotContainer.getDriverLeftXboxX() * Constants.MAX_LINEAR_SPEED,
@@ -89,9 +89,9 @@ public class DriveUtil extends SubsystemBase {
 
 	public void setSwerveModuleStates(SwerveModuleState[] states) {
 		m_frontLeft.setDesiredState(states[0]);
-		m_frontRight.setDesiredState(states[0]);
-		m_backLeft.setDesiredState(states[0]);
-		m_backLeft.setDesiredState(states[0]);
+		m_frontRight.setDesiredState(states[1]);
+		m_backLeft.setDesiredState(states[2]);
+		m_backRight.setDesiredState(states[3]);
 	}
 
 	public Rotation2d getHeading2d() {
@@ -110,8 +110,13 @@ public class DriveUtil extends SubsystemBase {
 		gyro.reset();
 	}
 
-	public void resetOdometry() {
-
+	public void resetPose(Pose2d pose) {
+		m_odometry.resetPosition(gyro.getRotation2d(), new SwerveModulePosition[] {
+			m_frontLeft.getPosition(),
+			m_frontRight.getPosition(),
+			m_backLeft.getPosition(),
+			m_backRight.getPosition()
+		}, pose);
 	}
 
 	public void calibrateGyro() {

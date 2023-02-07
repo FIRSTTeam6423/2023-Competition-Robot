@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants. This class should not be used for any other purpose. All constants should be declared
@@ -16,14 +18,14 @@ public final class Constants {
     /**
      * DriveUtil Constants
      */
-    public static final int TOPLEFT_DRIVE = 1;
-    public static final int TOPLEFT_PIVOT = 2;
-    public static final int TOPRIGHT_DRIVE = 3;
-    public static final int TOPRIGHT_PIVOT = 4;
-    public static final int BOTTOMLEFT_DRIVE = 5;
-    public static final int BOTTOMLEFT_PIVOT = 6;
-    public static final int BOTTOMRIGHT_DRIVE = 7;
-    public static final int BOTTOMRIGHT_PIVOT = 8;
+    public static final int FRONTLEFT_DRIVE = 1;
+    public static final int FRONTLEFT_PIVOT = 2;
+    public static final int FRONTRIGHT_DRIVE = 3;
+    public static final int FRONTRIGHT_PIVOT = 4;
+    public static final int BACKLEFT_DRIVE = 5;
+    public static final int BACKLEFT_PIVOT = 6;
+    public static final int BACKRIGHT_DRIVE = 7;
+    public static final int BACKRIGHT_PIVOT = 8;
     public static final int ARM_MOTOR = 9;
     public static final int WRIST_MOTOR = 10;
 
@@ -43,12 +45,17 @@ public final class Constants {
     public static final double MODULEPIVOT_I = 0.5;
     public static final double MODULEPIVOT_D = 0.5;
 
+    public static final double XDIR_P = 0;
+    public static final double YDIR_P = 0;
+    public static final double ROT_P = 0;
+
     //Pivot
     public static final double COUNTS_PER_REV = 4096; //May need to be 1024 for scaling. test to see
     public static final double RATIOED_COUNTS_PER_REV = COUNTS_PER_REV/13.71; //Takes gear reduction into account
     //Drive
     public static final double METERS_PER_REV = 39.37 * 4 * Math.PI; //39.37 is factor for inches to meters
     public static final double TICKS_PER_METER = 4096 / METERS_PER_REV;
+            
     //Ticks per rotation/360
 
     /**
