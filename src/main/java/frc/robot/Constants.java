@@ -4,8 +4,6 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants. This class should not be used for any other purpose. All constants should be declared
@@ -31,19 +29,31 @@ public final class Constants {
 
     public static final int TOPLEFT_ABS_ENCODER = 0;
     public static final int TOPRIGHT_ABS_ENCODER = 1;
-    public static final int BOTTOMRIGHT_ABS_ENCODER = 2;
-    public static final int BOTTOMLEFT_ABS_ENCODER = 3;
+    public static final int BOTTOMLEFT_ABS_ENCODER = 2;
+    public static final int BOTTOMRIGHT_ABS_ENCODER = 3;
+
+    public static final double TOPLEFT_ABS_ENCODER_OFFSET = -101.48;//77.1;
+    public static final double TOPRIGHT_ABS_ENCODER_OFFSET = -262.07;//-82.4;
+    public static final double BOTTOMLEFT_ABS_ENCODER_OFFSET = -121.36;//-115.2;
+    public static final double BOTTOMRIGHT_ABS_ENCODER_OFFSET = -173.39;//4.9;
+
+    public static final double[] ABS_ENCODER_OFFSETS = {
+        TOPLEFT_ABS_ENCODER_OFFSET,
+        TOPRIGHT_ABS_ENCODER_OFFSET,
+        BOTTOMLEFT_ABS_ENCODER_OFFSET,
+        BOTTOMRIGHT_ABS_ENCODER_OFFSET
+    };
 
     public static final double WHEEL_RADIUS = 0.5;
-    public static final double MAX_ANGULAR_SPEED = Math.PI; //1/2 rotation per second
-    public static final double MAX_LINEAR_SPEED = 5; //meters per second
+    public static final double MAX_ANGULAR_SPEED = 10*Math.PI; //1/2 rotation per second
+    public static final double MAX_LINEAR_SPEED = 30; //meters per second
 
-    public static final double MODULEDRIVE_P = 0.5;
-    public static final double MODULEDRIVE_I = 0.5;
-    public static final double MODULEDRIVE_D = 0.5;
-    public static final double MODULEPIVOT_P = 0.5;
-    public static final double MODULEPIVOT_I = 0.5;
-    public static final double MODULEPIVOT_D = 0.5;
+    public static final double MODULEDRIVE_P = 0.05;//0.01;
+    public static final double MODULEDRIVE_I = 0;
+    public static final double MODULEDRIVE_D = 0;
+    public static final double MODULEPIVOT_P = 0.05;//0.01;
+    public static final double MODULEPIVOT_I = 0;
+    public static final double MODULEPIVOT_D = 0;
 
     public static final double XDIR_P = 0;
     public static final double YDIR_P = 0;
@@ -53,7 +63,7 @@ public final class Constants {
     public static final double COUNTS_PER_REV = 4096; //May need to be 1024 for scaling. test to see
     public static final double RATIOED_COUNTS_PER_REV = COUNTS_PER_REV/13.71; //Takes gear reduction into account
     //Drive
-    public static final double METERS_PER_REV = 39.37 * 4 * Math.PI; //39.37 is factor for inches to meters
+    public static final double METERS_PER_REV = 2* 0.102 * Math.PI;
     public static final double TICKS_PER_METER = 4096 / METERS_PER_REV;
             
     //Ticks per rotation/360

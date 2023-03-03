@@ -15,8 +15,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.DriveUtil;
 import frc.robot.commands.OperateDrive;
-import frc.robot.subsystems.ClawUtil;
-import frc.robot.commands.OperateClaw;
+// import frc.robot.subsystems.ClawUtil;
+// import frc.robot.commands.OperateClaw;
 import edu.wpi.first.wpilibj2.command.Command;
 
 /**
@@ -28,10 +28,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final DriveUtil driveUtil = new DriveUtil();
-  private final ClawUtil clawUtil = new ClawUtil();
+  // private final ClawUtil clawUtil = new ClawUtil();
 
   private final OperateDrive operateDrive = new OperateDrive(driveUtil);
-  private final OperateClaw operateClaw = new OperateClaw(clawUtil);
+  // private final OperateClaw operateClaw = new OperateClaw(clawUtil);
 
   private static XboxController driver;
   private JoystickButton clawButton;
@@ -57,7 +57,7 @@ public class RobotContainer {
   private void configureButtonBindings() {
     clawButton = new JoystickButton(driver, Button.kX.value);
 
-		clawButton.onTrue(new InstantCommand(() -> clawUtil.toggleClaw(), clawUtil));
+		// clawButton.onTrue(new InstantCommand(() -> clawUtil.toggleClaw(), clawUtil));
   }
 
   /**
@@ -72,7 +72,7 @@ public class RobotContainer {
 
   private void configureDefaultCommands(){
     driveUtil.setDefaultCommand(operateDrive);
-    clawUtil.setDefaultCommand(operateClaw);
+    // clawUtil.setDefaultCommand(operateClaw);
   }
 
   public static double getDriverLeftXboxX(){

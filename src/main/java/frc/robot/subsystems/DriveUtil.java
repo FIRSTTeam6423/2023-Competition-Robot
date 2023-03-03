@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import com.kauailabs.navx.frc.AHRS;
-import edu.wpi.first.wpilibj.SPI;
 
 public class DriveUtil extends SubsystemBase {
 	// P denotes Pivoting, D driving
@@ -25,21 +24,26 @@ public class DriveUtil extends SubsystemBase {
 	private final Translation2d m_frontRightLoc = new Translation2d(Constants.TOPRIGHT_X, Constants.TOPRIGHT_Y);
 	private final Translation2d m_backLeftLoc = new Translation2d(Constants.BOTTOMLEFT_X, Constants.TOPLEFT_Y);
 	private final Translation2d m_backRightLoc = new Translation2d(Constants.BOTTOMRIGHT_X, Constants.BOTTOMRIGHT_Y);
+	private AHRS gyro = new AHRS();
 
 	private final SwerveModule m_frontLeft = new SwerveModule(
-			Constants.FRONTLEFT_DRIVE,
+			Constants.FRONTLEFT_DRIVE, 
+			false,
 			Constants.FRONTLEFT_PIVOT,
 			Constants.TOPLEFT_ABS_ENCODER);
 	private final SwerveModule m_frontRight = new SwerveModule(
 			Constants.FRONTRIGHT_DRIVE,
+			false,
 			Constants.FRONTRIGHT_PIVOT,
 			Constants.TOPRIGHT_ABS_ENCODER);
 	private final SwerveModule m_backLeft = new SwerveModule(
 			Constants.BACKLEFT_DRIVE,
+			false,
 			Constants.BACKLEFT_PIVOT,
 			Constants.BOTTOMLEFT_ABS_ENCODER);
 	private final SwerveModule m_backRight = new SwerveModule(
 			Constants.BACKRIGHT_DRIVE,
+			false,
 			Constants.BACKRIGHT_PIVOT,
 			Constants.BOTTOMRIGHT_ABS_ENCODER);
 
@@ -50,6 +54,7 @@ public class DriveUtil extends SubsystemBase {
 	// though wpilib uses it as an example
 	// this took me like 30 min ot figure out
 	// convert encoders to m
+
 	private final SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(kinematics, getHeading2d(),
 			new SwerveModulePosition[] {
 					m_frontLeft.getPosition(),
@@ -58,25 +63,25 @@ public class DriveUtil extends SubsystemBase {
 					m_backRight.getPosition()
 			}, new Pose2d(0.0, 0.0, new Rotation2d()));
 
-	private AHRS gyro = new AHRS(SPI.Port.kMXP);
-
 	public double setpoint;
 
 	public DriveUtil() {
 		setpoint = 0;
 
+		resetGyro();
 		calibrateGyro();
 	}
 
 	public void driveRobot(boolean fieldRelative) {
 		var swerveModuleStates = kinematics.toSwerveModuleStates(
 				fieldRelative
-						? ChassisSpeeds.fromFieldRelativeSpeeds(
-								RobotContainer.getDriverLeftXboxX() * Constants.MAX_LINEAR_SPEED,
-								RobotContainer.getDriverLeftXboxY() * Constants.MAX_LINEAR_SPEED,
-								RobotContainer.getDriverRightXboxX() * Constants.MAX_ANGULAR_SPEED, getHeading2d())
-						: new ChassisSpeeds(RobotContainer.getDriverLeftXboxX() * Constants.MAX_LINEAR_SPEED,
-								RobotContainer.getDriverLeftXboxY() * Constants.MAX_LINEAR_SPEED,
+						? ChassisSpeeds.fromFieldRelativeSpeeds(  
+								RobotContainer.getDriverLeftXboxX(),// * Constants.MAX_LINEAR_SPEED,
+								RobotContainer.getDriverLeftXboxY(),// * Constants.MAX_LINEAR_SPEED,
+								RobotContainer.getDriverRightXboxX(),// * Constants.MAX_ANGULAR_SPEED, 
+								getHeading2d())
+						: new ChassisSpeeds(RobotContainer.getDriverLeftXboxY() * Constants.MAX_LINEAR_SPEED,
+								RobotContainer.getDriverLeftXboxX() * Constants.MAX_LINEAR_SPEED,//Note y and x swapped for first 2 arguments is not intuitive, x is "forward"
 								RobotContainer.getDriverRightXboxX() * Constants.MAX_ANGULAR_SPEED));
 
 		SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Constants.MAX_LINEAR_SPEED);
