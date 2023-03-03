@@ -14,6 +14,19 @@ package frc.robot;
  */
 public final class Constants {
     /**
+     * ArmUtilConstants
+     */
+    public static final int ARM1 = 9;
+    public static final int ARM2 = 10;
+    public static final int WRIST = 11;
+    public static final double ARM_CONVERSION_FACTOR = 1;
+    public static final double ARM_LOWER_LIMIT=0;//this is not the actual value
+    public static final double ARM_UPPER_LIMIT=0.5;//this is not the actual value
+    public static final double WRIST_LOWER_LIMIT=0;//this is not the actual value
+    public static final double WRIST_UPPER_LIMIT=0.5;//this is not the actual value
+    public static final double DEADBAND = 3.5;
+    public static final double TURN_P_VALUE = 0.6;
+    /**
      * DriveUtil Constants
      */
     public static final int TOPLEFT_DRIVE = 1;
@@ -73,4 +86,6 @@ public final class Constants {
      */
     public static final int XBOX_DRIVER = 0;
     public static final int XBOX_OPERATOR = 1;
+
+    public static final double XBOX_STICK_DEADZONE_WIDTH=0.1;
 }

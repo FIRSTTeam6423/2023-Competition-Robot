@@ -5,17 +5,17 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.subsystems.DriveUtil;
+import frc.robot.commands.OperateArm;
 import frc.robot.commands.OperateDrive;
-import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.ArmUtil;
+import frc.robot.subsystems.DriveUtil;
+import frc.robot.util.ArmState;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -29,14 +29,26 @@ public class RobotContainer {
 
   private final OperateDrive operateDrive = new OperateDrive(driveUtil);
 
+  private final ArmUtil armUtil = new ArmUtil();
+
+  private final OperateArm operateArm = new OperateArm(armUtil);
+
   private static XboxController driver;
-  // private static XboxController operator;
+  private static XboxController operator;
 
   private SendableChooser<Command> autoChooser = new SendableChooser<>();
+
+  private JoystickButton highButton;
+  private JoystickButton middleButton;
+  private JoystickButton lowButton;
+  private JoystickButton highPButton;
+  private JoystickButton groundPButton;
   
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     driver = new XboxController(Constants.XBOX_DRIVER);
+    operator = new XboxController(Constants.XBOX_OPERATOR);
+
 
     // Configure the button bindings
     configureButtonBindings();
@@ -49,7 +61,19 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
-  private void configureButtonBindings() {}
+  private void configureButtonBindings() {
+    highButton = new JoystickButton(operator, Button.kY.value);
+    middleButton =  new JoystickButton(operator, Button.kA.value);
+    lowButton = new JoystickButton(operator, Button.kX.value);
+    highPButton = new JoystickButton(operator, Button.kStart.value);
+    groundPButton = new JoystickButton(operator, Button.kB.value);
+
+    highButton.onTrue(new InstantCommand(() -> armUtil.setState(ArmState.HIGH_GOAL), armUtil));
+    middleButton.onTrue(new InstantCommand(() -> armUtil.setState(ArmState.MIDDLE_GOAL), armUtil));
+    lowButton.onTrue(new InstantCommand(() -> armUtil.setState(ArmState.LOW_GOAL), armUtil));
+    highPButton.onTrue(new InstantCommand(() -> armUtil.setState(ArmState.HIGH_PICK), armUtil));
+    groundPButton.onTrue(new InstantCommand(() -> armUtil.setState(ArmState.GROUND_PICK), armUtil));
+  }
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
@@ -120,4 +144,20 @@ public class RobotContainer {
   public static boolean getDriverRightStickButton(){
     return driver.getRightStickButton();
   } 
+
+  public static double getOperatorLeftXboxX(){
+    return operator.getLeftX();
+  }
+
+  public static double getOperatorLeftXboxY(){
+    return operator.getLeftY();
+  }
+
+  public static double getOperatorRightXboxX(){
+    return operator.getRightX();
+  }
+
+  public static double getOperatorRightXboxY(){
+    return operator.getRightY();
+  }
 }
