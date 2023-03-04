@@ -3,18 +3,20 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import com.revrobotics.RelativeEncoder;
 
 import frc.robot.Constants;
-import frc.robot.commands.OperateArm;
 import frc.robot.util.ArmState;
 
 public class ArmUtil extends SubsystemBase{
     private CANSparkMax armMotor1, armMotor2, wristMotor;
     private ArmState state;
     private RelativeEncoder arm1Encoder, arm2Encoder, wristEncoder;
+    private DigitalInput armLimitSwitch, wristLimitSwitch;
 
     public ArmUtil() {
         armMotor1 = new CANSparkMax(Constants.ARM1, MotorType.kBrushless);
@@ -23,6 +25,9 @@ public class ArmUtil extends SubsystemBase{
         arm1Encoder = armMotor1.getEncoder();
         arm2Encoder = armMotor2.getEncoder();
         wristEncoder = wristMotor.getEncoder();
+
+        armLimitSwitch = new DigitalInput(Constants.ARM_LIMIT_SWITCH);
+        wristLimitSwitch = new DigitalInput(Constants.WRIST_LIMIT_SWITCH);
     }
 
     public void resetEncoders() {
@@ -48,6 +53,16 @@ public class ArmUtil extends SubsystemBase{
             motor.set(error * Constants.TURN_P_VALUE);
         }
 
+    }
+
+    public void zeroPosition(){
+        if(!armLimitSwitch.get()){
+            armMotor1.set(-0.1);
+            armMotor2.set(-0.1);
+        }
+        if(!wristLimitSwitch.get()){
+            wristMotor.set(-0.1);
+        }
     }
 
     public void operateArmToPosition(double dir){
@@ -104,5 +119,13 @@ public class ArmUtil extends SubsystemBase{
                 turn(wristMotor,wristEncoder,120);
                 break;
         }
+    }
+
+    public void periodic() {
+        SmartDashboard.putNumber("arm1 encoder", arm1Encoder.getPosition());
+        SmartDashboard.putNumber("arm2 encoder", arm2Encoder.getPosition());
+        SmartDashboard.putNumber("wrist encoder", wristEncoder.getPosition());
+        SmartDashboard.putBoolean("arm limitswitch", armLimitSwitch.get());
+        SmartDashboard.putBoolean("wrist limitswitch", wristLimitSwitch.get());
     }
 }
