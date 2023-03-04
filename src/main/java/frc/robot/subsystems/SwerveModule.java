@@ -14,6 +14,8 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+import java.util.Currency;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
@@ -37,6 +39,7 @@ public class SwerveModule extends SubsystemBase {
 		driveMotor = new CANSparkMax(driveMotorID, MotorType.kBrushless);
 		driveMotor.setInverted(driveInverted);
 		pivotMotor = new CANSparkMax(pivotMotorID, MotorType.kBrushless);
+		pivotMotor.setInverted(true);
 		this.encoderID = encoderID;
 		/**
 		 * We need three encoders, as the sparkmax can only accurately tell
@@ -77,14 +80,15 @@ public class SwerveModule extends SubsystemBase {
 
 	public void setDesiredState(SwerveModuleState desiredState) {
 		// Optimize the reference state to avoid spinning further than 90 degrees
-		double curRotDeg = -pivotEncoder.getAbsolutePosition() * 360 - Constants.ABS_ENCODER_OFFSETS[this.encoderID];
+		double curRotDeg = pivotEncoder.getAbsolutePosition() * 360 - Constants.ABS_ENCODER_OFFSETS[this.encoderID];//-pivotEncoder.getAbsolutePosition() * 360 - Constants.ABS_ENCODER_OFFSETS[this.encoderID];
 		state = SwerveModuleState.optimize(desiredState, new Rotation2d(Math.toRadians(curRotDeg)));
 		// Different constant need for drivePIDController, convert m/s to rpm
 		driveMotor.set(drivePIDController.calculate(driveEncoder.getVelocity(), state.speedMetersPerSecond));
-		pivotMotor.set(pivotPIDController.calculate(curRotDeg, state.angle.getDegrees()));
-		SmartDashboard.putNumber("Desired Angle id: " + encoderID , state.angle.getDegrees());
-		SmartDashboard.putNumber("Actual Angle id: " + encoderID, curRotDeg);
-
+		pivotMotor.set(pivotPIDController.calculate(curRotDeg,state.angle.getDegrees()));
+		//SmartDashboard.putNumber("Desired Angle id: " + encoderID , state.angle.getDegrees());
+		SmartDashboard.putNumber("curRotDeg: " + encoderID, curRotDeg);
+		SmartDashboard.putNumber("pid output: " + encoderID, pivotPIDController.calculate(curRotDeg, 0));
+		
 		
 		//SmartDashboard.putNumber("ABS encoder" + Integer.toString(this.encoderID), pivotEncoder.getAbsolutePosition() * 360 + Constants.ABS_ENCODER_OFFSETS[this.encoderID]);
 	}

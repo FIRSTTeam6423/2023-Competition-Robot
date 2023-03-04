@@ -33,7 +33,7 @@ public class DriveUtil extends SubsystemBase {
 			Constants.TOPLEFT_ABS_ENCODER);
 	private final SwerveModule m_frontRight = new SwerveModule(
 			Constants.FRONTRIGHT_DRIVE,
-			false,
+			true,
 			Constants.FRONTRIGHT_PIVOT,
 			Constants.TOPRIGHT_ABS_ENCODER);
 	private final SwerveModule m_backLeft = new SwerveModule(
@@ -43,7 +43,7 @@ public class DriveUtil extends SubsystemBase {
 			Constants.BOTTOMLEFT_ABS_ENCODER);
 	private final SwerveModule m_backRight = new SwerveModule(
 			Constants.BACKRIGHT_DRIVE,
-			false,
+			true,
 			Constants.BACKRIGHT_PIVOT,
 			Constants.BOTTOMRIGHT_ABS_ENCODER);
 

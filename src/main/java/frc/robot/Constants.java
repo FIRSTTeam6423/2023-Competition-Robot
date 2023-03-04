@@ -32,10 +32,10 @@ public final class Constants {
     public static final int BOTTOMLEFT_ABS_ENCODER = 2;
     public static final int BOTTOMRIGHT_ABS_ENCODER = 3;
 
-    public static final double TOPLEFT_ABS_ENCODER_OFFSET = -101.48;//77.1;
-    public static final double TOPRIGHT_ABS_ENCODER_OFFSET = -262.07;//-82.4;
-    public static final double BOTTOMLEFT_ABS_ENCODER_OFFSET = -121.36;//-115.2;
-    public static final double BOTTOMRIGHT_ABS_ENCODER_OFFSET = -173.39;//4.9;
+    public static final double TOPLEFT_ABS_ENCODER_OFFSET = 12.0;//77.1;
+    public static final double TOPRIGHT_ABS_ENCODER_OFFSET = 171.6;//-82.4;
+    public static final double BOTTOMLEFT_ABS_ENCODER_OFFSET = 30.8;//-115.2;
+    public static final double BOTTOMRIGHT_ABS_ENCODER_OFFSET = 83.8;//4.9;
 
     public static final double[] ABS_ENCODER_OFFSETS = {
         TOPLEFT_ABS_ENCODER_OFFSET,
@@ -45,13 +45,13 @@ public final class Constants {
     };
 
     public static final double WHEEL_RADIUS = 0.5;
-    public static final double MAX_ANGULAR_SPEED = 10*Math.PI; //1/2 rotation per second
-    public static final double MAX_LINEAR_SPEED = 30; //meters per second
+    public static final double MAX_ANGULAR_SPEED = 40*Math.PI; //1/2 rotation per second
+    public static final double MAX_LINEAR_SPEED = 100; //meters per second
 
-    public static final double MODULEDRIVE_P = 0.05;//0.01;
+    public static final double MODULEDRIVE_P = 0.01;//0.01;
     public static final double MODULEDRIVE_I = 0;
     public static final double MODULEDRIVE_D = 0;
-    public static final double MODULEPIVOT_P = 0.05;//0.01;
+    public static final double MODULEPIVOT_P = 0.005;//0.01;
     public static final double MODULEPIVOT_I = 0;
     public static final double MODULEPIVOT_D = 0;
 
