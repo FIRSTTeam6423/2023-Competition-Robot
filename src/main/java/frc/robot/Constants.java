@@ -24,13 +24,22 @@ public final class Constants {
     public static final int ARM_LIMIT_SWITCH = 5;
 
     public static final double ARM_CONVERSION_FACTOR = 1;
-    public static final double ARM_LOWER_LIMIT=0;//this is not the actual value
+    public static final double ARM_LOWER_LIMIT=0;
     public static final double ARM_UPPER_LIMIT=0.5;//this is not the actual value
     public static final double WRIST_LOWER_LIMIT=0;//this is not the actual value
-    public static final double WRIST_UPPER_LIMIT=0.5;//this is not the actual value
+    public static final double WRIST_UPPER_LIMIT=0;
+     
+
 
     public static final double DEADBAND = 3.5;
-    public static final double TURN_P_VALUE = 0.6;
+    public static final double ARM_P = 0;
+    public static final double ARM_I = 0;
+    public static final double ARM_D = 0;
+
+    public static final double WRIST_P = 0;
+    public static final double WRIST_I = 0;
+    public static final double WRIST_D = 0;
+
     /**
      * DriveUtil Constants
      */
@@ -50,10 +59,10 @@ public final class Constants {
     public static final int BOTTOMLEFT_ABS_ENCODER = 2;
     public static final int BOTTOMRIGHT_ABS_ENCODER = 3;
 
-    public static final double TOPLEFT_ABS_ENCODER_OFFSET = 12.0;//77.1;
-    public static final double TOPRIGHT_ABS_ENCODER_OFFSET = 171.6;//-82.4;
-    public static final double BOTTOMLEFT_ABS_ENCODER_OFFSET = 30.8;//-115.2;
-    public static final double BOTTOMRIGHT_ABS_ENCODER_OFFSET = 83.8;//4.9;
+    public static final double TOPLEFT_ABS_ENCODER_OFFSET = 35.6;//77.1;
+    public static final double TOPRIGHT_ABS_ENCODER_OFFSET = 158.2;//-82.4;
+    public static final double BOTTOMLEFT_ABS_ENCODER_OFFSET = 152.5;//-115.2;
+    public static final double BOTTOMRIGHT_ABS_ENCODER_OFFSET = 105.7;//4.9;
 
     public static final double[] ABS_ENCODER_OFFSETS = {
         TOPLEFT_ABS_ENCODER_OFFSET,

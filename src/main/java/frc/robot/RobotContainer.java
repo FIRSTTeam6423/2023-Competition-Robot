@@ -97,6 +97,7 @@ public class RobotContainer {
 
   private void configureDefaultCommands(){
     driveUtil.setDefaultCommand(operateDrive);
+    armUtil.setDefaultCommand(operateArm);
     // clawUtil.setDefaultCommand(operateClaw);
   }
 

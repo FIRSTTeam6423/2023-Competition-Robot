@@ -7,32 +7,28 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.ArmUtil;
 
-public class OperateArm extends CommandBase {
-  /** Creates a new OperateDrive. */
+public class RetractArm extends CommandBase {
+  /** Creates a new RetractArm. */
+  private boolean done = false;
   private ArmUtil au;
-  private RetractArmAndWrist initializeCommand;
-
-  public OperateArm(ArmUtil au) {
-    // Use addRequirements() here to declare subsystem dependencies.
+  public RetractArm(ArmUtil au) {
     this.au = au;
     addRequirements(this.au);
+
+    // Use addRequirements() here to declare subsystem dependencies.
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    initializeCommand = new RetractArmAndWrist(au);
-    initializeCommand.schedule();
+    
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(initializeCommand.isFinished()){
-      au.operateArm();
-    }
+    done = au.operateArmToLimitSwitch();
   }
-
 
   // Called once the command ends or is interrupted.
   @Override
@@ -41,6 +37,6 @@ public class OperateArm extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return done;
   }
 }
