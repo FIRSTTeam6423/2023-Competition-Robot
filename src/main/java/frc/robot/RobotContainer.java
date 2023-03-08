@@ -41,7 +41,6 @@ public class RobotContainer {
   private static XboxController driver;
   private static XboxController operator;
   private JoystickButton clawButton;
-  // private static XboxController operator;
 
   private SendableChooser<Command> autoChooser = new SendableChooser<>();
 
@@ -70,17 +69,17 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     highButton = new JoystickButton(operator, Button.kY.value);
-    middleButton =  new JoystickButton(operator, Button.kA.value);
-    lowButton = new JoystickButton(operator, Button.kX.value);
-    highPButton = new JoystickButton(operator, Button.kStart.value);
-    groundPButton = new JoystickButton(operator, Button.kB.value);
+    middleButton =  new JoystickButton(operator, Button.kX.value);
+    lowButton = new JoystickButton(operator, Button.kA.value);
+    highPButton = new JoystickButton(operator, Button.kLeftBumper.value);
+    groundPButton = new JoystickButton(operator, Button.kRightBumper.value);
+    clawButton = new JoystickButton(operator, Button.kB.value);
 
     highButton.onTrue(new InstantCommand(() -> armUtil.setState(ArmState.HIGH_GOAL), armUtil));
     middleButton.onTrue(new InstantCommand(() -> armUtil.setState(ArmState.MIDDLE_GOAL), armUtil));
     lowButton.onTrue(new InstantCommand(() -> armUtil.setState(ArmState.LOW_GOAL), armUtil));
     highPButton.onTrue(new InstantCommand(() -> armUtil.setState(ArmState.HIGH_PICK), armUtil));
     groundPButton.onTrue(new InstantCommand(() -> armUtil.setState(ArmState.GROUND_PICK), armUtil));
-    clawButton = new JoystickButton(driver, Button.kX.value);
 
 		// clawButton.onTrue(new InstantCommand(() -> clawUtil.toggleClaw(), clawUtil));
   }

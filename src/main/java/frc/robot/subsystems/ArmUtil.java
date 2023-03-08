@@ -2,6 +2,8 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -11,17 +13,16 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMax.IdleMode;
 
 import frc.robot.Constants;
-import frc.robot.RobotContainer;
 import frc.robot.util.ArmState;
-import frc.robot.util.ControlState;
 
 public class ArmUtil extends SubsystemBase{
     private CANSparkMax armMotor1, armMotor2, wristMotor;
     private ArmState armState;
-    private ControlState controlState;
     private RelativeEncoder arm1Encoder, arm2Encoder, wristEncoder;
     private DigitalInput armLimitSwitch, wristLimitSwitch;
     private PIDController armPIDController, wristPIDController;
+    private ArmFeedforward armFeedForwardController, wristFeedForwardController;
+
 
     public ArmUtil() {
         armMotor1 = new CANSparkMax(Constants.ARM1, MotorType.kBrushless);
@@ -39,14 +40,17 @@ public class ArmUtil extends SubsystemBase{
         arm2Encoder = armMotor2.getEncoder();
         wristEncoder = wristMotor.getEncoder();
 
-        arm1Encoder.setPositionConversionFactor(Constants.ARM_CONVERSION_FACTOR); //default unit of rotation of motor for position
-        arm2Encoder.setPositionConversionFactor(Constants.ARM_CONVERSION_FACTOR);
-        wristEncoder.setPositionConversionFactor(Constants.ARM_CONVERSION_FACTOR);
+        arm1Encoder.setPositionConversionFactor(Constants.ARM_TICKS_PER_MOTOR_DEG); 
+        arm2Encoder.setPositionConversionFactor(Constants.ARM_TICKS_PER_MOTOR_DEG);
+        wristEncoder.setPositionConversionFactor(1);
 
         armPIDController = new PIDController(Constants.ARM_P, Constants.ARM_I, Constants.ARM_D);
         wristPIDController = new PIDController(Constants.WRIST_P, Constants.WRIST_I, Constants.WRIST_D);
-
-        armLimitSwitch = new DigitalInput(Constants.ARM_LIMIT_SWITCH);
+        
+        armFeedForwardController = new ArmFeedforward(Constants.ARM_kS, Constants.ARM_kG, Constants.ARM_kV, Constants.ARM_kA);
+        wristFeedForwardController = new ArmFeedforward(Constants.WRIST_kS, Constants.WRIST_kG, Constants.WRIST_kV, Constants.WRIST_kA);
+        
+        armLimitSwitch = new DigitalInput(Constants.ARM_LIMIT_SWITCH);  
         wristLimitSwitch = new DigitalInput(Constants.WRIST_LIMIT_SWITCH);
     }
 
@@ -62,8 +66,18 @@ public class ArmUtil extends SubsystemBase{
 
     // everything is in degrees
     //0 degrees is the limit switch
-    public void turn(CANSparkMax motor, RelativeEncoder encoder, double degrees, PIDController pController) {
-        motor.set(pController.calculate(encoder.getPosition(), degrees));
+    public void turnArm(double degrees) {
+        armMotor1.set(MathUtil.clamp(armPIDController.calculate(arm1Encoder.getPosition(), degrees), -0.5, 0.5));
+        armMotor2.set(MathUtil.clamp(armPIDController.calculate(arm2Encoder.getPosition(), degrees), -0.5, 0.5));
+    }
+
+    public void turnWrist(double degrees){
+        wristMotor.set(MathUtil.clamp(wristPIDController.calculate(wristEncoder.getPosition(), degrees), -0.5, 0.5));
+    }
+
+    public void rotateArm(double degrees){
+        armMotor1.set(MathUtil.clamp(armFeedForwardController.calculate(degrees - Constants.ARM_FEEDFORWARD_OFFSET, Constants.ARM_VELOCITY, Constants.ARM_ACCELERATION), 0.0, 2.0));// armPIDController.calculate(0, degrees));
+        armMotor2.set(MathUtil.clamp(armFeedForwardController.calculate(degrees - Constants.ARM_FEEDFORWARD_OFFSET, Constants.ARM_VELOCITY, Constants.ARM_ACCELERATION), 0, 2.0));// armPIDCo
     }
 
     public void zeroArm(){
@@ -104,7 +118,7 @@ public class ArmUtil extends SubsystemBase{
     public void operateWristToPosition(double dir){
         if(Math.abs(dir)>=Constants.XBOX_STICK_DEADZONE_WIDTH){
             if(dir>0){
-                if(arm1Encoder.getPosition()< Constants.WRIST_UPPER_LIMIT){
+                if(wristEncoder.getPosition()< Constants.WRIST_UPPER_LIMIT){
                     wristMotor.set(0.1);//go up
                 }
                 else {
@@ -112,7 +126,7 @@ public class ArmUtil extends SubsystemBase{
                 }
             } 
             else {
-                if(arm1Encoder.getPosition() > Constants.WRIST_LOWER_LIMIT){
+                if(wristEncoder.getPosition() > Constants.WRIST_LOWER_LIMIT){
                     //go down
                     wristMotor.set(-0.1);
                 }
@@ -146,43 +160,21 @@ public class ArmUtil extends SubsystemBase{
     public void operateArmStates() {
         switch(armState) {
             case HIGH_GOAL:
-                turn(armMotor1, arm1Encoder, 120, armPIDController);
-                turn(armMotor2, arm2Encoder, 120, armPIDController);
-                turn(wristMotor, wristEncoder, 180, wristPIDController);
+                turnArm(Constants.HIGH_GOAL_ARM);
                 break;
             case MIDDLE_GOAL:
-                turn(armMotor1, arm1Encoder, 80, armPIDController);
-                turn(armMotor2, arm2Encoder, 80, armPIDController);
-                turn(wristMotor, wristEncoder, 130, wristPIDController);
+                turnArm(Constants.MIDDLE_GOAL_ARM);
                 break;
             case LOW_GOAL:
-                turn(armMotor1, arm1Encoder, 40, armPIDController);
-                turn(armMotor2, arm2Encoder, 40, armPIDController);
-                turn(wristMotor, wristEncoder, 80, wristPIDController);
+                turnArm(Constants.LOW_GOAL_ARM);
                 break;
             case GROUND_PICK:
-                turn(armMotor1, arm1Encoder, 15, armPIDController);
-                turn(armMotor2, arm2Encoder, 15, armPIDController);
-                turn(wristMotor, wristEncoder, 50, wristPIDController);
+                turnArm(Constants.GROUND_PICK_ARM);
                 break;
             case HIGH_PICK:
-                turn(armMotor1, arm1Encoder, 95, armPIDController);
-                turn(armMotor2, arm2Encoder, 95, armPIDController);
-                turn(wristMotor, wristEncoder, 120, wristPIDController);
+                turnArm(Constants.HIGH_PICK_ARM);
                 break;
         }
-    }
-
-    public void operateArm(){
-        // switch(controlState) {
-        //     case JOYSTICK_CONTROL:
-        //         operateArmToPosition(RobotContainer.getOperatorLeftXboxY());
-        //         operateWristToPosition(RobotContainer.getOperatorRightXboxY());
-        //         break;
-        //     case BUTTON_CONTROL:
-        //         operateArmStates();
-        //         break;
-        // }
     }
 
     public void periodic() {

@@ -10,27 +10,40 @@ import frc.robot.subsystems.ArmUtil;
 public class OperateArm extends CommandBase {
   /** Creates a new OperateDrive. */
   private ArmUtil au;
-  private RetractArmAndWrist initializeCommand;
+  private RetractArm initializeCommand;
+  private boolean wristZeroed;
+  private boolean armZeroed;
 
   public OperateArm(ArmUtil au) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.au = au;
     addRequirements(this.au);
+    System.out.println("IIIIIIIIIIIIIIIIIIIIIIIIIIIiii");
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    initializeCommand = new RetractArmAndWrist(au);
-    initializeCommand.schedule();
+    //initializeCommand = new RetractArm(au);
+    //System.out.println("EEEEEEEEEEEEEEEEE");
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(initializeCommand.isFinished()){
-      au.operateArm();
+    if(!wristZeroed){
+      //zero wrist
+      wristZeroed = au.operateWirstToLimitSwitch();
     }
+    else if(!armZeroed){
+      //todo: also keep the wrist up
+      armZeroed=au.operateArmToLimitSwitch();
+    }
+    else{
+      au.operateArmStates();
+      System.out.println("what's going on");
+    }
+
   }
 
 

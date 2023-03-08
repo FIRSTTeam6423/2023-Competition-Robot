@@ -23,7 +23,7 @@ public final class Constants {
     public static final int WRIST_LIMIT_SWITCH = 4;
     public static final int ARM_LIMIT_SWITCH = 5;
 
-    public static final double ARM_CONVERSION_FACTOR = 1;
+    public static final double ARM_TICKS_PER_MOTOR_DEG = 0.087890625;
     public static final double ARM_LOWER_LIMIT=0;
     public static final double ARM_UPPER_LIMIT=0.5;//this is not the actual value
     public static final double WRIST_LOWER_LIMIT=0;//this is not the actual value
@@ -32,13 +32,48 @@ public final class Constants {
 
 
     public static final double DEADBAND = 3.5;
-    public static final double ARM_P = 0;
+    public static final double ARM_P = 0.00000024412;
     public static final double ARM_I = 0;
-    public static final double ARM_D = 0;
+    public static final double ARM_D = 0.00000002828;
 
     public static final double WRIST_P = 0;
     public static final double WRIST_I = 0;
     public static final double WRIST_D = 0;
+
+    //ARMSTATE CONSTANTS
+    public static final double HIGH_GOAL_ARM = 110;
+    public static final double HIGH_GOAL_WRIST = 180;
+
+    public static final double MIDDLE_GOAL_ARM = 80;
+    public static final double MIDDLE_GOAL_WRIST = 130;
+
+    public static final double LOW_GOAL_ARM = 40;
+    public static final double LOW_GOAL_WRIST = 80;
+
+    public static final double HIGH_PICK_ARM = 95;
+    public static final double HIGH_PICK_WRIST = 50;
+
+    public static final double GROUND_PICK_ARM = 15;
+    public static final double GROUND_PICK_WRIST = 120;
+
+    //Feedforward constants - arbitrary values
+    public static final double ARM_kG = 0.82056;
+    public static final double ARM_kV = 0.00765858;
+    public static final double ARM_kS = 0.23125;
+    public static final double ARM_kA = 0.00086773;
+     
+    public static final double WRIST_kG = 0;
+    public static final double WRIST_kV = 0;
+    public static final double WRIST_kS = 0;
+    public static final double WRIST_kA = 0;
+
+    public static final double ARM_VELOCITY = 0.5;
+    public static final double ARM_ACCELERATION = 0;
+
+    public static final double WRIST_VELOCITY = 0;
+    public static final double WRIST_ACCELERATION = 0;
+
+    public static final double ARM_FEEDFORWARD_OFFSET = 90;
 
     /**
      * DriveUtil Constants
