@@ -23,7 +23,8 @@ public final class Constants {
     public static final int WRIST_LIMIT_SWITCH = 4;
     public static final int ARM_LIMIT_SWITCH = 5;
 
-    public static final double ARM_TICKS_PER_MOTOR_DEG = 0.087890625;
+    public static final double ARM_TICKS_PER_DEG = 0.0024414063 * 4096; //fixed
+    public static final double WRIST_TICKS_PER_DEG = 0.001373291 * 4096;
     public static final double ARM_LOWER_LIMIT=0;
     public static final double ARM_UPPER_LIMIT=0.5;//this is not the actual value
     public static final double WRIST_LOWER_LIMIT=0;//this is not the actual value
@@ -36,25 +37,29 @@ public final class Constants {
     public static final double ARM_I = 0;
     public static final double ARM_D = 0.00000002828;
 
-    public static final double WRIST_P = 0;
+    public static final double WRIST_P = 0.14759;
     public static final double WRIST_I = 0;
-    public static final double WRIST_D = 0;
+    public static final double WRIST_D = 0.049768;
 
     //ARMSTATE CONSTANTS
+    //Arm has max of ~120, parrel to ground at ~80
+    //Since wrist has a max of zero at limit switch
+    //All degrees should be negative. otherwise, wrist will break itself
+    
     public static final double HIGH_GOAL_ARM = 110;
-    public static final double HIGH_GOAL_WRIST = 180;
+    public static final double HIGH_GOAL_WRIST = -180;
 
     public static final double MIDDLE_GOAL_ARM = 80;
-    public static final double MIDDLE_GOAL_WRIST = 130;
+    public static final double MIDDLE_GOAL_WRIST = -130;
 
     public static final double LOW_GOAL_ARM = 40;
-    public static final double LOW_GOAL_WRIST = 80;
+    public static final double LOW_GOAL_WRIST = -80;
 
     public static final double HIGH_PICK_ARM = 95;
-    public static final double HIGH_PICK_WRIST = 50;
+    public static final double HIGH_PICK_WRIST = -50;
 
     public static final double GROUND_PICK_ARM = 15;
-    public static final double GROUND_PICK_WRIST = 120;
+    public static final double GROUND_PICK_WRIST = -150;
 
     //Feedforward constants - arbitrary values
     public static final double ARM_kG = 0.82056;
@@ -62,10 +67,10 @@ public final class Constants {
     public static final double ARM_kS = 0.23125;
     public static final double ARM_kA = 0.00086773;
      
-    public static final double WRIST_kG = 0;
-    public static final double WRIST_kV = 0;
-    public static final double WRIST_kS = 0;
-    public static final double WRIST_kA = 0;
+    public static final double WRIST_kG = 1.3802;
+    public static final double WRIST_kV = 0.016472;
+    public static final double WRIST_kS = -0.6777;
+    public static final double WRIST_kA = 0.0098395;
 
     public static final double ARM_VELOCITY = 0.5;
     public static final double ARM_ACCELERATION = 0;

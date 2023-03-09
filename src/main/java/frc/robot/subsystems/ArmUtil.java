@@ -25,6 +25,8 @@ public class ArmUtil extends SubsystemBase{
 
 
     public ArmUtil() {
+        armState = ArmState.INITIALIZING;
+        
         armMotor1 = new CANSparkMax(Constants.ARM1, MotorType.kBrushless);
         armMotor2 = new CANSparkMax(Constants.ARM2, MotorType.kBrushless);
         wristMotor = new CANSparkMax(Constants.WRIST,MotorType.kBrushless);
@@ -40,9 +42,9 @@ public class ArmUtil extends SubsystemBase{
         arm2Encoder = armMotor2.getEncoder();
         wristEncoder = wristMotor.getEncoder();
 
-        arm1Encoder.setPositionConversionFactor(Constants.ARM_TICKS_PER_MOTOR_DEG); 
-        arm2Encoder.setPositionConversionFactor(Constants.ARM_TICKS_PER_MOTOR_DEG);
-        wristEncoder.setPositionConversionFactor(1);
+        arm1Encoder.setPositionConversionFactor(Constants.ARM_TICKS_PER_DEG); //Now fixed. Problem was we were assuming native units were
+        arm2Encoder.setPositionConversionFactor(Constants.ARM_TICKS_PER_DEG); //ticks when its actually rotations. Constants show fix
+        wristEncoder.setPositionConversionFactor(Constants.WRIST_TICKS_PER_DEG); //Me personally, i would test moving arm on own, then add on wrist once code to make sure it doesnt hit bumper exists
 
         armPIDController = new PIDController(Constants.ARM_P, Constants.ARM_I, Constants.ARM_D);
         wristPIDController = new PIDController(Constants.WRIST_P, Constants.WRIST_I, Constants.WRIST_D);
@@ -157,6 +159,12 @@ public class ArmUtil extends SubsystemBase{
         return false;
     }
 
+    public void stopWrist(){
+        // wristMotor.set(wristPIDController.calculate(wristEncoder.getPosition(), 0));
+        //Stop wrist does not work, makes motor go crazy. could cause motor to die so fix it
+        //Maybe we juse feedforward for just this? idk
+    }
+
     public void operateArmStates() {
         switch(armState) {
             case HIGH_GOAL:
@@ -173,6 +181,11 @@ public class ArmUtil extends SubsystemBase{
                 break;
             case HIGH_PICK:
                 turnArm(Constants.HIGH_PICK_ARM);
+                break;
+            case RETRACT:
+            case INITIALIZING:
+                if(operateWirstToLimitSwitch())
+                    operateArmToLimitSwitch();
                 break;
         }
     }

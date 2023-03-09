@@ -31,19 +31,7 @@ public class OperateArm extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(!wristZeroed){
-      //zero wrist
-      wristZeroed = au.operateWirstToLimitSwitch();
-    }
-    else if(!armZeroed){
-      //todo: also keep the wrist up
-      armZeroed=au.operateArmToLimitSwitch();
-    }
-    else{
       au.operateArmStates();
-      System.out.println("what's going on");
-    }
-
   }
 
 

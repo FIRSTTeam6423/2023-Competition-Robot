@@ -16,8 +16,8 @@ import frc.robot.commands.OperateDrive;
 import frc.robot.subsystems.ArmUtil;
 import frc.robot.subsystems.DriveUtil;
 import frc.robot.util.ArmState;
-// import frc.robot.subsystems.ClawUtil;
-// import frc.robot.commands.OperateClaw;
+import frc.robot.subsystems.ClawUtil;
+import frc.robot.commands.OperateClaw;
 import edu.wpi.first.wpilibj2.command.Command;
 
 /**
@@ -29,10 +29,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final DriveUtil driveUtil = new DriveUtil();
-  // private final ClawUtil clawUtil = new ClawUtil();
+  private final ClawUtil clawUtil = new ClawUtil();
 
   private final OperateDrive operateDrive = new OperateDrive(driveUtil);
-  // private final OperateClaw operateClaw = new OperateClaw(clawUtil);
+  private final OperateClaw operateClaw = new OperateClaw(clawUtil);
 
   private final ArmUtil armUtil = new ArmUtil();
 
@@ -81,7 +81,7 @@ public class RobotContainer {
     highPButton.onTrue(new InstantCommand(() -> armUtil.setState(ArmState.HIGH_PICK), armUtil));
     groundPButton.onTrue(new InstantCommand(() -> armUtil.setState(ArmState.GROUND_PICK), armUtil));
 
-		// clawButton.onTrue(new InstantCommand(() -> clawUtil.toggleClaw(), clawUtil));
+		clawButton.onTrue(new InstantCommand(() -> clawUtil.toggleClaw(), clawUtil));
   }
 
   /**
@@ -97,7 +97,7 @@ public class RobotContainer {
   private void configureDefaultCommands(){
     driveUtil.setDefaultCommand(operateDrive);
     armUtil.setDefaultCommand(operateArm);
-    // clawUtil.setDefaultCommand(operateClaw);
+    clawUtil.setDefaultCommand(operateClaw);
   }
 
   public static double getDriverLeftXboxX(){
