@@ -1,6 +1,6 @@
 package frc.robot.util;
 
 public enum ArmState {
-    STATE_1,STATE_2,STATE_3;
+    HIGH_GOAL,MIDDLE_GOAL,LOW_GOAL,GROUND_PICK,HIGH_PICK, INITIALIZING, RETRACT;
 
 }

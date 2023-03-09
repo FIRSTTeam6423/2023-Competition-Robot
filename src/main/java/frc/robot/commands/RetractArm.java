@@ -5,37 +5,38 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.DriveUtil;
+import frc.robot.subsystems.ArmUtil;
 
-public class OperateDrive extends CommandBase {
-  /** Creates a new OperateDrive. */
-  private DriveUtil du;
+public class RetractArm extends CommandBase {
+  /** Creates a new RetractArm. */
+  private boolean done = false;
+  private ArmUtil au;
+  public RetractArm(ArmUtil au) {
+    this.au = au;
+    addRequirements(this.au);
 
-  public OperateDrive(DriveUtil du) {
     // Use addRequirements() here to declare subsystem dependencies.
-    this.du = du;
-    addRequirements(this.du);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    System.out.println("OOOOOOOOOOOOOOOOOOOo");
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    du.driveRobot(false);
+    done = au.operateArmToLimitSwitch();
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+  }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return done;
   }
 }
