@@ -31,6 +31,8 @@ public final class Constants {
     public static final double WRIST_UPPER_LIMIT=0;
      
 
+    public static final double ARM_NARROW_DEADBAND=3.5;
+    public static final double ARM_WIDE_DEADBAND=7;
 
     public static final double DEADBAND = 3.5;
     public static final double ARM_P = 0.00000024412;

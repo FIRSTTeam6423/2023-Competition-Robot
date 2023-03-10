@@ -1,6 +1,8 @@
 package frc.robot.subsystems;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.RelativeEncoder;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
@@ -8,10 +10,6 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.CANSparkMax.IdleMode;
-
 import frc.robot.Constants;
 import frc.robot.util.ArmState;
 
@@ -22,6 +20,7 @@ public class ArmUtil extends SubsystemBase{
     private DigitalInput armLimitSwitch, wristLimitSwitch;
     private PIDController armPIDController, wristPIDController;
     private ArmFeedforward armFeedForwardController, wristFeedForwardController;
+    private boolean oscillationGoingUp=false;
 
 
     public ArmUtil() {
@@ -69,8 +68,22 @@ public class ArmUtil extends SubsystemBase{
     // everything is in degrees
     //0 degrees is the limit switch
     public void turnArm(double degrees) {
-        armMotor1.set(MathUtil.clamp(armPIDController.calculate(arm1Encoder.getPosition(), degrees), -0.5, 0.5));
-        armMotor2.set(MathUtil.clamp(armPIDController.calculate(arm2Encoder.getPosition(), degrees), -0.5, 0.5));
+        double armPosition=arm1Encoder.getPosition()*360;
+        boolean runningMotors=true;
+        if(oscillationGoingUp){
+            if(armPosition < degrees-Constants.ARM_NARROW_DEADBAND || armPosition>degrees) //if in narrow deadband
+            {
+                oscillationGoingUp=false;
+                runningMotors=false;
+            }
+        }
+        else if(armPosition < degrees-Constants.ARM_WIDE_DEADBAND || armPosition>degrees){
+            runningMotors=false;
+        }
+        if(runningMotors){
+            armMotor1.set(MathUtil.clamp(armPIDController.calculate(arm1Encoder.getPosition(), degrees), -0.5, 0.5));
+            armMotor2.set(MathUtil.clamp(armPIDController.calculate(arm2Encoder.getPosition(), degrees), -0.5, 0.5));
+        }
     }
 
     public void turnWrist(double degrees){
