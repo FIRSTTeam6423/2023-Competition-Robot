@@ -5,6 +5,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.RobotContainer;
 import frc.robot.subsystems.ArmUtil;
 
 public class OperateArm extends CommandBase {
@@ -18,20 +19,17 @@ public class OperateArm extends CommandBase {
     // Use addRequirements() here to declare subsystem dependencies.
     this.au = au;
     addRequirements(this.au);
-    System.out.println("IIIIIIIIIIIIIIIIIIIIIIIIIIIiii");
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    //initializeCommand = new RetractArm(au);
-    //System.out.println("EEEEEEEEEEEEEEEEE");
   }
-
+  
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-      au.operateArmStates();
+      au.operateArm(-RobotContainer.getOperatorJoystickY());
   }
 
 

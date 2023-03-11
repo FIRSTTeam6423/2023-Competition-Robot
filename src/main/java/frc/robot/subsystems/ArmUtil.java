@@ -22,8 +22,9 @@ public class ArmUtil extends SubsystemBase{
     private DigitalInput armLimitSwitch, wristLimitSwitch;
     private PIDController armPIDController, wristPIDController;
     private ArmFeedforward armFeedForwardController, wristFeedForwardController;
-
-
+    private boolean oscillationGoingUp = false;
+    private double holdAngle = 0;
+    private boolean holding = false;
     public ArmUtil() {
         armState = ArmState.INITIALIZING;
         
@@ -42,14 +43,18 @@ public class ArmUtil extends SubsystemBase{
         arm2Encoder = armMotor2.getEncoder();
         wristEncoder = wristMotor.getEncoder();
 
-        arm1Encoder.setPositionConversionFactor(Constants.ARM_TICKS_PER_DEG); //Now fixed. Problem was we were assuming native units were
-        arm2Encoder.setPositionConversionFactor(Constants.ARM_TICKS_PER_DEG); //ticks when its actually rotations. Constants show fix
-        wristEncoder.setPositionConversionFactor(Constants.WRIST_TICKS_PER_DEG); //Me personally, i would test moving arm on own, then add on wrist once code to make sure it doesnt hit bumper exists
+        arm1Encoder.setPositionConversionFactor(Constants.ARM_CONVERSION_FACTOR); //Now fixed. Problem was we were assuming native units were
+        arm2Encoder.setPositionConversionFactor(Constants.ARM_CONVERSION_FACTOR); //ticks when its actually rotations. Constants show fix
+        
+        arm1Encoder.setVelocityConversionFactor(Constants.ARM_CONVERSION_FACTOR/60);
+        arm2Encoder.setVelocityConversionFactor(Constants.ARM_CONVERSION_FACTOR/60);
+        
+        wristEncoder.setPositionConversionFactor(Constants.WRIST_CONVERSION_FACTOR); //Me personally, i would test moving arm on own, then add on wrist once code to make sure it doesnt hit bumper exists
 
         armPIDController = new PIDController(Constants.ARM_P, Constants.ARM_I, Constants.ARM_D);
         wristPIDController = new PIDController(Constants.WRIST_P, Constants.WRIST_I, Constants.WRIST_D);
         
-        armFeedForwardController = new ArmFeedforward(Constants.ARM_kS, Constants.ARM_kG, Constants.ARM_kV, Constants.ARM_kA);
+        armFeedForwardController = new ArmFeedforward(Constants.ARM_kS, Constants.ARM_kG/12, Constants.ARM_kV, Constants.ARM_kA);
         wristFeedForwardController = new ArmFeedforward(Constants.WRIST_kS, Constants.WRIST_kG, Constants.WRIST_kV, Constants.WRIST_kA);
         
         armLimitSwitch = new DigitalInput(Constants.ARM_LIMIT_SWITCH);  
@@ -68,75 +73,54 @@ public class ArmUtil extends SubsystemBase{
 
     // everything is in degrees
     //0 degrees is the limit switch
-    public void turnArm(double degrees) {
-        armMotor1.set(MathUtil.clamp(armPIDController.calculate(arm1Encoder.getPosition(), degrees), -0.5, 0.5));
-        armMotor2.set(MathUtil.clamp(armPIDController.calculate(arm2Encoder.getPosition(), degrees), -0.5, 0.5));
-    }
 
-    public void turnWrist(double degrees){
-        wristMotor.set(MathUtil.clamp(wristPIDController.calculate(wristEncoder.getPosition(), degrees), -0.5, 0.5));
-    }
-
-    public void rotateArm(double degrees){
-        armMotor1.set(MathUtil.clamp(armFeedForwardController.calculate(degrees - Constants.ARM_FEEDFORWARD_OFFSET, Constants.ARM_VELOCITY, Constants.ARM_ACCELERATION), 0.0, 2.0));// armPIDController.calculate(0, degrees));
-        armMotor2.set(MathUtil.clamp(armFeedForwardController.calculate(degrees - Constants.ARM_FEEDFORWARD_OFFSET, Constants.ARM_VELOCITY, Constants.ARM_ACCELERATION), 0, 2.0));// armPIDCo
-    }
-
-    public void zeroArm(){
-        arm1Encoder.setPosition(0);
-        arm2Encoder.setPosition(0);
-    }
-
-    public void zeroWrist(){
-        wristEncoder.setPosition(0);
-    }
-
-    public void operateArmToPosition(double dir){
-        if(Math.abs(dir)>=Constants.XBOX_STICK_DEADZONE_WIDTH){
-            if(dir>0){
-                if(arm1Encoder.getPosition()< Constants.ARM_UPPER_LIMIT){
-                    armMotor1.set(0.1);//go up
-                    armMotor2.set(0.1);
-                }
-                else {
-                    armMotor1.set(0);
-                    armMotor2.set(0);
-                }
-            } 
-            else {
-                if(arm1Encoder.getPosition() > Constants.ARM_LOWER_LIMIT){
-                    //go down
-                    armMotor1.set(-0.1);
-                    armMotor2.set(-0.1);
-                }
-                else {
-                   armMotor1.set(0);
-                   armMotor2.set(0);
-                }
+    public void holdArm(double degrees) {
+        double armPosition=arm1Encoder.getPosition();
+        if(oscillationGoingUp) {
+            //if(armPosition < degrees-Constants.ARM_NARROW_DEADBAND || armPosition>degrees) //if in narrow deadband
+            if(armPosition >= degrees) {
+                oscillationGoingUp=false;
             }
-        }       
+
+        } else if(armPosition < degrees-Constants.ARM_OSCIL_DEADBAND) {
+            oscillationGoingUp = true;
+        }
+
+        if(oscillationGoingUp) {
+            armMotor1.set(
+                MathUtil.clamp(
+                    armFeedForwardController.calculate(degrees, 0), 
+                    -0.3, 
+                    0.3
+                ) 
+            );       
+            armMotor2.set(
+                MathUtil.clamp(
+                    armFeedForwardController.calculate(degrees, 0), 
+                    -0.3, 
+                    0.3
+                ) 
+            );        
+        }
     }
 
-    public void operateWristToPosition(double dir){
-        if(Math.abs(dir)>=Constants.XBOX_STICK_DEADZONE_WIDTH){
-            if(dir>0){
-                if(wristEncoder.getPosition()< Constants.WRIST_UPPER_LIMIT){
-                    wristMotor.set(0.1);//go up
-                }
-                else {
-                    wristMotor.set(0);
-                }
-            } 
-            else {
-                if(wristEncoder.getPosition() > Constants.WRIST_LOWER_LIMIT){
-                    //go down
-                    wristMotor.set(-0.1);
-                }
-                else {
-                   wristMotor.set(0);
-                }
-            }
-        }       
+    public void setArmVelocity(double degPerSec){
+        armMotor1.set(
+            MathUtil.clamp(armFeedForwardController.calculate(
+                Math.toRadians(arm1Encoder.getPosition()-60), 0)
+                + armPIDController.calculate(arm1Encoder.getVelocity(), degPerSec),
+                0, 
+                0.2
+            )
+        );
+        armMotor2.set(
+            MathUtil.clamp(armFeedForwardController.calculate(
+                Math.toRadians(arm1Encoder.getPosition()-60), 0)
+                + armPIDController.calculate(arm1Encoder.getVelocity(), degPerSec),
+                0, 
+                0.2
+            )
+        );
     }
 
     public boolean operateWirstToLimitSwitch(){
@@ -159,42 +143,25 @@ public class ArmUtil extends SubsystemBase{
         return false;
     }
 
-    public void stopWrist(){
-        // wristMotor.set(wristPIDController.calculate(wristEncoder.getPosition(), 0));
-        //Stop wrist does not work, makes motor go crazy. could cause motor to die so fix it
-        //Maybe we juse feedforward for just this? idk
-    }
-
-    public void operateArmStates() {
-        switch(armState) {
-            case HIGH_GOAL:
-                turnArm(Constants.HIGH_GOAL_ARM);
-                break;
-            case MIDDLE_GOAL:
-                turnArm(Constants.MIDDLE_GOAL_ARM);
-                break;
-            case LOW_GOAL:
-                turnArm(Constants.LOW_GOAL_ARM);
-                break;
-            case GROUND_PICK:
-                turnArm(Constants.GROUND_PICK_ARM);
-                break;
-            case HIGH_PICK:
-                turnArm(Constants.HIGH_PICK_ARM);
-                break;
-            case RETRACT:
-            case INITIALIZING:
-                if(operateWirstToLimitSwitch())
-                    operateArmToLimitSwitch();
-                break;
+    public void operateArm(double joystickInput) {
+        // armMotor2.setVoltage(Constants.ARM_kG * Math.sin(Math.toRadians(arm2Encoder.getPosition() + 30)));
+        if (Math.abs(joystickInput) < Constants.ARM_JOYSTICK_INPUT_DEADBAND) {
+            if(!holding) {
+                holding = true;
+                holdAngle = arm1Encoder.getPosition();
+            }
+            holdArm(holdAngle);
+        } else {
+            holding = false;
+            setArmVelocity(joystickInput * Constants.ARM_VELOCITY);
         }
     }
 
     public void periodic() {
-        SmartDashboard.putNumber("arm1 encoder", arm1Encoder.getPosition());
+        SmartDashboard.putNumber("arm1 encoder", arm1Encoder.getPosition() +30);
         SmartDashboard.putNumber("arm2 encoder", arm2Encoder.getPosition());
         SmartDashboard.putNumber("wrist encoder", wristEncoder.getPosition());
-        SmartDashboard.putBoolean("arm limitswitch", armLimitSwitch.get());
+        SmartDashboard.putNumber("arm ff calc", armFeedForwardController.calculate(Math.toRadians(arm1Encoder.getPosition()-60), 0));
         SmartDashboard.putBoolean("wrist limitswitch", wristLimitSwitch.get());
         if(!armLimitSwitch.get()){
             arm1Encoder.setPosition(0);

@@ -5,6 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -39,7 +40,7 @@ public class RobotContainer {
   private final OperateArm operateArm = new OperateArm(armUtil);
 
   private static XboxController driver;
-  private static XboxController operator;
+  private static Joystick operator;
   private JoystickButton clawButton;
 
   private SendableChooser<Command> autoChooser = new SendableChooser<>();
@@ -53,7 +54,7 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     driver = new XboxController(Constants.XBOX_DRIVER);
-    operator = new XboxController(Constants.XBOX_OPERATOR);
+    operator = new Joystick(Constants.JOYSTICK_OPERATOR);
 
 
     // Configure the button bindings
@@ -68,20 +69,9 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    highButton = new JoystickButton(operator, Button.kY.value);
-    middleButton =  new JoystickButton(operator, Button.kX.value);
-    lowButton = new JoystickButton(operator, Button.kA.value);
-    highPButton = new JoystickButton(operator, Button.kLeftBumper.value);
-    groundPButton = new JoystickButton(operator, Button.kRightBumper.value);
-    clawButton = new JoystickButton(operator, Button.kB.value);
+    
 
-    highButton.onTrue(new InstantCommand(() -> armUtil.setState(ArmState.HIGH_GOAL), armUtil));
-    middleButton.onTrue(new InstantCommand(() -> armUtil.setState(ArmState.MIDDLE_GOAL), armUtil));
-    lowButton.onTrue(new InstantCommand(() -> armUtil.setState(ArmState.LOW_GOAL), armUtil));
-    highPButton.onTrue(new InstantCommand(() -> armUtil.setState(ArmState.HIGH_PICK), armUtil));
-    groundPButton.onTrue(new InstantCommand(() -> armUtil.setState(ArmState.GROUND_PICK), armUtil));
-
-		clawButton.onTrue(new InstantCommand(() -> clawUtil.toggleClaw(), clawUtil));
+		//clawButton.onTrue(new InstantCommand(() -> clawUtil.toggleClaw(), clawUtil));
   }
 
   /**
@@ -156,19 +146,13 @@ public class RobotContainer {
     return driver.getRightStickButton();
   } 
 
-  public static double getOperatorLeftXboxX(){
-    return operator.getLeftX();
+  public static double getOperatorJoystickX(){
+    return operator.getX();
   }
 
-  public static double getOperatorLeftXboxY(){
-    return operator.getLeftY();
+  public static double getOperatorJoystickY(){
+    return operator.getY();
   }
 
-  public static double getOperatorRightXboxX(){
-    return operator.getRightX();
-  }
 
-  public static double getOperatorRightXboxY(){
-    return operator.getRightY();
-  }
 }

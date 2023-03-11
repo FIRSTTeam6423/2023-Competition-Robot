@@ -23,19 +23,20 @@ public final class Constants {
     public static final int WRIST_LIMIT_SWITCH = 4;
     public static final int ARM_LIMIT_SWITCH = 5;
 
-    public static final double ARM_TICKS_PER_DEG = 0.0024414063 * 4096; //fixed
-    public static final double WRIST_TICKS_PER_DEG = 0.001373291 * 4096;
+    public static final double ARM_CONVERSION_FACTOR = (360.0/48.0); //fixed
+    public static final double WRIST_CONVERSION_FACTOR = (360.0/64.0);
     public static final double ARM_LOWER_LIMIT=0;
     public static final double ARM_UPPER_LIMIT=0.5;//this is not the actual value
     public static final double WRIST_LOWER_LIMIT=0;//this is not the actual value
     public static final double WRIST_UPPER_LIMIT=0;
      
 
+    public static final double ARM_OSCIL_DEADBAND = 10; //degrees
 
     public static final double DEADBAND = 3.5;
-    public static final double ARM_P = 0.00000024412;
+    public static final double ARM_P = 0.005;
     public static final double ARM_I = 0;
-    public static final double ARM_D = 0.00000002828;
+    public static final double ARM_D = 0;
 
     public static final double WRIST_P = 0.14759;
     public static final double WRIST_I = 0;
@@ -62,24 +63,23 @@ public final class Constants {
     public static final double GROUND_PICK_WRIST = -150;
 
     //Feedforward constants - arbitrary values
-    public static final double ARM_kG = 0.82056;
-    public static final double ARM_kV = 0.00765858;
-    public static final double ARM_kS = 0.23125;
-    public static final double ARM_kA = 0.00086773;
+    public static final double ARM_kG = .7;//0.82056; //0.58;//
+    public static final double ARM_kV = 0;//0.00765858;
+    public static final double ARM_kS = 0;//0.23125;
+    public static final double ARM_kA = 0;//0.00086773;
      
     public static final double WRIST_kG = 1.3802;
     public static final double WRIST_kV = 0.016472;
     public static final double WRIST_kS = -0.6777;
     public static final double WRIST_kA = 0.0098395;
 
-    public static final double ARM_VELOCITY = 0.5;
+    public static final double ARM_VELOCITY = 30;
     public static final double ARM_ACCELERATION = 0;
 
     public static final double WRIST_VELOCITY = 0;
     public static final double WRIST_ACCELERATION = 0;
 
     public static final double ARM_FEEDFORWARD_OFFSET = 90;
-
     /**
      * DriveUtil Constants
      */
@@ -161,6 +161,10 @@ public final class Constants {
      */
     public static final int XBOX_DRIVER = 0;
     public static final int XBOX_OPERATOR = 1;
+    public static final int JOYSTICK_OPERATOR = 1;
+    
+    public static final double ARM_JOYSTICK_INPUT_DEADBAND = .05;
+
 
     public static final double XBOX_STICK_DEADZONE_WIDTH=0.1;
 }
