@@ -99,6 +99,9 @@ public final class Constants {
     public static final int BOTTOMLEFT_ABS_ENCODER = 2;
     public static final int BOTTOMRIGHT_ABS_ENCODER = 3;
 
+    public static final double DRIVECONVERSIONFACTOR = (1/7.13) * .096 * Math.PI;
+    public static final double DEGREES_PER_ROTATION = 360;
+
     public static final double TOPLEFT_ABS_ENCODER_OFFSET = 35.6;//77.1;
     public static final double TOPRIGHT_ABS_ENCODER_OFFSET = 158.2;//-82.4;
     public static final double BOTTOMLEFT_ABS_ENCODER_OFFSET = 152.5;//-115.2;
@@ -112,10 +115,10 @@ public final class Constants {
     };
 
     public static final double WHEEL_RADIUS = 0.5;
-    public static final double MAX_ANGULAR_SPEED = 40*Math.PI; //1/2 rotation per second
-    public static final double MAX_LINEAR_SPEED = 100; //meters per second
+    public static final double MAX_ANGULAR_SPEED = 4; //
+    public static final double MAX_LINEAR_SPEED = 5; //meters per second
 
-    public static final double MODULEDRIVE_P = 0.01;//0.01;
+    public static final double MODULEDRIVE_P = 0.0204;//0.0024
     public static final double MODULEDRIVE_I = 0;
     public static final double MODULEDRIVE_D = 0;
     public static final double MODULEPIVOT_P = 0.005;//0.01;

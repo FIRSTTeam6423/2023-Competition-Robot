@@ -76,10 +76,10 @@ public class DriveUtil extends SubsystemBase {
 		var swerveModuleStates = kinematics.toSwerveModuleStates(
 				fieldRelative
 						? ChassisSpeeds.fromFieldRelativeSpeeds(  
-								RobotContainer.getDriverLeftXboxX(),// * Constants.MAX_LINEAR_SPEED,
-								RobotContainer.getDriverLeftXboxY(),// * Constants.MAX_LINEAR_SPEED,
-								RobotContainer.getDriverRightXboxX(),// * Constants.MAX_ANGULAR_SPEED, 
-								getHeading2d())
+								RobotContainer.getDriverLeftXboxX() * Constants.MAX_LINEAR_SPEED,
+								RobotContainer.getDriverLeftXboxY() * Constants.MAX_LINEAR_SPEED,
+								RobotContainer.getDriverRightXboxX() * Math.toRadians(Constants.MAX_ANGULAR_SPEED), 
+								m_odometry.getPoseMeters().getRotation())
 						: new ChassisSpeeds(RobotContainer.getDriverLeftXboxY() * Constants.MAX_LINEAR_SPEED,
 								RobotContainer.getDriverLeftXboxX() * Constants.MAX_LINEAR_SPEED,//Note y and x swapped for first 2 arguments is not intuitive, x is "forward"
 								RobotContainer.getDriverRightXboxX() * Constants.MAX_ANGULAR_SPEED));
@@ -100,7 +100,7 @@ public class DriveUtil extends SubsystemBase {
 	}
 
 	public Rotation2d getHeading2d() {
-		return Rotation2d.fromDegrees(gyro.getYaw());
+		return gyro.getRotation2d();
 	}
 
 	public Pose2d getPose() {

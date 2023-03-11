@@ -73,12 +73,12 @@ public class ClawUtil extends SubsystemBase {
      * with pneumatics it works and it is a no harm no foul approach.
      */
     public void operateClaw(){
-        if(state == ClawState.CLAW_CLOSE){
-            grabber.set(true);
-        }
-        if(state == ClawState.CLAW_OPEN){
-            grabber.set(false);
-        }
+        // if(state == ClawState.CLAW_CLOSE){
+        //     grabber.set(true);
+        // }
+        // if(state == ClawState.CLAW_OPEN){
+        //     grabber.set(false);
+        // }
     }
 
     @Override

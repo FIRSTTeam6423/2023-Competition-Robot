@@ -26,7 +26,7 @@ public class OperateDrive extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    du.driveRobot(false);
+    du.driveRobot(true);
   }
 
   // Called once the command ends or is interrupted.

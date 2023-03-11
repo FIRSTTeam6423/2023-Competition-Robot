@@ -22,7 +22,6 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 public class SwerveModule extends SubsystemBase {
 	/** Creates a new SwerveModule. */
-	private static final int kEncoderResolution = 4096;
 	private CANSparkMax driveMotor, pivotMotor;
 
 	private RelativeEncoder driveEncoder;
@@ -47,8 +46,8 @@ public class SwerveModule extends SubsystemBase {
 		 * that and pass that in to the PIDController
 		 **/
 		driveEncoder = driveMotor.getEncoder();
-		driveEncoder.setPositionConversionFactor(kEncoderResolution);
-		driveEncoder.setVelocityConversionFactor(Constants.METERS_PER_REV / 60);
+		driveEncoder.setPositionConversionFactor(Constants.DRIVECONVERSIONFACTOR);
+		driveEncoder.setVelocityConversionFactor(Constants.DRIVECONVERSIONFACTOR/60);;
 		driveEncoder.setPosition(0);
 
 		pivotEncoder = new DutyCycleEncoder(encoderID);
@@ -73,24 +72,19 @@ public class SwerveModule extends SubsystemBase {
 	}
 
 	public SwerveModulePosition getPosition() {
-		Rotation2d r = new Rotation2d(pivotEncoder.getAbsolutePosition());
-		return new SwerveModulePosition(driveEncoder.getPosition() / Constants.TICKS_PER_METER,
+		Rotation2d r = new Rotation2d(pivotEncoder.getAbsolutePosition() * Constants.DEGREES_PER_ROTATION);
+		return new SwerveModulePosition(driveEncoder.getPosition(),
 				r);
 	}
 
 	public void setDesiredState(SwerveModuleState desiredState) {
 		// Optimize the reference state to avoid spinning further than 90 degrees
-		double curRotDeg = pivotEncoder.getAbsolutePosition() * 360 - Constants.ABS_ENCODER_OFFSETS[this.encoderID];//-pivotEncoder.getAbsolutePosition() * 360 - Constants.ABS_ENCODER_OFFSETS[this.encoderID];
+		double curRotDeg = pivotEncoder.getAbsolutePosition() * Constants.DEGREES_PER_ROTATION - Constants.ABS_ENCODER_OFFSETS[this.encoderID];//-pivotEncoder.getAbsolutePosition() * 360 - Constants.ABS_ENCODER_OFFSETS[this.encoderID];
 		state = SwerveModuleState.optimize(desiredState, new Rotation2d(Math.toRadians(curRotDeg)));
 		// Different constant need for drivePIDController, convert m/s to rpm
 		driveMotor.set(drivePIDController.calculate(driveEncoder.getVelocity(), state.speedMetersPerSecond));
 		pivotMotor.set(pivotPIDController.calculate(curRotDeg,state.angle.getDegrees()));
-		//SmartDashboard.putNumber("Desired Angle id: " + encoderID , state.angle.getDegrees());
-		SmartDashboard.putNumber("curRotDeg: " + encoderID, curRotDeg);
-		SmartDashboard.putNumber("pid output: " + encoderID, pivotPIDController.calculate(curRotDeg, 0));
-		
-		
-		//SmartDashboard.putNumber("ABS encoder" + Integer.toString(this.encoderID), pivotEncoder.getAbsolutePosition() * 360 + Constants.ABS_ENCODER_OFFSETS[this.encoderID]);
+		SmartDashboard.putNumber("Encoder " + encoderID + " velocity: ", driveEncoder.getVelocity());
 	}
 
 	public void stopModule() {
@@ -125,7 +119,5 @@ public class SwerveModule extends SubsystemBase {
 
 	@Override
 	public void periodic() {
-		SmartDashboard.putNumber("Current Angle" + encoderID , pivotEncoder.getAbsolutePosition());
-		SmartDashboard.putNumber("Current Angle deg" + encoderID , pivotEncoder.getAbsolutePosition()*360);
 	}
 }
