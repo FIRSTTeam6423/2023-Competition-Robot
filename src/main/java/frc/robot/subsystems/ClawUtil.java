@@ -88,7 +88,7 @@ public class ClawUtil extends SubsystemBase {
          * Additionally, we are sending state to the SmartDashboard.
          */
         //operateArm();
-        SmartDashboard.putString("Claw State :: ", getPistonState().toString());
+        //SmartDashboard.putString("Claw State :: ", getPistonState().toString());
         // SmartDashboard.putBoolean("Compressor", pcmCompressor.enabled());
         // SmartDashboard.putBoolean("Pressure Switch", pcmCompressor.getPressureSwitchValue());
         // SmartDashboard.putBoolean("Solonoid", grabber.get());

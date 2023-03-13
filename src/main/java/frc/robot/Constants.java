@@ -102,10 +102,10 @@ public final class Constants {
     public static final double DRIVECONVERSIONFACTOR = (1/7.13) * .096 * Math.PI;
     public static final double DEGREES_PER_ROTATION = 360;
 
-    public static final double TOPLEFT_ABS_ENCODER_OFFSET = 35.6;//77.1;
-    public static final double TOPRIGHT_ABS_ENCODER_OFFSET = 158.2;//-82.4;
-    public static final double BOTTOMLEFT_ABS_ENCODER_OFFSET = 152.5;//-115.2;
-    public static final double BOTTOMRIGHT_ABS_ENCODER_OFFSET = 105.7;//4.9;
+    public static final double TOPLEFT_ABS_ENCODER_OFFSET = 35.6;
+    public static final double TOPRIGHT_ABS_ENCODER_OFFSET = 158.2;
+    public static final double BOTTOMLEFT_ABS_ENCODER_OFFSET = 152.5;
+    public static final double BOTTOMRIGHT_ABS_ENCODER_OFFSET = 105.7;
 
     public static final double[] ABS_ENCODER_OFFSETS = {
         TOPLEFT_ABS_ENCODER_OFFSET,
@@ -115,10 +115,10 @@ public final class Constants {
     };
 
     public static final double WHEEL_RADIUS = 0.5;
-    public static final double MAX_ANGULAR_SPEED = 4; //
-    public static final double MAX_LINEAR_SPEED = 5; //meters per second
+    public static final double MAX_ANGULAR_SPEED = 500; //
+    public static final double MAX_LINEAR_SPEED = 15; //meters per second
 
-    public static final double MODULEDRIVE_P = 0.0204;//0.0024
+    public static final double MODULEDRIVE_P = 0.039753;//0.0024
     public static final double MODULEDRIVE_I = 0;
     public static final double MODULEDRIVE_D = 0;
     public static final double MODULEPIVOT_P = 0.005;//0.01;
@@ -128,13 +128,6 @@ public final class Constants {
     public static final double XDIR_P = 0;
     public static final double YDIR_P = 0;
     public static final double ROT_P = 0;
-
-    //Pivot
-    public static final double COUNTS_PER_REV = 4096; //May need to be 1024 for scaling. test to see
-    public static final double RATIOED_COUNTS_PER_REV = COUNTS_PER_REV/13.71; //Takes gear reduction into account
-    //Drive
-    public static final double METERS_PER_REV = 2* 0.102 * Math.PI;
-    public static final double TICKS_PER_METER = 4096 / METERS_PER_REV;
             
     //Ticks per rotation/360
 

@@ -34,11 +34,11 @@ public class SwerveModule extends SubsystemBase {
 
 	private SwerveModuleState state;
 
-	public SwerveModule(int driveMotorID, boolean driveInverted, int pivotMotorID, int encoderID) {
+	public SwerveModule(int driveMotorID, boolean driveInverted, int pivotMotorID, int encoderID, boolean pivotInverted) {
 		driveMotor = new CANSparkMax(driveMotorID, MotorType.kBrushless);
 		driveMotor.setInverted(driveInverted);
 		pivotMotor = new CANSparkMax(pivotMotorID, MotorType.kBrushless);
-		pivotMotor.setInverted(true);
+		pivotMotor.setInverted(pivotInverted);
 		this.encoderID = encoderID;
 		/**
 		 * We need three encoders, as the sparkmax can only accurately tell
@@ -73,7 +73,7 @@ public class SwerveModule extends SubsystemBase {
 
 	public SwerveModulePosition getPosition() {
 		Rotation2d r = new Rotation2d(pivotEncoder.getAbsolutePosition() * Constants.DEGREES_PER_ROTATION);
-		return new SwerveModulePosition(driveEncoder.getPosition(),
+		return new SwerveModulePosition(driveEncoder.getPosition() * 4,
 				r);
 	}
 
@@ -83,8 +83,7 @@ public class SwerveModule extends SubsystemBase {
 		state = SwerveModuleState.optimize(desiredState, new Rotation2d(Math.toRadians(curRotDeg)));
 		// Different constant need for drivePIDController, convert m/s to rpm
 		driveMotor.set(drivePIDController.calculate(driveEncoder.getVelocity(), state.speedMetersPerSecond));
-		pivotMotor.set(pivotPIDController.calculate(curRotDeg,state.angle.getDegrees()));
-		SmartDashboard.putNumber("Encoder " + encoderID + " velocity: ", driveEncoder.getVelocity());
+		pivotMotor.set(pivotPIDController.calculate(curRotDeg, state.angle.getDegrees()));
 	}
 
 	public void stopModule() {
@@ -119,5 +118,9 @@ public class SwerveModule extends SubsystemBase {
 
 	@Override
 	public void periodic() {
+		SmartDashboard.putNumber(this.encoderID + " pos", driveEncoder.getPosition());
+		SmartDashboard.putNumber(this.encoderID + " vel", driveEncoder.getVelocity());
+		SmartDashboard.putNumber(this.encoderID + " pidOut", drivePIDController.calculate(driveEncoder.getVelocity(), state.speedMetersPerSecond));
+		SmartDashboard.putNumber(this.encoderID + " state", state.speedMetersPerSecond);
 	}
 }
