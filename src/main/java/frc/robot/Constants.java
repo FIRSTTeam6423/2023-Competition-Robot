@@ -119,7 +119,7 @@ public final class Constants {
     };
 
     public static final double WHEEL_RADIUS = 0.5;
-    public static final double MAX_ANGULAR_SPEED = 500; //
+    public static final double MAX_ANGULAR_SPEED = 2000; //
     public static final double MAX_LINEAR_SPEED = 15; //meters per second
 
     public static final double MODULEDRIVE_P = 0.039753;//0.0024
@@ -201,5 +201,5 @@ public final class Constants {
     public static final int XBOX_DRIVER = 0;
     public static final int XBOX_OPERATOR = 1;
 
-    public static final double XBOX_STICK_DEADZONE_WIDTH=0.1;
+    public static final double XBOX_STICK_DEADZONE_WIDTH=0.015;
 }

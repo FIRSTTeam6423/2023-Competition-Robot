@@ -68,13 +68,21 @@ public class DriveUtil extends SubsystemBase {
 		resetPose(new Pose2d(0.0, 0.0, new Rotation2d()));
 	}
 
+	public double deadzone(double input){
+		if(Math.abs(input) >= Constants.XBOX_STICK_DEADZONE_WIDTH){
+			return input;
+		} else {
+			return 0;
+		}
+	}
+
 	public void driveRobot(boolean fieldRelative) {
 		var swerveModuleStates = kinematics.toSwerveModuleStates(
 				fieldRelative
-						? ChassisSpeeds.fromFieldRelativeSpeeds(  
-								-RobotContainer.getDriverLeftXboxX() * Constants.MAX_LINEAR_SPEED,
-								RobotContainer.getDriverLeftXboxY() * Constants.MAX_LINEAR_SPEED,
-								RobotContainer.getDriverRightXboxX() * Math.toRadians(Constants.MAX_ANGULAR_SPEED), 
+						? ChassisSpeeds.fromFieldRelativeSpeeds(
+								-deadzone(RobotContainer.getDriverLeftXboxX()) * Constants.MAX_LINEAR_SPEED,
+								deadzone(RobotContainer.getDriverLeftXboxY()) * Constants.MAX_LINEAR_SPEED,
+								deadzone(RobotContainer.getDriverRightXboxX()) * Math.toRadians(Constants.MAX_ANGULAR_SPEED), 
 								m_odometry.getPoseMeters().getRotation())
 						: new ChassisSpeeds(RobotContainer.getDriverLeftXboxY() * Constants.MAX_LINEAR_SPEED,
 								RobotContainer.getDriverLeftXboxX() * Constants.MAX_LINEAR_SPEED,//Note y and x swapped for first 2 arguments is not intuitive, x is "forward"
