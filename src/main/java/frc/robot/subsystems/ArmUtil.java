@@ -76,34 +76,21 @@ public class ArmUtil extends SubsystemBase{
 
     public void holdArm(double degrees) {
         double armPosition=arm1Encoder.getPosition();
-        if(oscillationGoingUp) {
-            //if(armPosition < degrees-Constants.ARM_NARROW_DEADBAND || armPosition>degrees) //if in narrow deadband
-            if(armPosition >= degrees) {
-                oscillationGoingUp=false;
-            }
-
-        } else if(armPosition < degrees-Constants.ARM_OSCIL_DEADBAND) {
-            oscillationGoingUp = true;
-        }
-
-        if(oscillationGoingUp) {
-            armMotor1.set(
-                MathUtil.clamp(
-                    armFeedForwardController.calculate(degrees, 0), 
-                    -0.3, 
-                    0.3
-                ) 
-            );       
-            armMotor2.set(
-                MathUtil.clamp(
-                    armFeedForwardController.calculate(degrees, 0), 
-                    -0.3, 
-                    0.3
-                ) 
-            );        
-        }
+        armMotor1.set(
+            MathUtil.clamp(
+                armFeedForwardController.calculate(Math.toRadians(degrees), 0), 
+                -0.3, 
+                0.3
+            ) 
+        );       
+        armMotor2.set(
+            MathUtil.clamp(
+                armFeedForwardController.calculate(Math.toDegrees(degrees), 0), 
+                -0.3, 
+                0.3
+            ) 
+        );        
     }
-
     public void setArmVelocity(double degPerSec){
         armMotor1.set(
             MathUtil.clamp(armFeedForwardController.calculate(
@@ -148,7 +135,7 @@ public class ArmUtil extends SubsystemBase{
         if (Math.abs(joystickInput) < Constants.ARM_JOYSTICK_INPUT_DEADBAND) {
             if(!holding) {
                 holding = true;
-                holdAngle = arm1Encoder.getPosition();
+                holdAngle = arm1Encoder.getPosition()-60;
             }
             holdArm(holdAngle);
         } else {
