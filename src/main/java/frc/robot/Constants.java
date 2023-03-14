@@ -122,6 +122,9 @@ public final class Constants {
     public static final double MAX_ANGULAR_SPEED = 2000; //
     public static final double MAX_LINEAR_SPEED = 15; //meters per second
 
+    public static final double ALIGN_TO_TAG_MAX_VELOCITY = 0.1;
+    public static final double ALIGN_TO_TAG_MAX_ACCELERATION = 0.5;
+
     public static final double MODULEDRIVE_P = 0.039753;//0.0024
     public static final double MODULEDRIVE_I = 0;
     public static final double MODULEDRIVE_D = 0;

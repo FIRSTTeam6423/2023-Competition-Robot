@@ -15,6 +15,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
+import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import com.kauailabs.navx.frc.AHRS;
 
@@ -65,7 +66,8 @@ public class DriveUtil extends SubsystemBase {
 
 	public void start() {		
 		calibrateGyro();
-		resetPose(new Pose2d(0.0, 0.0, new Rotation2d()));
+		Pose2d robotPose = RobotContainer.getFieldPosed2dFromNearestCameraTarget();
+		resetPose(robotPose);
 	}
 
 	public double deadzone(double input){

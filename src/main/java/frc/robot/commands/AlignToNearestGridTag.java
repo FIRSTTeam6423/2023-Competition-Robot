@@ -8,26 +8,15 @@ import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPoint;
-import com.pathplanner.lib.auto.PIDConstants;
-import com.pathplanner.lib.auto.SwerveAutoBuilder;
-import com.pathplanner.lib.commands.PPRamseteCommand;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
-import com.pathplanner.lib.server.PathPlannerServer;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.DriveUtil;
@@ -58,7 +47,7 @@ public class AlignToNearestGridTag extends CommandBase {
     SmartDashboard.putNumber("Robot rot", robotPos.getRotation().getDegrees());
 
     traj = PathPlanner.generatePath(
-      new PathConstraints(0.1, 0.5),
+      new PathConstraints(Constants.ALIGN_TO_TAG_MAX_VELOCITY, Constants.ALIGN_TO_TAG_MAX_ACCELERATION),
       new PathPoint(
         robotPos.getTranslation(),
         new Rotation2d(tagPose.getRotation().getZ()),
@@ -74,16 +63,19 @@ public class AlignToNearestGridTag extends CommandBase {
     SmartDashboard.putNumber("end X", traj.getEndState().poseMeters.getX());
     SmartDashboard.putNumber("end Y", traj.getEndState().poseMeters.getY());
     SmartDashboard.putNumber("end rot", traj.getEndState().poseMeters.getRotation().getDegrees());
+
     driveUtil.resetPose(traj.getInitialPose());
+
     new PPSwerveControllerCommand(
             	traj, 
             	driveUtil::getPose, // Pose supplier
             	driveUtil.kinematics, // SwerveDriveKinematics
-            	new PIDController(Constants.XDIR_P, 0, 0), // X controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
-            	new PIDController(Constants.YDIR_P, 0, 0), // Y controller (usually the same values as X controller)
-            	new PIDController(Constants.ROT_P, 0, 0), // Rotation controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
+            	new PIDController(0, 0, 0), // X controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
+            	new PIDController(0, 0, 0), // Y controller (usually the same values as X controller)
+            	new PIDController(0, 0, 0), // Rotation controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
+              //Only using feedforwards should be fine for this, we are already using pid in the set module states
             	driveUtil::setSwerveModuleStates, // Module states consumer
-            	true, // Should the path be automatically mirrored depending on alliance color. Optional, defaults to true
+            	false, // This should always work regardless of alliance color
             	driveUtil // Requires this drive subsystem
         	).schedule();
   }

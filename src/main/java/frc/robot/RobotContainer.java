@@ -213,6 +213,7 @@ public class RobotContainer {
 			Pose3d tagPose = getTagPose3dFromId(target.getFiducialId());
 			return tagPose;
 		}
+    DriverStation.reportWarning("No nearest camera target to get Pose3d!", false);
 		return null;
 	}
 
@@ -224,7 +225,7 @@ public class RobotContainer {
 			Pose3d pos = PhotonUtils.estimateFieldToRobotAprilTag(
           target.getBestCameraToTarget(),   
           tagPose,
-          Constants.CAMERA_TO_ROBOT
+          Constants.CAMERA_TO_ROBOT // TODO: ADD THIS
 					);
 			return new Pose2d(
 					pos.getX(),
