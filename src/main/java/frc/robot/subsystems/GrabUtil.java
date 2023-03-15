@@ -8,6 +8,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.util.GrabberState;
@@ -21,8 +22,8 @@ public class GrabUtil extends SubsystemBase {
     grabMotor = new CANSparkMax(Constants.GRAB_MOTOR, MotorType.kBrushless);
     grabEncoder = grabMotor.getEncoder(); 
   }
-  public void setState(GrabberState state){
-    this.state=state;
+  public void setState(GrabberState newState){
+    state = newState;
   }
 
   public void operateGrabber(){
@@ -32,9 +33,9 @@ public class GrabUtil extends SubsystemBase {
         break;
       case INTAKE:
         grabMotor.set(Constants.GRAB_INTAKE_SPEED);
-        if(grabMotor.getBusVoltage() < Constants.MIN_GRAB_INTAKE_VOLTAGE){
-          setState(GrabberState.OFF);
-        }
+        // if(grabMotor.getBusVoltage() < Constants.MIN_GRAB_INTAKE_VOLTAGE){
+        //   setState(GrabberState.OFF);
+        // }
         break;
       case OUTPUT:
         grabMotor.set(Constants.GRAB_OUTPUT_SPEED);
@@ -46,5 +47,7 @@ public class GrabUtil extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    SmartDashboard.putNumber("RPMMMM", grabEncoder.getVelocity());
+    SmartDashboard.putNumber("Voltageeee", grabEncoder.getAverageDepth());
   }
 }

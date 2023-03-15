@@ -18,7 +18,7 @@ public final class Constants {
      */
     
     public static final int GRAB_MOTOR = 12; 
-    public static final double GRAB_INTAKE_SPEED = 0.7;
+    public static final double GRAB_INTAKE_SPEED = 0.75;
     public static final double GRAB_OUTPUT_SPEED = -0.25;
     public static final double MIN_GRAB_INTAKE_VOLTAGE = 12.5;//probably wrong
 

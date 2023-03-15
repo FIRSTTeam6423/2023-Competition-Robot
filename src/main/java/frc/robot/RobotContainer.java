@@ -18,6 +18,7 @@ import frc.robot.subsystems.ArmUtil;
 import frc.robot.subsystems.DriveUtil;
 import frc.robot.subsystems.GrabUtil;
 import frc.robot.util.ArmState;
+import frc.robot.util.GrabberState;
 import frc.robot.subsystems.ClawUtil;
 import frc.robot.commands.OperateClaw;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -53,6 +54,9 @@ public class RobotContainer {
   private JoystickButton lowButton;
   private JoystickButton highPButton;
   private JoystickButton groundPButton;
+  private JoystickButton rollOnButton;
+  private JoystickButton spitButton;
+  private JoystickButton rollOfButton;
   
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -72,20 +76,28 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    highButton = new JoystickButton(operator, Button.kY.value);
-    middleButton =  new JoystickButton(operator, Button.kX.value);
+    // highButton = new JoystickButton(operator, Button.kY.value);
+    // middleButton =  new JoystickButton(operator, Button.kX.value);
     lowButton = new JoystickButton(operator, Button.kA.value);
     highPButton = new JoystickButton(operator, Button.kLeftBumper.value);
     groundPButton = new JoystickButton(operator, Button.kRightBumper.value);
     clawButton = new JoystickButton(operator, Button.kB.value);
 
-    highButton.onTrue(new InstantCommand(() -> armUtil.setState(ArmState.HIGH_GOAL), armUtil));
-    middleButton.onTrue(new InstantCommand(() -> armUtil.setState(ArmState.MIDDLE_GOAL), armUtil));
+    rollOfButton = new JoystickButton(operator, Button.kStart.value);
+    rollOnButton = new JoystickButton(operator, Button.kY.value);
+    spitButton = new JoystickButton(operator, Button.kX.value);
+
+    // highButton.onTrue(new InstantCommand(() -> armUtil.setState(ArmState.HIGH_GOAL), armUtil));
+    // middleButton.onTrue(new InstantCommand(() -> armUtil.setState(ArmState.MIDDLE_GOAL), armUtil));
     lowButton.onTrue(new InstantCommand(() -> armUtil.setState(ArmState.LOW_GOAL), armUtil));
     highPButton.onTrue(new InstantCommand(() -> armUtil.setState(ArmState.HIGH_PICK), armUtil));
     groundPButton.onTrue(new InstantCommand(() -> armUtil.setState(ArmState.GROUND_PICK), armUtil));
 
 		clawButton.onTrue(new InstantCommand(() -> clawUtil.toggleClaw(), clawUtil));
+
+    rollOfButton.onTrue(new InstantCommand(() -> grabUtil.setState(GrabberState.OFF), grabUtil));
+    rollOnButton.onTrue(new InstantCommand(() -> grabUtil.setState(GrabberState.INTAKE), grabUtil));
+    spitButton.onTrue(new InstantCommand(() -> grabUtil.setState(GrabberState.OUTPUT), grabUtil));
   }
 
   /**
