@@ -82,8 +82,8 @@ public class DriveUtil extends SubsystemBase {
 		var swerveModuleStates = kinematics.toSwerveModuleStates(
 				fieldRelative
 						? ChassisSpeeds.fromFieldRelativeSpeeds(
-								-deadzone(RobotContainer.getDriverLeftXboxX()) * Constants.MAX_LINEAR_SPEED,
-								deadzone(RobotContainer.getDriverLeftXboxY()) * Constants.MAX_LINEAR_SPEED,
+								deadzone(RobotContainer.getDriverLeftXboxY()) * Constants.MAX_LINEAR_SPEED * Math.cos(Math.toRadians(RobotContainer.allianceOrientation)), //reversed x and y so that up on controller is
+								deadzone(RobotContainer.getDriverLeftXboxX()) * Constants.MAX_LINEAR_SPEED * Math.cos(Math.toRadians(RobotContainer.allianceOrientation)), //forward from driver pov
 								deadzone(RobotContainer.getDriverRightXboxX()) * Math.toRadians(Constants.MAX_ANGULAR_SPEED), 
 								m_odometry.getPoseMeters().getRotation())
 						: new ChassisSpeeds(RobotContainer.getDriverLeftXboxY() * Constants.MAX_LINEAR_SPEED,

@@ -63,6 +63,8 @@ public class RobotContainer {
   private JoystickButton highPButton;
   private JoystickButton groundPButton;
   
+  public static double allianceOrientation = 0; 
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     driver = new XboxController(Constants.XBOX_DRIVER);
@@ -227,6 +229,7 @@ public class RobotContainer {
           tagPose,
           Constants.CAMERA_TO_ROBOT // TODO: ADD THIS
 					);
+      allianceOrientation = Math.toDegrees(tagPose.getRotation().getZ());
 			return new Pose2d(
 					pos.getX(),
 					pos.getY(),
