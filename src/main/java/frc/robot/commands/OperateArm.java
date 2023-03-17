@@ -26,7 +26,6 @@ public class OperateArm extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-
       au.operateArm(-RobotContainer.getOperatorJoystickY());
   }
 
@@ -41,4 +40,3 @@ public class OperateArm extends CommandBase {
     return false;
   }
 }
-

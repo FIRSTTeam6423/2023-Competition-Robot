@@ -24,16 +24,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-//import frc.robot.commands.OperateArm;
+import frc.robot.commands.OperateArm;
 import frc.robot.commands.OperateDrive;
-
 import frc.robot.commands.OperateGrab;
 import frc.robot.subsystems.ArmUtil;
-
 import frc.robot.subsystems.DriveUtil;
 import frc.robot.subsystems.GrabUtil;
 import frc.robot.util.ArmState;
-import frc.robot.util.GrabberState;
 import frc.robot.subsystems.ClawUtil;
 import frc.robot.commands.OperateClaw;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -48,19 +45,16 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final DriveUtil driveUtil = new DriveUtil();
   private final ClawUtil clawUtil = new ClawUtil();
-
-private final GrabUtil grabUtil = new GrabUtil();
-
   private static final PhotonCamera camera = new PhotonCamera("johncam");
   
+  private final GrabUtil grabUtil = new GrabUtil();
 
   private final OperateDrive operateDrive = new OperateDrive(driveUtil);
   private final OperateClaw operateClaw = new OperateClaw(clawUtil);
-  private final OperateGrab operateGrab = new OperateGrab(grabUtil);
 
-  //private final ArmUtil armUtil = new ArmUtil();
+  private final ArmUtil armUtil = new ArmUtil();
 
-  //private final OperateArm operateArm = new OperateArm(armUtil);
+  private final OperateArm operateArm = new OperateArm(armUtil);
 
   private static XboxController driver;
   private static Joystick operator;
@@ -73,16 +67,13 @@ private final GrabUtil grabUtil = new GrabUtil();
   private JoystickButton lowButton;
   private JoystickButton highPButton;
   private JoystickButton groundPButton;
-  private JoystickButton rollOnButton;
-  private JoystickButton spitButton;
-  private JoystickButton rollOfButton;
   
   public static double allianceOrientation = 0; 
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     driver = new XboxController(Constants.XBOX_DRIVER);
-    operator = new Joystick(Constants.JOYSTICK_OPERATOR);
+    operator = new Joystick(Constants.XBOX_OPERATOR);
 
 
     // Configure the button bindings
@@ -97,13 +88,6 @@ private final GrabUtil grabUtil = new GrabUtil();
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    rollOfButton = new JoystickButton(operator, Button.kStart.value);
-    rollOnButton = new JoystickButton(operator, Button.kY.value);
-    spitButton = new JoystickButton(operator, Button.kX.value);
-
-    rollOfButton.onTrue(new InstantCommand(() -> grabUtil.setState(GrabberState.OFF), grabUtil));
-    rollOnButton.onTrue(new InstantCommand(() -> grabUtil.setState(GrabberState.INTAKE), grabUtil));
-    spitButton.onTrue(new InstantCommand(() -> grabUtil.setState(GrabberState.OUTPUT), grabUtil));
   }
 
   /**
@@ -118,9 +102,8 @@ private final GrabUtil grabUtil = new GrabUtil();
 
   private void configureDefaultCommands(){
     driveUtil.setDefaultCommand(operateDrive);
-    //armUtil.setDefaultCommand(operateArm);
+    armUtil.setDefaultCommand(operateArm);
     clawUtil.setDefaultCommand(operateClaw);
-    grabUtil.setDefaultCommand(operateGrab);
   }
 
   public static double getDriverLeftXboxX(){
@@ -246,5 +229,4 @@ private final GrabUtil grabUtil = new GrabUtil();
 		DriverStation.reportWarning("Could not get Pose2d from camera target: no targets found.", false);
 		return null;
 	}
-
 }
