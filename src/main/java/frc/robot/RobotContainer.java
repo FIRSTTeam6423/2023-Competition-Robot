@@ -35,15 +35,23 @@ import frc.robot.commands.AutoFollowTrajectorySwerve;
 import frc.robot.commands.BottomGoalThenLeave;
 import frc.robot.commands.ExitAndBalance;
 import frc.robot.commands.OperateDrive;
+<<<<<<< HEAD
 import frc.robot.commands.OperateGrab;
 import frc.robot.commands.SetArmPresetState;
 import frc.robot.commands.SpitCubeThenPush;
 import frc.robot.commands.SpitSeconds;
 import frc.robot.subsystems.ArmUtil;
+=======
+//import frc.robot.subsystems.ArmUtil;
+>>>>>>> 29241c6 (Revert "Merge pull request #4 from FIRSTTeam6423/rollerGrab")
 import frc.robot.subsystems.DriveUtil;
-import frc.robot.subsystems.GrabUtil;
 import frc.robot.util.ArmState;
+<<<<<<< HEAD
 import frc.robot.util.WristState;
+=======
+import frc.robot.subsystems.ClawUtil;
+import frc.robot.commands.OperateClaw;
+>>>>>>> 29241c6 (Revert "Merge pull request #4 from FIRSTTeam6423/rollerGrab")
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.OperateArm;
 
@@ -56,10 +64,18 @@ import frc.robot.commands.OperateArm;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final DriveUtil driveUtil = new DriveUtil();
+<<<<<<< HEAD
   private static final PhotonCamera camera = new PhotonCamera("johncam");
   
   private static final GrabUtil grabUtil = new GrabUtil();
   private final OperateGrab operateGrab = new OperateGrab(grabUtil);
+=======
+  private final ClawUtil clawUtil = new ClawUtil();
+  private static final PhotonCamera camera = new PhotonCamera("johncam");
+  
+  private final OperateDrive operateDrive = new OperateDrive(driveUtil);
+  private final OperateClaw operateClaw = new OperateClaw(clawUtil);
+>>>>>>> 29241c6 (Revert "Merge pull request #4 from FIRSTTeam6423/rollerGrab")
 
   private final OperateDrive operateDrive = new OperateDrive(driveUtil);
 
@@ -78,6 +94,15 @@ public class RobotContainer {
 
   private static JoystickButton controlToggleButton;
   private SendableChooser<Command> autoChooser = new SendableChooser<>();
+<<<<<<< HEAD
+=======
+
+  private JoystickButton highButton;
+  private JoystickButton middleButton;
+  private JoystickButton lowButton;
+  private JoystickButton highPButton;
+  private JoystickButton groundPButton;
+>>>>>>> 29241c6 (Revert "Merge pull request #4 from FIRSTTeam6423/rollerGrab")
   
   public static double allianceOrientation = 0; 
 
@@ -121,6 +146,7 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
+<<<<<<< HEAD
     middleGoalButton.onTrue(new InstantCommand(()->{
       armUtil.setArmState(ArmState.MIDDLE_GOAL);
     }));
@@ -145,6 +171,9 @@ public class RobotContainer {
     cargoRetractButton.onTrue(new InstantCommand(()->{
       armUtil.setWristState(WristState.CARGO_RETRACT);
     }));
+=======
+
+>>>>>>> 29241c6 (Revert "Merge pull request #4 from FIRSTTeam6423/rollerGrab")
   }
 
   /**
@@ -159,8 +188,13 @@ public class RobotContainer {
 
   private void configureDefaultCommands(){
     driveUtil.setDefaultCommand(operateDrive);
+<<<<<<< HEAD
     armUtil.setDefaultCommand(operateArm);
     grabUtil.setDefaultCommand(operateGrab);
+=======
+    //armUtil.setDefaultCommand(operateArm);
+    clawUtil.setDefaultCommand(operateClaw);
+>>>>>>> 29241c6 (Revert "Merge pull request #4 from FIRSTTeam6423/rollerGrab")
   }
 
   public static double getDriverLeftXboxX(){
