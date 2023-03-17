@@ -26,9 +26,14 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 //import frc.robot.commands.OperateArm;
 import frc.robot.commands.OperateDrive;
-//import frc.robot.subsystems.ArmUtil;
+
+import frc.robot.commands.OperateGrab;
+import frc.robot.subsystems.ArmUtil;
+
 import frc.robot.subsystems.DriveUtil;
+import frc.robot.subsystems.GrabUtil;
 import frc.robot.util.ArmState;
+import frc.robot.util.GrabberState;
 import frc.robot.subsystems.ClawUtil;
 import frc.robot.commands.OperateClaw;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -43,10 +48,15 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final DriveUtil driveUtil = new DriveUtil();
   private final ClawUtil clawUtil = new ClawUtil();
+
+private final GrabUtil grabUtil = new GrabUtil();
+
   private static final PhotonCamera camera = new PhotonCamera("johncam");
   
+
   private final OperateDrive operateDrive = new OperateDrive(driveUtil);
   private final OperateClaw operateClaw = new OperateClaw(clawUtil);
+  private final OperateGrab operateGrab = new OperateGrab(grabUtil);
 
   //private final ArmUtil armUtil = new ArmUtil();
 
@@ -63,6 +73,9 @@ public class RobotContainer {
   private JoystickButton lowButton;
   private JoystickButton highPButton;
   private JoystickButton groundPButton;
+  private JoystickButton rollOnButton;
+  private JoystickButton spitButton;
+  private JoystickButton rollOfButton;
   
   public static double allianceOrientation = 0; 
 
@@ -84,7 +97,13 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
+    rollOfButton = new JoystickButton(operator, Button.kStart.value);
+    rollOnButton = new JoystickButton(operator, Button.kY.value);
+    spitButton = new JoystickButton(operator, Button.kX.value);
 
+    rollOfButton.onTrue(new InstantCommand(() -> grabUtil.setState(GrabberState.OFF), grabUtil));
+    rollOnButton.onTrue(new InstantCommand(() -> grabUtil.setState(GrabberState.INTAKE), grabUtil));
+    spitButton.onTrue(new InstantCommand(() -> grabUtil.setState(GrabberState.OUTPUT), grabUtil));
   }
 
   /**
@@ -101,6 +120,7 @@ public class RobotContainer {
     driveUtil.setDefaultCommand(operateDrive);
     //armUtil.setDefaultCommand(operateArm);
     clawUtil.setDefaultCommand(operateClaw);
+    grabUtil.setDefaultCommand(operateGrab);
   }
 
   public static double getDriverLeftXboxX(){

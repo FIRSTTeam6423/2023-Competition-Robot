@@ -5,31 +5,26 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.RobotContainer;
-import frc.robot.subsystems.ArmUtil;
+import frc.robot.subsystems.GrabUtil;
 
-public class OperateArm extends CommandBase {
-  /** Creates a new OperateDrive. */
-  private ArmUtil au;
-
-  public OperateArm(ArmUtil au) {
+public class OperateGrab extends CommandBase {
+  private GrabUtil gu;
+  /** Creates a new OperateGrab. */
+  public OperateGrab(GrabUtil gu) {
     // Use addRequirements() here to declare subsystem dependencies.
-    this.au = au;
-    addRequirements(this.au);
+    this.gu = gu;
+    addRequirements(this.gu);
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
-  }
-  
+  public void initialize() {}
+
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-
-      au.operateArm(-RobotContainer.getOperatorJoystickY());
+    gu.operateGrabber();
   }
-
 
   // Called once the command ends or is interrupted.
   @Override
@@ -41,4 +36,3 @@ public class OperateArm extends CommandBase {
     return false;
   }
 }
-
