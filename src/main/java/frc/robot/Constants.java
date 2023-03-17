@@ -37,7 +37,7 @@ public final class Constants {
     public static final int ARM_LIMIT_SWITCH = 5;
 
     public static final double ARM_CONVERSION_FACTOR = (360.0/48.0); //fixed
-    public static final double WRIST_CONVERSION_FACTOR = (360.0/81);
+    public static final double WRIST_CONVERSION_FACTOR = (360/90.0);
     public static final double ARM_LOWER_LIMIT=0;
     public static final double ARM_UPPER_LIMIT=0.5;//this is not the actual value
     public static final double WRIST_LOWER_LIMIT=0;//this is not the actual value
@@ -45,6 +45,7 @@ public final class Constants {
      
 
     public static final double ARM_OSCIL_DEADBAND = 10; //degrees
+    public static final double WRIST_RETRACT_DEADBAND = 20;
 
     public static final double DEADBAND = 3.5;
     public static final double ARM_P = 0.005;
@@ -91,6 +92,9 @@ public final class Constants {
 
     public static final double WRIST_VELOCITY = 0;
     public static final double WRIST_ACCELERATION = 0;
+
+    public static final double WRIST_PHYSICAL_STOP = 0;
+    public static final double WRIST_STOP_DEADBAND = 10;
 
     public static final double ARM_FEEDFORWARD_OFFSET = 90;
     /**
@@ -214,7 +218,7 @@ public final class Constants {
     public static final int XBOX_OPERATOR = 2;
     public static final int JOYSTICK_OPERATOR = 0;//1;
     
-    public static final double ARM_JOYSTICK_INPUT_DEADBAND = .3;
+    public static final double ARM_JOYSTICK_INPUT_DEADBAND = .25;
 
 
     public static final double XBOX_STICK_DEADZONE_WIDTH=0.015;

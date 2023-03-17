@@ -118,9 +118,6 @@ public class SwerveModule extends SubsystemBase {
 
 	@Override
 	public void periodic() {
-		SmartDashboard.putNumber(this.encoderID + " pos", driveEncoder.getPosition());
-		SmartDashboard.putNumber(this.encoderID + " vel", driveEncoder.getVelocity());
-		SmartDashboard.putNumber(this.encoderID + " pidOut", drivePIDController.calculate(driveEncoder.getVelocity(), state.speedMetersPerSecond));
-		SmartDashboard.putNumber(this.encoderID + " state", state.speedMetersPerSecond);
+		
 	}
 }

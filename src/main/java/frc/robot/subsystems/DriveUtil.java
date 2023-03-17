@@ -143,9 +143,5 @@ public class DriveUtil extends SubsystemBase {
 						m_frontLeft.getPosition(), m_frontRight.getPosition(),
 						m_backLeft.getPosition(), m_backRight.getPosition()
 				});
-
-		SmartDashboard.putNumber("xpos", m_odometry.getPoseMeters().getX());
-		SmartDashboard.putNumber("ypos", m_odometry.getPoseMeters().getY());
-		SmartDashboard.putNumber("rpos", m_odometry.getPoseMeters().getRotation().getDegrees());
 	}
 }

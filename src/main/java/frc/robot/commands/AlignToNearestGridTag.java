@@ -42,9 +42,6 @@ public class AlignToNearestGridTag extends CommandBase {
     PathPlannerTrajectory traj = new PathPlannerTrajectory();
     Pose2d robotPos = RobotContainer.getFieldPosed2dFromNearestCameraTarget();
     Pose3d tagPose = RobotContainer.getPose3dOfNearestCameraTarget();
-    SmartDashboard.putNumber("Robot X", robotPos.getX());
-    SmartDashboard.putNumber("Robot Y", robotPos.getY());
-    SmartDashboard.putNumber("Robot rot", robotPos.getRotation().getDegrees());
 
     traj = PathPlanner.generatePath(
       new PathConstraints(Constants.ALIGN_TO_TAG_MAX_VELOCITY, Constants.ALIGN_TO_TAG_MAX_ACCELERATION),
@@ -60,9 +57,9 @@ public class AlignToNearestGridTag extends CommandBase {
       )
     );
     
-    SmartDashboard.putNumber("end X", traj.getEndState().poseMeters.getX());
-    SmartDashboard.putNumber("end Y", traj.getEndState().poseMeters.getY());
-    SmartDashboard.putNumber("end rot", traj.getEndState().poseMeters.getRotation().getDegrees());
+    // SmartDashboard.putNumber("end X", traj.getEndState().poseMeters.getX());
+    // SmartDashboard.putNumber("end Y", traj.getEndState().poseMeters.getY());
+    // SmartDashboard.putNumber("end rot", traj.getEndState().poseMeters.getRotation().getDegrees());
 
     driveUtil.resetPose(traj.getInitialPose());
 

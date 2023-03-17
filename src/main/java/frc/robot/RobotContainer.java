@@ -48,6 +48,7 @@ public class RobotContainer {
   private static final PhotonCamera camera = new PhotonCamera("johncam");
   
   private final GrabUtil grabUtil = new GrabUtil();
+  private final OperateGrab operateGrab = new OperateGrab(grabUtil);
 
   private final OperateDrive operateDrive = new OperateDrive(driveUtil);
   private final OperateClaw operateClaw = new OperateClaw(clawUtil);
@@ -58,22 +59,15 @@ public class RobotContainer {
 
   private static XboxController driver;
   private static Joystick operator;
-  private JoystickButton clawButton;
 
   private SendableChooser<Command> autoChooser = new SendableChooser<>();
-
-  private JoystickButton highButton;
-  private JoystickButton middleButton;
-  private JoystickButton lowButton;
-  private JoystickButton highPButton;
-  private JoystickButton groundPButton;
   
   public static double allianceOrientation = 0; 
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     driver = new XboxController(Constants.XBOX_DRIVER);
-    operator = new Joystick(Constants.XBOX_OPERATOR);
+    operator = new Joystick(Constants.JOYSTICK_OPERATOR);
 
 
     // Configure the button bindings
@@ -104,6 +98,7 @@ public class RobotContainer {
     driveUtil.setDefaultCommand(operateDrive);
     armUtil.setDefaultCommand(operateArm);
     clawUtil.setDefaultCommand(operateClaw);
+    grabUtil.setDefaultCommand(operateGrab);
   }
 
   public static double getDriverLeftXboxX(){

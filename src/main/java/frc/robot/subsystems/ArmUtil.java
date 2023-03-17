@@ -26,7 +26,7 @@ public class ArmUtil extends SubsystemBase{
     private boolean holding = false;
     private boolean controlWrist = false;
     public ArmUtil() {
-        armState = ArmState.INITIALIZING;
+        armState = ArmState.INITIALIZE;
         
         armMotor1 = new CANSparkMax(Constants.ARM1, MotorType.kBrushless);
         armMotor2 = new CANSparkMax(Constants.ARM2, MotorType.kBrushless);
@@ -91,9 +91,8 @@ public class ArmUtil extends SubsystemBase{
                 0.3
             ) 
         );
-        SmartDashboard.putNumber("Degree from horizontal", degrees);
-        SmartDashboard.putNumber("Hold Arm Pos", arm1Encoder.getPosition()-60);                
     }
+
     public void setArmVelocity(double degPerSec){
         armMotor1.set(
             MathUtil.clamp(armFeedForwardController.calculate(
@@ -134,37 +133,63 @@ public class ArmUtil extends SubsystemBase{
     }
 
     public void operateArm(double joystickInput) {
+        double input = joystickInput;
         // armMotor2.setVoltage(Constants.ARM_kG * Math.sin(Math.toRadians(arm2Encoder.getPosition() + 30)));
         if (Math.abs(joystickInput) < Constants.ARM_JOYSTICK_INPUT_DEADBAND) {
             if(!holding) {
+                input = 0;
                 holding = true;
                 holdAngle = arm1Encoder.getPosition()-60;
+                System.out.println(input);
+                System.out.println(joystickInput);
+                System.out.println("AAAAAAAAAAAAAAAAAAA");
             }
-            holdArm(holdAngle);
+           // holdArm(holdAngle);
         } else {
             holding = false;
-            setArmVelocity(joystickInput * Constants.ARM_VELOCITY);
+            //setArmVelocity(input * Constants.ARM_VELOCITY);
         }
         SmartDashboard.putBoolean("Holding?", holding);
     }
 
+    public void lowerWrist(){
+        if(wristEncoder.getPosition() <= Constants.WRIST_PHYSICAL_STOP - Constants.WRIST_STOP_DEADBAND) {
+            wristMotor.set(0);
+        } else {
+            wristMotor.set(-.2);
+        }
+    }
 
-    public void operareWrist(boolean input) {
-        if (input){
-            wristMotor.set(
-            MathUtil.clamp(wristFeedForwardController.calculate(Math.toRadians(arm1Encoder.getPosition() + wristEncoder.getPosition() + 142.5), 0) 
-            + wristPIDController.calculate(arm1Encoder.getPosition() + wristEncoder.getPosition() + 142.5, 
-            0),
-            -0.3, 0.3));
+    public void operateArmStates(double armInput, boolean initialized){
+        switch(armState) {
+            case INITIALIZE: //Arm cannot be moved until initialize finished.
+                operateArmToLimitSwitch();
+                operateWirstToLimitSwitch();
+                if(initialized){
+                    armState = ArmState.RETRACT;
+                }
+                break;
+            case RETRACT:
+                operateWirstToLimitSwitch();
+                operateArm(armInput);
+                if (arm1Encoder.getPosition() > Constants.WRIST_RETRACT_DEADBAND){
+                    armState = ArmState.CONTROL;
+                }
+                break;
+            case CONTROL:
+                operateArm(armInput);
+                lowerWrist();
+                if(arm1Encoder.getPosition() <= Constants.WRIST_RETRACT_DEADBAND){
+                    armState = ArmState.RETRACT;
+                }
+                break;
         }
     }
 
     public void periodic() {
-        SmartDashboard.putNumber("arm1 encoder", arm1Encoder.getPosition());
-        SmartDashboard.putNumber("arm2 encoder", arm2Encoder.getPosition());
-        SmartDashboard.putNumber("wrist encoder", wristEncoder.getPosition());
         SmartDashboard.putBoolean("wrist limitswitch", wristLimitSwitch.get());
-        SmartDashboard.putNumber("wrist angle", arm1Encoder.getPosition() + wristEncoder.getPosition() + 142.5);
+        SmartDashboard.putNumber("wrist angle", arm1Encoder.getPosition() + wristEncoder.getPosition() + 122);
+        SmartDashboard.putNumber("arm angle", arm1Encoder.getPosition());
         if(!armLimitSwitch.get()){
             arm1Encoder.setPosition(0);
             arm2Encoder.setPosition(0);
@@ -172,6 +197,6 @@ public class ArmUtil extends SubsystemBase{
         if(!wristLimitSwitch.get()){
             wristEncoder.setPosition(0);
         }
-        SmartDashboard.putNumber("wrist want", RobotContainer.getOperatorSlider() * 270);
+        SmartDashboard.putNumber("wrist angle only", wristEncoder.getPosition());
     }
 }
