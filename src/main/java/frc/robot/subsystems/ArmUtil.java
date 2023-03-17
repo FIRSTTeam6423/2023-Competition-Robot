@@ -1,6 +1,8 @@
 package frc.robot.subsystems;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.RelativeEncoder;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
@@ -8,11 +10,8 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.CANSparkMax.IdleMode;
-
 import frc.robot.Constants;
+import frc.robot.RobotContainer;
 import frc.robot.util.ArmState;
 
 public class ArmUtil extends SubsystemBase{
@@ -25,6 +24,7 @@ public class ArmUtil extends SubsystemBase{
     private boolean oscillationGoingUp = false;
     private double holdAngle = 0;
     private boolean holding = false;
+    private boolean controlWrist = false;
     public ArmUtil() {
         armState = ArmState.INITIALIZING;
         
@@ -75,37 +75,40 @@ public class ArmUtil extends SubsystemBase{
     //0 degrees is the limit switch
 
     public void holdArm(double degrees) {
-        double armPosition=arm1Encoder.getPosition();
         armMotor1.set(
             MathUtil.clamp(
-                armFeedForwardController.calculate(Math.toRadians(degrees), 0), 
-                -0.3, 
+                armFeedForwardController.calculate(Math.toRadians(degrees), 0)
+                +  armPIDController.calculate(arm1Encoder.getPosition() - 60, degrees), 
+                0, 
                 0.3
             ) 
         );       
         armMotor2.set(
             MathUtil.clamp(
-                armFeedForwardController.calculate(Math.toDegrees(degrees), 0), 
-                -0.3, 
+                armFeedForwardController.calculate(Math.toDegrees(degrees), 0) 
+                + armPIDController.calculate(arm1Encoder.getPosition() - 60, degrees), 
+                0, 
                 0.3
             ) 
-        );        
+        );
+        SmartDashboard.putNumber("Degree from horizontal", degrees);
+        SmartDashboard.putNumber("Hold Arm Pos", arm1Encoder.getPosition()-60);                
     }
     public void setArmVelocity(double degPerSec){
         armMotor1.set(
             MathUtil.clamp(armFeedForwardController.calculate(
                 Math.toRadians(arm1Encoder.getPosition()-60), 0)
                 + armPIDController.calculate(arm1Encoder.getVelocity(), degPerSec),
-                0, 
-                0.2
+                -0.3,
+                0.4
             )
         );
         armMotor2.set(
             MathUtil.clamp(armFeedForwardController.calculate(
                 Math.toRadians(arm1Encoder.getPosition()-60), 0)
                 + armPIDController.calculate(arm1Encoder.getVelocity(), degPerSec),
-                0, 
-                0.2
+                -0.3, 
+                0.4
             )
         );
     }
@@ -142,14 +145,26 @@ public class ArmUtil extends SubsystemBase{
             holding = false;
             setArmVelocity(joystickInput * Constants.ARM_VELOCITY);
         }
+        SmartDashboard.putBoolean("Holding?", holding);
+    }
+
+
+    public void operareWrist(boolean input) {
+        if (input){
+            wristMotor.set(
+            MathUtil.clamp(wristFeedForwardController.calculate(Math.toRadians(arm1Encoder.getPosition() + wristEncoder.getPosition() + 142.5), 0) 
+            + wristPIDController.calculate(arm1Encoder.getPosition() + wristEncoder.getPosition() + 142.5, 
+            0),
+            -0.3, 0.3));
+        }
     }
 
     public void periodic() {
-        SmartDashboard.putNumber("arm1 encoder", arm1Encoder.getPosition() +30);
+        SmartDashboard.putNumber("arm1 encoder", arm1Encoder.getPosition());
         SmartDashboard.putNumber("arm2 encoder", arm2Encoder.getPosition());
         SmartDashboard.putNumber("wrist encoder", wristEncoder.getPosition());
-        SmartDashboard.putNumber("arm ff calc", armFeedForwardController.calculate(Math.toRadians(arm1Encoder.getPosition()-60), 0));
         SmartDashboard.putBoolean("wrist limitswitch", wristLimitSwitch.get());
+        SmartDashboard.putNumber("wrist angle", arm1Encoder.getPosition() + wristEncoder.getPosition() + 142.5);
         if(!armLimitSwitch.get()){
             arm1Encoder.setPosition(0);
             arm2Encoder.setPosition(0);
@@ -157,5 +172,6 @@ public class ArmUtil extends SubsystemBase{
         if(!wristLimitSwitch.get()){
             wristEncoder.setPosition(0);
         }
+        SmartDashboard.putNumber("wrist want", RobotContainer.getOperatorSlider() * 270);
     }
 }

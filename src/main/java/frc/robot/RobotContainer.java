@@ -154,5 +154,12 @@ public class RobotContainer {
     return operator.getY();
   }
 
+  public static double getOperatorSlider(){
+    return operator.getThrottle();
+  }
+
+  public static boolean getOperator1Button(){
+    return operator.getRawButton(1);
+  }
 
 }
