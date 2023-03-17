@@ -15,6 +15,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
+import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import com.kauailabs.navx.frc.AHRS;
 
@@ -30,22 +31,22 @@ public class DriveUtil extends SubsystemBase {
 			Constants.FRONTLEFT_DRIVE, 
 			true,
 			Constants.FRONTLEFT_PIVOT,
-			Constants.TOPLEFT_ABS_ENCODER);
+			Constants.TOPLEFT_ABS_ENCODER, true);
 	private final SwerveModule m_frontRight = new SwerveModule(
 			Constants.FRONTRIGHT_DRIVE,
 			true,
 			Constants.FRONTRIGHT_PIVOT,
-			Constants.TOPRIGHT_ABS_ENCODER);
+			Constants.TOPRIGHT_ABS_ENCODER, true);
 	private final SwerveModule m_backLeft = new SwerveModule(
 			Constants.BACKLEFT_DRIVE,
 			true,
 			Constants.BACKLEFT_PIVOT,
-			Constants.BOTTOMLEFT_ABS_ENCODER);
+			Constants.BOTTOMLEFT_ABS_ENCODER, true);
 	private final SwerveModule m_backRight = new SwerveModule(
 			Constants.BACKRIGHT_DRIVE,
 			true,
 			Constants.BACKRIGHT_PIVOT,
-			Constants.BOTTOMRIGHT_ABS_ENCODER);
+			Constants.BOTTOMRIGHT_ABS_ENCODER, true);
 
 	public SwerveDriveKinematics kinematics = new SwerveDriveKinematics(m_frontLeftLoc, m_frontRightLoc,
 			m_backLeftLoc, m_backRightLoc);
@@ -63,28 +64,33 @@ public class DriveUtil extends SubsystemBase {
 					m_backRight.getPosition()
 			}, new Pose2d(0.0, 0.0, new Rotation2d()));
 
-	public double setpoint;
-
-	public DriveUtil() {
-		setpoint = 0;
-
-		resetGyro();
+	public void start() {		
 		calibrateGyro();
+		Pose2d robotPose = RobotContainer.getFieldPosed2dFromNearestCameraTarget();
+		resetPose(robotPose);
+	}
+
+	public double deadzone(double input){
+		if(Math.abs(input) >= Constants.XBOX_STICK_DEADZONE_WIDTH){
+			return input;
+		} else {
+			return 0;
+		}
 	}
 
 	public void driveRobot(boolean fieldRelative) {
 		var swerveModuleStates = kinematics.toSwerveModuleStates(
 				fieldRelative
-						? ChassisSpeeds.fromFieldRelativeSpeeds(  
-								RobotContainer.getDriverLeftXboxX(),// * Constants.MAX_LINEAR_SPEED,
-								RobotContainer.getDriverLeftXboxY(),// * Constants.MAX_LINEAR_SPEED,
-								RobotContainer.getDriverRightXboxX(),// * Constants.MAX_ANGULAR_SPEED, 
-								getHeading2d())
+						? ChassisSpeeds.fromFieldRelativeSpeeds(
+								deadzone(RobotContainer.getDriverLeftXboxY()) * Constants.MAX_LINEAR_SPEED * Math.cos(Math.toRadians(RobotContainer.allianceOrientation)), //reversed x and y so that up on controller is
+								deadzone(RobotContainer.getDriverLeftXboxX()) * Constants.MAX_LINEAR_SPEED * Math.cos(Math.toRadians(RobotContainer.allianceOrientation)), //forward from driver pov
+								deadzone(RobotContainer.getDriverRightXboxX()) * Math.toRadians(Constants.MAX_ANGULAR_SPEED), 
+								m_odometry.getPoseMeters().getRotation())
 						: new ChassisSpeeds(RobotContainer.getDriverLeftXboxY() * Constants.MAX_LINEAR_SPEED,
 								RobotContainer.getDriverLeftXboxX() * Constants.MAX_LINEAR_SPEED,//Note y and x swapped for first 2 arguments is not intuitive, x is "forward"
 								RobotContainer.getDriverRightXboxX() * Constants.MAX_ANGULAR_SPEED));
 
-		SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Constants.MAX_LINEAR_SPEED);
+		//SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Constants.MAX_LINEAR_SPEED);
 
 		m_frontLeft.setDesiredState(swerveModuleStates[0]);
 		m_frontRight.setDesiredState(swerveModuleStates[1]);
@@ -100,7 +106,7 @@ public class DriveUtil extends SubsystemBase {
 	}
 
 	public Rotation2d getHeading2d() {
-		return Rotation2d.fromDegrees(gyro.getYaw());
+		return gyro.getRotation2d();
 	}
 
 	public Pose2d getPose() {
@@ -131,12 +137,15 @@ public class DriveUtil extends SubsystemBase {
 	@Override
 	public void periodic() {
 		// This method will be called once per scheduler run
-		var gyroAngle = getHeading2d();
 
-		m_odometry.update(gyroAngle,
+		m_odometry.update(gyro.getRotation2d(),
 				new SwerveModulePosition[] {
 						m_frontLeft.getPosition(), m_frontRight.getPosition(),
 						m_backLeft.getPosition(), m_backRight.getPosition()
 				});
+
+		SmartDashboard.putNumber("xpos", m_odometry.getPoseMeters().getX());
+		SmartDashboard.putNumber("ypos", m_odometry.getPoseMeters().getY());
+		SmartDashboard.putNumber("rpos", m_odometry.getPoseMeters().getRotation().getDegrees());
 	}
 }

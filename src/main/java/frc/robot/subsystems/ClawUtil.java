@@ -73,12 +73,12 @@ public class ClawUtil extends SubsystemBase {
      * with pneumatics it works and it is a no harm no foul approach.
      */
     public void operateClaw(){
-        if(state == ClawState.CLAW_CLOSE){
-            grabber.set(true);
-        }
-        if(state == ClawState.CLAW_OPEN){
-            grabber.set(false);
-        }
+        // if(state == ClawState.CLAW_CLOSE){
+        //     grabber.set(true);
+        // }
+        // if(state == ClawState.CLAW_OPEN){
+        //     grabber.set(false);
+        // }
     }
 
     @Override
@@ -88,7 +88,7 @@ public class ClawUtil extends SubsystemBase {
          * Additionally, we are sending state to the SmartDashboard.
          */
         //operateArm();
-        SmartDashboard.putString("Claw State :: ", getPistonState().toString());
+        //SmartDashboard.putString("Claw State :: ", getPistonState().toString());
         // SmartDashboard.putBoolean("Compressor", pcmCompressor.enabled());
         // SmartDashboard.putBoolean("Pressure Switch", pcmCompressor.getPressureSwitchValue());
         // SmartDashboard.putBoolean("Solonoid", grabber.get());
