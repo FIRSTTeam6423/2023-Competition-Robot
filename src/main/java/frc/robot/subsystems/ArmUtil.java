@@ -27,21 +27,6 @@ public class ArmUtil extends SubsystemBase{
     private boolean controlWrist = false;
     public ArmUtil() {
         armState = ArmState.INITIALIZING;
-        
-        armMotor1 = new CANSparkMax(Constants.ARM1, MotorType.kBrushless);
-        armMotor2 = new CANSparkMax(Constants.ARM2, MotorType.kBrushless);
-        wristMotor = new CANSparkMax(Constants.WRIST,MotorType.kBrushless);
-       
-        wristMotor.setIdleMode(IdleMode.kBrake);
-        armMotor1.setIdleMode(IdleMode.kBrake);
-        armMotor2.setIdleMode(IdleMode.kBrake);
-
-
-        armMotor1.setInverted(true); //up is positive for both arm and wrist
-
-        arm1Encoder = armMotor1.getEncoder();
-        arm2Encoder = armMotor2.getEncoder();
-        wristEncoder = wristMotor.getEncoder();
 
         arm1Encoder.setPositionConversionFactor(Constants.ARM_CONVERSION_FACTOR); //Now fixed. Problem was we were assuming native units were
         arm2Encoder.setPositionConversionFactor(Constants.ARM_CONVERSION_FACTOR); //ticks when its actually rotations. Constants show fix
@@ -50,10 +35,6 @@ public class ArmUtil extends SubsystemBase{
         arm2Encoder.setVelocityConversionFactor(Constants.ARM_CONVERSION_FACTOR/60);
         
         wristEncoder.setPositionConversionFactor(Constants.WRIST_CONVERSION_FACTOR); //Me personally, i would test moving arm on own, then add on wrist once code to make sure it doesnt hit bumper exists
-
-        armPIDController = new PIDController(Constants.ARM_P, Constants.ARM_I, Constants.ARM_D);
-        wristPIDController = new PIDController(Constants.WRIST_P, Constants.WRIST_I, Constants.WRIST_D);
-        
         armFeedForwardController = new ArmFeedforward(Constants.ARM_kS, Constants.ARM_kG/12, Constants.ARM_kV, Constants.ARM_kA);
         wristFeedForwardController = new ArmFeedforward(Constants.WRIST_kS, Constants.WRIST_kG, Constants.WRIST_kV, Constants.WRIST_kA);
         
