@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.RobotContainer;
 import frc.robot.util.ArmState;
 import frc.robot.util.WristState;
 
@@ -239,7 +240,7 @@ public class ArmUtil extends SubsystemBase{
                 boolean armAtLimitSwitch = operateArmToLimitSwitch();
                 boolean wristAtLimitSwitch = operateWristToLimitSwitch();
                 if(armAtLimitSwitch && wristAtLimitSwitch){
-                    armState = ArmState.CONTROL;
+                    setArmState(ArmState.CONTROL);
                     wristState = WristState.RETRACTED;
                 }
                 break;
@@ -307,6 +308,12 @@ public class ArmUtil extends SubsystemBase{
             case PARALLEL_TO_GROUND:
                 setWristAngleRelativeToGround(0); // "0" should be parallel to the ground
                 break;
+            case CONTROL:
+            if(Math.abs(RobotContainer.getOperatorSlider()) >= 0.2){
+                wristMotor.set(-RobotContainer.getOperatorSlider() * 0.3);
+            } else {
+                wristMotor.set(0);
+            }
         }
     }
 

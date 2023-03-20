@@ -12,6 +12,9 @@ import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
+import com.pathplanner.lib.PathConstraints;
+import com.pathplanner.lib.PathPlanner;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -21,9 +24,13 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.commands.AlignToNearestGridTag;
+import frc.robot.commands.AutoFollowTrajectorySwerve;
+import frc.robot.commands.BottomGoalThenLeave;
 import frc.robot.commands.OperateArm;
 import frc.robot.commands.OperateDrive;
 import frc.robot.commands.OperateGrab;
@@ -73,6 +80,14 @@ public class RobotContainer {
     // Configure the button bindings
     configureButtonBindings();
     configureDefaultCommands();
+
+    autoChooser.setDefaultOption("Bottom Goal Then Leave", new BottomGoalThenLeave(grabUtil, driveUtil));
+    autoChooser.setDefaultOption("Leave Then Balance", new AutoFollowTrajectorySwerve(driveUtil, 
+    PathPlanner.loadPath("Exit", new PathConstraints(
+      Constants.ALIGN_TO_TAG_MAX_VELOCITY, Constants.ALIGN_TO_TAG_MAX_ACCELERATION))));
+
+    SmartDashboard.putData("Autonomous Command", autoChooser);
+
   }
 
   /**
@@ -91,7 +106,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    return null;
+		return autoChooser.getSelected();
   }
 
   private void configureDefaultCommands(){
@@ -169,8 +184,8 @@ public class RobotContainer {
     return operator.getThrottle();
   }
 
-  public static boolean getOperator1Button(){
-    return operator.getRawButton(1);
+  public static boolean getOperatorButton(int num){
+    return operator.getRawButton(num);
   }
 
   public static Pose3d getTagPose3dFromId(int id) {

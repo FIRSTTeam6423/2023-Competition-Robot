@@ -22,6 +22,7 @@ public class GrabUtil extends SubsystemBase {
     grabMotor = new CANSparkMax(Constants.GRAB_MOTOR, MotorType.kBrushless);
     grabEncoder = grabMotor.getEncoder(); 
   }
+  
   public void setState(GrabberState newState){
     state = newState;
   }

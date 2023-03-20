@@ -35,7 +35,7 @@ public class AutoFollowTrajectorySwerve extends SequentialCommandGroup {
             	new PIDController(Constants.ROT_P, 0, 0), // Rotation controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
             	driveUtil::setSwerveModuleStates, // Module states consumer
             	true, // Should the path be automatically mirrored depending on alliance color. Optional, defaults to true
-            	driveUtil // Requires this drive subsystem
+            	driveUtil // Requires thuis drive subsystem
         	)
 		);
 

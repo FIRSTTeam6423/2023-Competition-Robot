@@ -51,7 +51,7 @@ public class AlignToNearestGridTag extends CommandBase {
         robotPos.getRotation() //Camera rotation not same as rogot
       ),
       new PathPoint(
-        new Translation2d(tagPose.getX()+1, robotPos.getY()),
+        new Translation2d(tagPose.getX()+5, robotPos.getY()),
         new Rotation2d(tagPose.getRotation().getZ()),
         new Rotation2d(tagPose.getRotation().getZ() + Math.PI)
       )

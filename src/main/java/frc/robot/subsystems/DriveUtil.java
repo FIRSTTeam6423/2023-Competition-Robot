@@ -13,6 +13,8 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Robot;
@@ -67,7 +69,17 @@ public class DriveUtil extends SubsystemBase {
 	public void start() {		
 		calibrateGyro();
 		Pose2d robotPose = RobotContainer.getFieldPosed2dFromNearestCameraTarget();
-		resetPose(robotPose);
+		if (robotPose == null){
+			if(DriverStation.getAlliance() == Alliance.Red){
+				RobotContainer.allianceOrientation = 180;
+				resetPose(new Pose2d(new Translation2d(14.5, 5), Rotation2d.fromDegrees(0)));
+			} else {
+				RobotContainer.allianceOrientation = 0;
+				resetPose(new Pose2d(new Translation2d(2.00, 5.00), Rotation2d.fromDegrees(180)));
+			}
+		} else {
+			resetPose(robotPose);
+		}
 	}
 
 	public double deadzone(double input){
