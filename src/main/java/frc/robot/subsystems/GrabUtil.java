@@ -27,19 +27,28 @@ public class GrabUtil extends SubsystemBase {
     state = newState;
   }
 
-  public void operateGrabber(){
+  public void operateGrabber(boolean intake, boolean spitting){
     switch(state){
       case OFF:
         grabMotor.set(0);
+        if(intake){
+          state = GrabberState.INTAKE;
+        }
+        if(spitting){
+          state =  GrabberState.OUTPUT;
+        }
         break;
       case INTAKE:
         grabMotor.set(Constants.GRAB_INTAKE_SPEED);
-        // if(grabMotor.getBusVoltage() < Constants.MIN_GRAB_INTAKE_VOLTAGE){
-        //   setState(GrabberState.OFF);
-        // }
+        if(!intake){
+          state = GrabberState.OFF;
+        }
         break;
       case OUTPUT:
         grabMotor.set(Constants.GRAB_OUTPUT_SPEED);
+        if(!spitting){
+          state = GrabberState.OFF;
+        }
         break;
     }
 
@@ -48,7 +57,5 @@ public class GrabUtil extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("RPMMMM", grabEncoder.getVelocity());
-    SmartDashboard.putNumber("Voltageeee", grabEncoder.getAverageDepth());
   }
 }

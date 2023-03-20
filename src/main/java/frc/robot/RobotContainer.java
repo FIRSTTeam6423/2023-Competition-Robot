@@ -38,8 +38,6 @@ import frc.robot.subsystems.ArmUtil;
 import frc.robot.subsystems.DriveUtil;
 import frc.robot.subsystems.GrabUtil;
 import frc.robot.util.ArmState;
-import frc.robot.subsystems.ClawUtil;
-import frc.robot.commands.OperateClaw;
 import edu.wpi.first.wpilibj2.command.Command;
 
 /**
@@ -51,14 +49,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final DriveUtil driveUtil = new DriveUtil();
-  private final ClawUtil clawUtil = new ClawUtil();
   private static final PhotonCamera camera = new PhotonCamera("johncam");
   
   private final GrabUtil grabUtil = new GrabUtil();
   private final OperateGrab operateGrab = new OperateGrab(grabUtil);
 
   private final OperateDrive operateDrive = new OperateDrive(driveUtil);
-  private final OperateClaw operateClaw = new OperateClaw(clawUtil);
 
   private final ArmUtil armUtil = new ArmUtil();
 
@@ -66,6 +62,7 @@ public class RobotContainer {
 
   private static XboxController driver;
   private static Joystick operator;
+  private static JoystickButton middleGoalButton;
 
   private SendableChooser<Command> autoChooser = new SendableChooser<>();
   
@@ -76,6 +73,10 @@ public class RobotContainer {
     driver = new XboxController(Constants.XBOX_DRIVER);
     operator = new Joystick(Constants.JOYSTICK_OPERATOR);
 
+
+    middleGoalButton = new JoystickButton(operator, 9);
+
+    autoChooser.setDefaultOption("align to grid", new AlignToNearestGridTag(driveUtil));
 
     // Configure the button bindings
     configureButtonBindings();
@@ -97,6 +98,9 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
+    middleGoalButton.onTrue(new InstantCommand(()->{
+      armUtil.setArmState(ArmState.MIDDLE_GOAL);
+    }));
   }
 
   /**
@@ -112,7 +116,6 @@ public class RobotContainer {
   private void configureDefaultCommands(){
     driveUtil.setDefaultCommand(operateDrive);
     armUtil.setDefaultCommand(operateArm);
-    clawUtil.setDefaultCommand(operateClaw);
     grabUtil.setDefaultCommand(operateGrab);
   }
 
@@ -186,6 +189,50 @@ public class RobotContainer {
 
   public static boolean getOperatorButton(int num){
     return operator.getRawButton(num);
+  }
+
+  public static boolean getOperator2Button(){
+    return operator.getRawButton(2);
+  }
+
+  public static boolean getOperator3Button(){
+    return operator.getRawButton(3);
+  }
+
+  public static boolean getOperator4Button(){
+    return operator.getRawButton(4);
+  }
+
+  public static boolean getOperator5Button(){
+    return operator.getRawButton(5);
+  }
+
+  public static boolean getOperator6Button(){
+    return operator.getRawButton(6);
+  }
+
+  public static boolean getOperator7Button(){
+    return operator.getRawButton(7);
+  }
+
+  public static boolean getOperator8Button(){
+    return operator.getRawButton(8);
+  }
+
+  public static boolean getOperator9Button(){
+    return operator.getRawButton(9);
+  }
+
+  public static boolean getOperator10Button(){
+    return operator.getRawButton(10);
+  }
+
+  public static boolean getOperator11Button(){
+    return operator.getRawButton(11);
+  }
+
+  public static boolean getOperator12Button(){
+    return operator.getRawButton(12);
   }
 
   public static Pose3d getTagPose3dFromId(int id) {

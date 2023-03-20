@@ -7,6 +7,7 @@ package frc.robot;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -22,7 +23,7 @@ public final class Constants {
      */
     
     public static final int GRAB_MOTOR = 12; 
-    public static final double GRAB_INTAKE_SPEED = 0.75;
+    public static final double GRAB_INTAKE_SPEED = 0.85;
     public static final double GRAB_OUTPUT_SPEED = -0.25;
     public static final double MIN_GRAB_INTAKE_VOLTAGE = 12.5;//probably wrong
 
@@ -46,35 +47,35 @@ public final class Constants {
     public static final Constraints ARM_PROFILE_CONSTRAINTS = new Constraints(10, 5);
 
     public static final double ARM_OSCIL_DEADBAND = 10; //degrees
-    public static final double WRIST_RETRACT_DEADBAND = 20;
+    public static final double WRIST_RETRACT_DEADBAND = 15;
 
     public static final double DEADBAND = 3.5;
     public static final double ARM_P = 0.005;
     public static final double ARM_I = 0;
     public static final double ARM_D = 0;
 
-    public static final double WRIST_P = 0.14759;
+    public static final double WRIST_P = 0.075;
     public static final double WRIST_I = 0;
-    public static final double WRIST_D = 0.049768;
+    public static final double WRIST_D = 0;
 
     //ARMSTATE CONSTANTS
     //Arm has max of ~120, parrel to ground at ~80
     //Since wrist has a max of zero at limit switch
     //All degrees should be negative. otherwise, wrist will break itself
     
-    public static final double HIGH_GOAL_ARM = 110;
+    public static final double HIGH_GOAL_ARM = 10;
     public static final double HIGH_GOAL_WRIST = -180;
 
-    public static final double MIDDLE_GOAL_ARM = 80;
+    public static final double MIDDLE_GOAL_ARM = -30; // 0 is parallel to ground
     public static final double MIDDLE_GOAL_WRIST = -130;
 
-    public static final double LOW_GOAL_ARM = 40;
+    public static final double LOW_GOAL_ARM = -50;
     public static final double LOW_GOAL_WRIST = -80;
 
-    public static final double HIGH_PICK_ARM = 95;
+    public static final double HIGH_PICK_ARM = -60;
     public static final double HIGH_PICK_WRIST = -50;
 
-    public static final double GROUND_PICK_ARM = 15;
+    public static final double GROUND_PICK_ARM = -60;
     public static final double GROUND_PICK_WRIST = -150;
 
     //Feedforward constants - arbitrary values
@@ -88,13 +89,13 @@ public final class Constants {
     public static final double WRIST_kS = 0;//-0.6777;
     public static final double WRIST_kA = 0;//0.0098395;
 
-    public static final double ARM_VELOCITY = 30;
+    public static final double ARM_VELOCITY = 50;
     public static final double ARM_ACCELERATION = 0;
 
     public static final double WRIST_VELOCITY = 0;
     public static final double WRIST_ACCELERATION = 0;
 
-    public static final double WRIST_PHYSICAL_STOP = 0;
+    public static final double WRIST_PHYSICAL_STOP = -174;
     public static final double WRIST_STOP_DEADBAND = 10;
 
     public static final double ARM_FEEDFORWARD_OFFSET = 90;
@@ -150,7 +151,7 @@ public final class Constants {
     public static final double YDIR_P = 0;
     public static final double ROT_P = 0;
 
-    public static final Transform3d CAMERA_TO_ROBOT=new Transform3d(); //Dummy
+    public static final Transform3d CAMERA_TO_ROBOT=new Transform3d(new Translation3d(-.0635, .1778, 0.0), new Rotation3d()); //Dummy
 
     public static final double APRIL1_X = 15.51;
         public static final double APRIL1_Y = 1.07;

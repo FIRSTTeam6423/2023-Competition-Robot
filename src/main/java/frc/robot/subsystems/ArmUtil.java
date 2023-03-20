@@ -11,10 +11,10 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.util.ArmState;
 import frc.robot.util.WristState;
@@ -35,20 +35,24 @@ public class ArmUtil extends SubsystemBase{
 
     private double holdAngle = 0;
     private boolean holding = false;
+    private boolean foldWristOut = false;
 
     private double armStateTimeElapsed = 0;
+    private boolean previousWristToggleButtonState = false;
 
 
     public ArmUtil() {
         armProfile = new TrapezoidProfile(new Constraints(0, 0), new State(0, 0));
 
         armState = ArmState.INITIALIZE;
-        wristState = WristState.OUT;
+        wristState = WristState.RETRACTED;
 
         armMotor1 = new CANSparkMax(Constants.ARM1, MotorType.kBrushless);
         armMotor2 = new CANSparkMax(Constants.ARM2, MotorType.kBrushless);
         wristMotor = new CANSparkMax(Constants.WRIST,MotorType.kBrushless);
        
+        wristMotor.setIdleMode(IdleMode.kBrake);
+
         wristMotor.setIdleMode(IdleMode.kBrake);
         armMotor1.setIdleMode(IdleMode.kBrake);
         armMotor2.setIdleMode(IdleMode.kBrake);
@@ -93,35 +97,35 @@ public class ArmUtil extends SubsystemBase{
                 armProfile = new TrapezoidProfile( //Note: high goal arm and initial position both have to assume same angle is zero
                     Constants.ARM_PROFILE_CONSTRAINTS, 
                     new State(Constants.HIGH_GOAL_ARM, 0),
-                    new State(arm1Encoder.getPosition()-60,0)
+                    new State(getArmAngleRelativeToGround(),0)
                 );
                 break;
             case MIDDLE_GOAL: 
                 armProfile = new TrapezoidProfile( //Note: middle goal arm and initial position both have to assume same angle is zero
                     Constants.ARM_PROFILE_CONSTRAINTS, 
                     new State(Constants.MIDDLE_GOAL_ARM, 0),
-                    new State(arm1Encoder.getPosition()-60,0)
+                    new State(getArmAngleRelativeToGround(),0)
                 );
                 break;
             case LOW_GOAL: 
                 armProfile = new TrapezoidProfile( //Note: middle goal arm and initial position both have to assume same angle is zero
                     Constants.ARM_PROFILE_CONSTRAINTS, 
                     new State(Constants.LOW_GOAL_ARM, 0),
-                    new State(arm1Encoder.getPosition()-60,0)
+                    new State(getArmAngleRelativeToGround(),0)
                 );
                 break;
             case GROUND_PICK: // preset for a ground pickup
                 armProfile = new TrapezoidProfile( //Note: middle goal arm and initial position both have to assume same angle is zero
                     Constants.ARM_PROFILE_CONSTRAINTS, 
                     new State(Constants.GROUND_PICK_ARM, 0),
-                    new State(arm1Encoder.getPosition()-60,0)
+                    new State(getArmAngleRelativeToGround(),0)
                 );
                 break;
             case HIGH_PICK: // preset for a player pickup
                 armProfile = new TrapezoidProfile( //Note: middle goal arm and initial position both have to assume same angle is zero
                     Constants.ARM_PROFILE_CONSTRAINTS, 
                     new State(Constants.HIGH_PICK_ARM, 0),
-                    new State(arm1Encoder.getPosition()-60,0)
+                    new State(getArmAngleRelativeToGround(),0)
                 );
                 break;
         }
@@ -158,18 +162,18 @@ public class ArmUtil extends SubsystemBase{
     public void setArmVelocity(double degPerSec){ //I'm not sure if you can use the same pid for velocity and position
         armMotor1.set(
             MathUtil.clamp(armFeedForwardController.calculate(
-                Math.toRadians(arm1Encoder.getPosition()-60), 0)
+                Math.toRadians(getArmAngleRelativeToGround()), 0)
                 + armPIDController.calculate(arm1Encoder.getVelocity(), degPerSec),
-                -0.3,
-                0.4
+                -0.5,
+                0.5
             )
         );
         armMotor2.set(
             MathUtil.clamp(armFeedForwardController.calculate(
-                Math.toRadians(arm1Encoder.getPosition()-60), 0)
+                Math.toRadians(getArmAngleRelativeToGround()), 0)
                 + armPIDController.calculate(arm1Encoder.getVelocity(), degPerSec),
-                -0.3, 
-                0.4
+                -0.5, 
+                0.5
             )
         );
     }
@@ -180,8 +184,8 @@ public class ArmUtil extends SubsystemBase{
             armMotor2.set(0);
             return true;
         }
-        armMotor1.set(-.1);
-        armMotor2.set(-.1);
+        armMotor1.set(-.05);
+        armMotor2.set(-.05);
         return false;
     }
 
@@ -195,15 +199,15 @@ public class ArmUtil extends SubsystemBase{
         // work with velocity, as we are not able to find kV efficiently. PID should handle velocity nicely
         armMotor1.set(
             MathUtil.clamp(armFeedForwardController.calculate(
-                Math.toRadians(arm1Encoder.getPosition()-60), 0)
-                + armPIDController.calculate(arm1Encoder.getPosition()-60, setpoint.position),
+                Math.toRadians(getArmAngleRelativeToGround()), 0)
+                + armPIDController.calculate(getArmAngleRelativeToGround(), setpoint.position),
                 -0.3,
                 0.4
             )
         );
         armMotor2.set(
             MathUtil.clamp(armFeedForwardController.calculate(
-                Math.toRadians(arm1Encoder.getPosition()-60), 0)
+                Math.toRadians(getArmAngleRelativeToGround()), 0)
                 + armPIDController.calculate(arm1Encoder.getPosition()-60, setpoint.position),
                 -0.3,
                 0.4
@@ -211,30 +215,41 @@ public class ArmUtil extends SubsystemBase{
         );
     }
 
+
+    /**
+     * degrees is angle with 0 being parallel to x axis, positive increase in raising arm
+
+     * @return double degrees
+     */
+    public double getArmAngleRelativeToGround(){
+        return arm1Encoder.getPosition() - 60;
+    }
+
     public void setWristAngleRelativeToGround(double degrees) {
         //degrees is angle with 0 being parallel to x axis, positive increase in angle is counter-clockwise.
         //arm1Encoder.getPosition() + wristEncoder.getPosition() + 122
-        if(!wristLimitSwitch.get()) {
-            DriverStation.reportError("Attempt to set wrist angle while limit switch activated.", null);
-        } else {
-            double curWristDegsRelGround = arm1Encoder.getPosition() + wristEncoder.getPosition() + 122;
-            wristMotor.set(
-                MathUtil.clamp(
-                    wristFeedForwardController.calculate(
-                        Math.toRadians(degrees),
-                        0
-                    ) + wristPIDController.calculate(
-                        curWristDegsRelGround, 
-                        degrees
-                    ),
-                    -0.3,
-                    0.4
-                )
-            );
-        }
+        double curWristDegsRelGround = arm1Encoder.getPosition() + wristEncoder.getPosition() + 99 + 33;
+        wristMotor.set(
+            MathUtil.clamp(
+                wristFeedForwardController.calculate(
+                    Math.toRadians(degrees),
+                    0
+                ) + wristPIDController.calculate(
+                    curWristDegsRelGround, 
+                    degrees
+                ),
+                -0.1,
+                !wristLimitSwitch.get() ? 0 : 0.1
+            )
+        );
+        
     }
 
     public void operateArm(double joystickInput) {
+        if(RobotContainer.getOperator5Button()&& !previousWristToggleButtonState){
+            toggleWristState();
+        }
+        previousWristToggleButtonState = RobotContainer.getOperator5Button();
         switch(armState) {
             case INITIALIZE: //In initialize, the user cannot move the arm and it is zeroing itself.
                 boolean armAtLimitSwitch = operateArmToLimitSwitch();
@@ -251,7 +266,7 @@ public class ArmUtil extends SubsystemBase{
                     if(!holding) {
                         input = 0;
                         holding = true;
-                        holdAngle = arm1Encoder.getPosition()-60;
+                        holdAngle = getArmAngleRelativeToGround();
                         System.out.println(input);
                         System.out.println(joystickInput);
                         System.out.println("AAAAAAAAAAAAAAAAAAA");
@@ -259,23 +274,29 @@ public class ArmUtil extends SubsystemBase{
                     holdArm(holdAngle);
                 } else {
                     holding = false;
+                    setArmVelocity(joystickInput * Constants.ARM_VELOCITY);
                 }
 
                 SmartDashboard.putBoolean("Holding?", holding);
 
-                operateWrist();
                 if(arm1Encoder.getPosition() <= Constants.WRIST_RETRACT_DEADBAND){
                     wristState = WristState.RETRACTED;
                 } else if(wristState == WristState.RETRACTED) { //this way it won't stop the user from making claw parallel
                     wristState = WristState.OUT;
                 }
+                operateWrist();
+
                 break;
             case HIGH_GOAL: //preset for high goal
             case MIDDLE_GOAL: //preset for middle goal
             case LOW_GOAL: // preset for the low goal
             case GROUND_PICK: // preset for a ground pickup
             case HIGH_PICK: // preset for a player pickup
-                operateArmPreset();
+                if(Math.abs(joystickInput)>Constants.ARM_JOYSTICK_INPUT_DEADBAND){
+                    setArmState(ArmState.CONTROL);
+                }else {
+                    operateArmPreset();
+                }
                 break;
         }
     }
@@ -285,12 +306,12 @@ public class ArmUtil extends SubsystemBase{
             wristMotor.set(0);
             return true;
         }
-        wristMotor.set(.3);
+        wristMotor.set(0.25);
         return false;
     }
 
     public void lowerWrist(){
-        if(wristEncoder.getPosition() <= Constants.WRIST_PHYSICAL_STOP - Constants.WRIST_STOP_DEADBAND) {
+        if(wristEncoder.getPosition() <= Constants.WRIST_PHYSICAL_STOP + Constants.WRIST_STOP_DEADBAND) {
             wristMotor.set(0);
         } else {
             wristMotor.set(-.2);
@@ -307,6 +328,7 @@ public class ArmUtil extends SubsystemBase{
                 break;
             case PARALLEL_TO_GROUND:
                 setWristAngleRelativeToGround(0); // "0" should be parallel to the ground
+                //wristMotor.set(-RobotContainer.getOperatorSlider()/10);
                 break;
             case CONTROL:
             if(Math.abs(RobotContainer.getOperatorSlider()) >= 0.2){
@@ -314,6 +336,14 @@ public class ArmUtil extends SubsystemBase{
             } else {
                 wristMotor.set(0);
             }
+        }
+    }
+
+    public void toggleWristState(){
+        if(wristState==WristState.OUT){
+            wristState=WristState.PARALLEL_TO_GROUND;
+        } else if(wristState==WristState.PARALLEL_TO_GROUND){
+            wristState=WristState.OUT;
         }
     }
 
@@ -330,7 +360,7 @@ public class ArmUtil extends SubsystemBase{
 
         SmartDashboard.putNumber("Wrist Encoder", wristEncoder.getPosition());
         SmartDashboard.putBoolean("Wrist Switch", wristLimitSwitch.get());
-        SmartDashboard.putNumber("Wrist Relative Angle", arm1Encoder.getPosition() + wristEncoder.getPosition() + 122);
+        SmartDashboard.putNumber("Wrist Relative Angle", arm1Encoder.getPosition() + wristEncoder.getPosition() + 99);
         SmartDashboard.putNumber("Arm Encoder", arm1Encoder.getPosition());
     }
 }

@@ -31,13 +31,14 @@ public class SpitOneSecond extends CommandBase {
   @Override
   public void execute() {
     ticker += .02; // 20 ms rate
-    gu.operateGrabber();
+    gu.operateGrabber(true, false);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
     gu.setState(GrabberState.OFF);
+    gu.operateGrabber(false, false);
   }
 
   // Returns true when the command should end.

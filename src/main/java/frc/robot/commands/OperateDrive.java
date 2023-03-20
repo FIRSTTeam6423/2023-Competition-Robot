@@ -20,13 +20,13 @@ public class OperateDrive extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    //du.start();
+    du.start();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    //du.driveRobot(true);
+    du.driveRobot(true);
   }
 
   // Called once the command ends or is interrupted.
