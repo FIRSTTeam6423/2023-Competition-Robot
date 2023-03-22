@@ -34,10 +34,12 @@ import frc.robot.commands.BottomGoalThenLeave;
 import frc.robot.commands.OperateArm;
 import frc.robot.commands.OperateDrive;
 import frc.robot.commands.OperateGrab;
+import frc.robot.commands.SetArmPresetState;
 import frc.robot.subsystems.ArmUtil;
 import frc.robot.subsystems.DriveUtil;
 import frc.robot.subsystems.GrabUtil;
 import frc.robot.util.ArmState;
+import frc.robot.util.WristState;
 import edu.wpi.first.wpilibj2.command.Command;
 
 /**
@@ -62,8 +64,14 @@ public class RobotContainer {
 
   private static XboxController driver;
   private static Joystick operator;
-  private static JoystickButton middleGoalButton;
+  private static JoystickButton middleGoalButton, lowGoalButton, highGoalButton, groundPickupButton, highPickupButton;
 
+
+  private static JoystickButton parallelToggleButton;
+  private static JoystickButton retractWristButton;
+  private static JoystickButton extendWristButton;
+
+  private static JoystickButton controlToggleButton;
   private SendableChooser<Command> autoChooser = new SendableChooser<>();
   
   public static double allianceOrientation = 0; 
@@ -75,16 +83,24 @@ public class RobotContainer {
 
 
     middleGoalButton = new JoystickButton(operator, 9);
-
-    autoChooser.setDefaultOption("align to grid", new AlignToNearestGridTag(driveUtil));
-
+    highGoalButton = new JoystickButton(operator, 7);
+    lowGoalButton = new JoystickButton(operator, 11);
+    groundPickupButton = new JoystickButton(operator, 12);
+    highPickupButton = new JoystickButton(operator, 10);
+    retractWristButton = new JoystickButton(operator, 4);
+    parallelToggleButton = new JoystickButton(operator, 5);
+    controlToggleButton = new JoystickButton(operator, 3);
+    extendWristButton = new JoystickButton(operator, 6);
     // Configure the button bindings
     configureButtonBindings();
     configureDefaultCommands();
 
-    autoChooser.setDefaultOption("Bottom Goal Then Leave", new BottomGoalThenLeave(grabUtil, driveUtil));
-    autoChooser.setDefaultOption("Leave Then Balance", new AutoFollowTrajectorySwerve(driveUtil, 
-    PathPlanner.loadPath("Exit", new PathConstraints(
+    autoChooser.setDefaultOption("Low goal arm state", new SetArmPresetState(armUtil, ArmState.LOW_GOAL));
+    autoChooser.setDefaultOption("Middle goal arm state", new SetArmPresetState(armUtil, ArmState.MIDDLE_GOAL));
+    autoChooser.addOption("Align to grid tag", new AlignToNearestGridTag(driveUtil));
+    autoChooser.addOption("Bottom Goal Then Leave", new BottomGoalThenLeave(grabUtil, driveUtil, armUtil));
+    autoChooser.addOption("Leave", new AutoFollowTrajectorySwerve(driveUtil, 
+      PathPlanner.loadPath("Exit", new PathConstraints(
       Constants.ALIGN_TO_TAG_MAX_VELOCITY, Constants.ALIGN_TO_TAG_MAX_ACCELERATION))));
 
     SmartDashboard.putData("Autonomous Command", autoChooser);
@@ -100,6 +116,24 @@ public class RobotContainer {
   private void configureButtonBindings() {
     middleGoalButton.onTrue(new InstantCommand(()->{
       armUtil.setArmState(ArmState.MIDDLE_GOAL);
+    }));
+    highGoalButton.onTrue(new InstantCommand(()->{
+      armUtil.setArmState(ArmState.HIGH_GOAL);
+    }));    
+    lowGoalButton.onTrue(new InstantCommand(()->{
+      armUtil.setArmState(ArmState.LOW_GOAL);
+    }));    
+    groundPickupButton.onTrue(new InstantCommand(()->{
+      armUtil.setArmState(ArmState.GROUND_PICK);
+    }));    
+    highPickupButton.onTrue(new InstantCommand(()->{
+      armUtil.setArmState(ArmState.HIGH_PICK);
+    }));
+    parallelToggleButton.onTrue(new InstantCommand(()->{
+      armUtil.setWristState(WristState.PARALLEL_TO_GROUND);
+    }));
+    retractWristButton.onTrue(new InstantCommand(()->{
+      armUtil.setWristState(WristState.RETRACTED);
     }));
   }
 

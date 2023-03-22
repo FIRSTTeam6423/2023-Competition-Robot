@@ -5,45 +5,28 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.GrabUtil;
-import frc.robot.util.GrabberState;
 
-import java.util.Timer;
-
-public class SpitOneSecond extends CommandBase {
-  /** Creates a new SpitOneSecond. */
-  private double ticker = 0;
-  private GrabUtil gu;
-
-  public SpitOneSecond(GrabUtil gu) {
+public class AutoBalance extends CommandBase {
+  /** Creates a new AutoBalance. */
+  public AutoBalance() {
     // Use addRequirements() here to declare subsystem dependencies.
-    this.gu = gu;
-    addRequirements(this.gu);
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
-    gu.setState(GrabberState.OUTPUT);
-  }
+  public void initialize() {}
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {
-    ticker += .02; // 20 ms rate
-    gu.operateGrabber(true, false);
-  }
+  public void execute() {}
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {
-    gu.setState(GrabberState.OFF);
-    gu.operateGrabber(false, false);
-  }
+  public void end(boolean interrupted) {}
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return ticker >=1;
+    return false;
   }
 }

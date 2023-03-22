@@ -23,7 +23,7 @@ public final class Constants {
      */
     
     public static final int GRAB_MOTOR = 12; 
-    public static final double GRAB_INTAKE_SPEED = 0.85;
+    public static final double GRAB_INTAKE_SPEED = 0.75;
     public static final double GRAB_OUTPUT_SPEED = -0.25;
     public static final double MIN_GRAB_INTAKE_VOLTAGE = 12.5;//probably wrong
 
@@ -36,8 +36,9 @@ public final class Constants {
 
     public static final int WRIST_LIMIT_SWITCH = 4;
     public static final int ARM_LIMIT_SWITCH = 5;
-
-    public static final double ARM_CONVERSION_FACTOR = (360.0/48.0); //fixed
+    public static final int GRABBER_LIMIT_SWITCH_ID = 6;
+    
+    public static final double ARM_CONVERSION_FACTOR = (360.0/36.0); //fixed
     public static final double WRIST_CONVERSION_FACTOR = (360/90.0);
     public static final double ARM_LOWER_LIMIT=0;
     public static final double ARM_UPPER_LIMIT=0.5;//this is not the actual value
@@ -50,7 +51,7 @@ public final class Constants {
     public static final double WRIST_RETRACT_DEADBAND = 15;
 
     public static final double DEADBAND = 3.5;
-    public static final double ARM_P = 0.005;
+    public static final double ARM_P = 0.0075;
     public static final double ARM_I = 0;
     public static final double ARM_D = 0;
 
@@ -63,23 +64,23 @@ public final class Constants {
     //Since wrist has a max of zero at limit switch
     //All degrees should be negative. otherwise, wrist will break itself
     
-    public static final double HIGH_GOAL_ARM = 10;
+    public static final double HIGH_GOAL_ARM = 0;
     public static final double HIGH_GOAL_WRIST = -180;
 
-    public static final double MIDDLE_GOAL_ARM = -30; // 0 is parallel to ground
+    public static final double MIDDLE_GOAL_ARM = -12.5; // 0 is parallel to ground
     public static final double MIDDLE_GOAL_WRIST = -130;
 
-    public static final double LOW_GOAL_ARM = -50;
+    public static final double LOW_GOAL_ARM = -68;
     public static final double LOW_GOAL_WRIST = -80;
 
-    public static final double HIGH_PICK_ARM = -60;
+    public static final double HIGH_PICK_ARM = 0;
     public static final double HIGH_PICK_WRIST = -50;
 
-    public static final double GROUND_PICK_ARM = -60;
+    public static final double GROUND_PICK_ARM = -68;
     public static final double GROUND_PICK_WRIST = -150;
 
     //Feedforward constants - arbitrary values
-    public static final double ARM_kG = 1.88; //0.58;//
+    public static final double ARM_kG = 1; //0.58;//
     public static final double ARM_kV = 0;//0.00765858;
     public static final double ARM_kS = 0;//0.23125;
     public static final double ARM_kA = 0;//0.00086773;
@@ -135,10 +136,10 @@ public final class Constants {
 
     public static final double WHEEL_RADIUS = 0.5;
     public static final double MAX_ANGULAR_SPEED = 2000; //
-    public static final double MAX_LINEAR_SPEED = 15; //meters per second
+    public static final double MAX_LINEAR_SPEED = 29.5; //meters per second
 
-    public static final double ALIGN_TO_TAG_MAX_VELOCITY = 0.1;
-    public static final double ALIGN_TO_TAG_MAX_ACCELERATION = 0.5;
+    public static final double ALIGN_TO_TAG_MAX_VELOCITY = 2;
+    public static final double ALIGN_TO_TAG_MAX_ACCELERATION = 1;
 
     public static final double MODULEDRIVE_P = 0.039753;//0.0024
     public static final double MODULEDRIVE_I = 0;
@@ -223,5 +224,5 @@ public final class Constants {
     public static final double ARM_JOYSTICK_INPUT_DEADBAND = .25;
 
 
-    public static final double XBOX_STICK_DEADZONE_WIDTH=0.015;
+    public static final double XBOX_STICK_DEADZONE_WIDTH=0.05;
 }

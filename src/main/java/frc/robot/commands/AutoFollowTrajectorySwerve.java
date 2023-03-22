@@ -12,6 +12,7 @@ import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import frc.robot.Constants;
@@ -26,14 +27,17 @@ public class AutoFollowTrajectorySwerve extends SequentialCommandGroup {
 	// Add your commands in the addCommands() call, e.g.
 	// addCommands(new FooCommand(), new BarCommand());
 		addCommands(
+			new InstantCommand(()->{
+				driveUtil.start();
+				//driveUtil.resetPose(traj.getInitialPose());
+			}),
 			new PPSwerveControllerCommand(
             	traj, 
             	driveUtil::getPose, // Pose supplier
-            	driveUtil.kinematics, // SwerveDriveKinematics
-            	new PIDController(0, 0, 0), // X controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
-            	new PIDController(0, 0, 0), // Y controller (usually the same values as X controller)
-            	new PIDController(0, 0, 0), // Rotation controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
-            	driveUtil::setSwerveModuleStates, // Module states consumer
+            	new PIDController(9, 0, 0), // X controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
+            	new PIDController(9, 0, 0), // Y controller (usually the same values as X controller)
+            	new PIDController(.4, 0, 0), // Rotation controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
+            	driveUtil::setChassisSpeeds, // Module states consumer
             	true, // Should the path be automatically mirrored depending on alliance color. Optional, defaults to true
             	driveUtil // Requires thuis drive subsystem
         	)

@@ -15,6 +15,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Robot;
@@ -27,6 +28,7 @@ public class DriveUtil extends SubsystemBase {
 	private final Translation2d m_frontRightLoc = new Translation2d(Constants.TOPRIGHT_X, Constants.TOPRIGHT_Y);
 	private final Translation2d m_backLeftLoc = new Translation2d(Constants.BOTTOMLEFT_X, Constants.TOPLEFT_Y);
 	private final Translation2d m_backRightLoc = new Translation2d(Constants.BOTTOMRIGHT_X, Constants.BOTTOMRIGHT_Y);
+	private boolean started = false;
 	private AHRS gyro = new AHRS();
 
 	private final SwerveModule m_frontLeft = new SwerveModule(
@@ -66,19 +68,27 @@ public class DriveUtil extends SubsystemBase {
 					m_backRight.getPosition()
 			}, new Pose2d(0.0, 0.0, new Rotation2d()));
 
-	public void start() {		
-		calibrateGyro();
+	public void start() {
+		if (started){
+			return;
+		}
+		started = true;		
+		// calibrateGyro();
 		Pose2d robotPose = RobotContainer.getFieldPosed2dFromNearestCameraTarget();
 		if (robotPose == null){
 			if(DriverStation.getAlliance() == Alliance.Red){
 				RobotContainer.allianceOrientation = 180;
 				resetPose(new Pose2d(new Translation2d(14.5, 5), Rotation2d.fromDegrees(0)));
+				System.out.println("Reset Pose");
 			} else {
 				RobotContainer.allianceOrientation = 0;
 				resetPose(new Pose2d(new Translation2d(2.00, 5.00), Rotation2d.fromDegrees(180)));
+				System.out.println("Reset Pose");
+
 			}
 		} else {
 			resetPose(robotPose);
+			System.out.println("Reset Pose");
 		}
 	}
 
@@ -91,11 +101,18 @@ public class DriveUtil extends SubsystemBase {
 	}
 
 	public void driveRobot(boolean fieldRelative) {
+		int xSign = (int)Math.signum(RobotContainer.getDriverLeftXboxY());
+		double xSpeed = xSign * Math.pow(RobotContainer.getDriverLeftXboxY(), 2) * Constants.MAX_LINEAR_SPEED * Math.cos(Math.toRadians(RobotContainer.allianceOrientation)); //reversed x and y so that up on controller is
+
+		int ySign = (int)Math.signum(RobotContainer.getDriverLeftXboxX());
+		double ySpeed = ySign * Math.pow(RobotContainer.getDriverLeftXboxX(), 2) * Constants.MAX_LINEAR_SPEED * Math.cos(Math.toRadians(RobotContainer.allianceOrientation)); //reversed x and y so that up on controller is
+
+
 		var swerveModuleStates = kinematics.toSwerveModuleStates(
 				fieldRelative
 						? ChassisSpeeds.fromFieldRelativeSpeeds(
-								deadzone(RobotContainer.getDriverLeftXboxY()) * Constants.MAX_LINEAR_SPEED * Math.cos(Math.toRadians(RobotContainer.allianceOrientation)), //reversed x and y so that up on controller is
-								deadzone(RobotContainer.getDriverLeftXboxX()) * Constants.MAX_LINEAR_SPEED * Math.cos(Math.toRadians(RobotContainer.allianceOrientation)), //forward from driver pov
+								deadzone(xSpeed), //reversed x and y so that up on controller is
+								deadzone(ySpeed), //forward from driver pov
 								deadzone(RobotContainer.getDriverRightXboxX()) * Math.toRadians(Constants.MAX_ANGULAR_SPEED), 
 								m_odometry.getPoseMeters().getRotation())
 						: new ChassisSpeeds(RobotContainer.getDriverLeftXboxY() * Constants.MAX_LINEAR_SPEED,
@@ -108,6 +125,10 @@ public class DriveUtil extends SubsystemBase {
 		m_frontRight.setDesiredState(swerveModuleStates[1]);
 		m_backLeft.setDesiredState(swerveModuleStates[2]);
 		m_backRight.setDesiredState(swerveModuleStates[3]);
+	}
+
+	public void setChassisSpeeds(ChassisSpeeds chassisSpeeds) {
+		setSwerveModuleStates(kinematics.toSwerveModuleStates(chassisSpeeds));
 	}
 
 	public void setSwerveModuleStates(SwerveModuleState[] states) {
@@ -149,6 +170,9 @@ public class DriveUtil extends SubsystemBase {
 	@Override
 	public void periodic() {
 		// This method will be called once per scheduler run
+		SmartDashboard.putNumber("x pos",m_odometry.getPoseMeters().getX());
+		SmartDashboard.putNumber("y pos",m_odometry.getPoseMeters().getY());
+		SmartDashboard.putNumber("odo angle",m_odometry.getPoseMeters().getRotation().getDegrees());
 
 		m_odometry.update(gyro.getRotation2d(),
 				new SwerveModulePosition[] {

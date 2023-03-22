@@ -8,19 +8,24 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.util.GrabberState;
 
 public class GrabUtil extends SubsystemBase {
   private CANSparkMax grabMotor;
   private RelativeEncoder grabEncoder;
   private GrabberState state=GrabberState.OFF;
+  private DigitalInput intakeLimitSwitch;
+
   /** Creates a new GrabUtil. */
   public GrabUtil() {
     grabMotor = new CANSparkMax(Constants.GRAB_MOTOR, MotorType.kBrushless);
     grabEncoder = grabMotor.getEncoder(); 
+    intakeLimitSwitch = new DigitalInput(Constants.GRABBER_LIMIT_SWITCH_ID);
   }
   
   public void setState(GrabberState newState){
@@ -28,10 +33,11 @@ public class GrabUtil extends SubsystemBase {
   }
 
   public void operateGrabber(boolean intake, boolean spitting){
+    SmartDashboard.putString("GRABBER STATE", state.name());
     switch(state){
       case OFF:
         grabMotor.set(0);
-        if(intake){
+        if(intake && intakeLimitSwitch.get()){
           state = GrabberState.INTAKE;
         }
         if(spitting){
@@ -41,6 +47,9 @@ public class GrabUtil extends SubsystemBase {
       case INTAKE:
         grabMotor.set(Constants.GRAB_INTAKE_SPEED);
         if(!intake){
+          state = GrabberState.OFF;
+        }
+        if(!intakeLimitSwitch.get()) {
           state = GrabberState.OFF;
         }
         break;
@@ -57,5 +66,6 @@ public class GrabUtil extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    SmartDashboard.putBoolean("Inntake Switch", intakeLimitSwitch.get());
   }
 }

@@ -47,7 +47,7 @@ public class SwerveModule extends SubsystemBase {
 		 **/
 		driveEncoder = driveMotor.getEncoder();
 		driveEncoder.setPositionConversionFactor(Constants.DRIVECONVERSIONFACTOR);
-		driveEncoder.setVelocityConversionFactor(Constants.DRIVECONVERSIONFACTOR/60);;
+		driveEncoder.setVelocityConversionFactor(Constants.DRIVECONVERSIONFACTOR/60);
 		driveEncoder.setPosition(0);
 
 		pivotEncoder = new DutyCycleEncoder(encoderID);
@@ -68,19 +68,19 @@ public class SwerveModule extends SubsystemBase {
 	}
 
 	public SwerveModuleState getState() {
-		return new SwerveModuleState(driveEncoder.getVelocity(), new Rotation2d(pivotEncoder.getAbsolutePosition()));
+		return new SwerveModuleState(driveEncoder.getVelocity(), Rotation2d.fromDegrees(pivotEncoder.getAbsolutePosition() * Constants.DEGREES_PER_ROTATION - Constants.ABS_ENCODER_OFFSETS[this.encoderID]));
 	}
 
 	public SwerveModulePosition getPosition() {
-		Rotation2d r = new Rotation2d(pivotEncoder.getAbsolutePosition() * Constants.DEGREES_PER_ROTATION);
-		return new SwerveModulePosition(driveEncoder.getPosition() * 4,
+		Rotation2d r = Rotation2d.fromDegrees(pivotEncoder.getAbsolutePosition() * Constants.DEGREES_PER_ROTATION - Constants.ABS_ENCODER_OFFSETS[this.encoderID]);
+		return new SwerveModulePosition(driveEncoder.getPosition(),
 				r);
 	}
 
 	public void setDesiredState(SwerveModuleState desiredState) {
 		// Optimize the reference state to avoid spinning further than 90 degrees
 		double curRotDeg = pivotEncoder.getAbsolutePosition() * Constants.DEGREES_PER_ROTATION - Constants.ABS_ENCODER_OFFSETS[this.encoderID];//-pivotEncoder.getAbsolutePosition() * 360 - Constants.ABS_ENCODER_OFFSETS[this.encoderID];
-		state = SwerveModuleState.optimize(desiredState, new Rotation2d(Math.toRadians(curRotDeg)));
+		state = SwerveModuleState.optimize(desiredState, Rotation2d.fromDegrees(curRotDeg));
 		// Different constant need for drivePIDController, convert m/s to rpm
 		driveMotor.set(drivePIDController.calculate(driveEncoder.getVelocity(), state.speedMetersPerSecond));
 		pivotMotor.set(pivotPIDController.calculate(curRotDeg, state.angle.getDegrees()));
