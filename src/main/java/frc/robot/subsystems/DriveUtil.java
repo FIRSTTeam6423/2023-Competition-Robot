@@ -74,22 +74,22 @@ public class DriveUtil extends SubsystemBase {
 		}
 		started = true;		
 		// calibrateGyro();
-		Pose2d robotPose = RobotContainer.getFieldPosed2dFromNearestCameraTarget();
-		if (robotPose == null){
+		//Pose2d robotPose = RobotContainer.getFieldPosed2dFromNearestCameraTarget();
+		//if (robotPose == null){
 			if(DriverStation.getAlliance() == Alliance.Red){
 				RobotContainer.allianceOrientation = 180;
-				resetPose(new Pose2d(new Translation2d(14.5, 5), Rotation2d.fromDegrees(0)));
+				//resetPose(new Pose2d(new Translation2d(14.5, 5), Rotation2d.fromDegrees(0)));
 				System.out.println("Reset Pose");
 			} else {
-				RobotContainer.allianceOrientation = 0;
-				resetPose(new Pose2d(new Translation2d(2.00, 5.00), Rotation2d.fromDegrees(180)));
+				RobotContainer.allianceOrientation = 180;//180 because blue controls are backwards. test to make sure
+				//resetPose(new Pose2d(new Translation2d(2.00, 5.00), Rotation2d.fromDegrees(180)));
 				System.out.println("Reset Pose");
 
 			}
-		} else {
-			resetPose(robotPose);
-			System.out.println("Reset Pose");
-		}
+		//} else {
+		//	resetPose(robotPose);
+		//	System.out.println("Reset Pose");
+		//}
 	}
 
 	public double deadzone(double input){
@@ -138,6 +138,13 @@ public class DriveUtil extends SubsystemBase {
 		m_backRight.setDesiredState(states[3]);
 	}
 
+	public void setSwerveModuleStatesFromPathPlanner(SwerveModuleState[] states) {
+		m_frontLeft.setDesiredStateFromPathPlanner(states[0]);
+		m_frontRight.setDesiredStateFromPathPlanner(states[1]);
+		m_backLeft.setDesiredStateFromPathPlanner(states[2]);
+		m_backRight.setDesiredStateFromPathPlanner(states[3]);
+	}
+
 	public Rotation2d getHeading2d() {
 		return gyro.getRotation2d();
 	}
@@ -148,6 +155,14 @@ public class DriveUtil extends SubsystemBase {
 
 	public double getHeading() {
 		return gyro.getYaw();
+	}
+
+	public double getPitch(){
+		return gyro.getPitch();
+	}
+
+	public double getRoll(){
+		return gyro.getRoll();
 	}
 
 	public void resetGyro() {
@@ -173,6 +188,10 @@ public class DriveUtil extends SubsystemBase {
 		SmartDashboard.putNumber("x pos",m_odometry.getPoseMeters().getX());
 		SmartDashboard.putNumber("y pos",m_odometry.getPoseMeters().getY());
 		SmartDashboard.putNumber("odo angle",m_odometry.getPoseMeters().getRotation().getDegrees());
+
+		SmartDashboard.putNumber("pitch", gyro.getPitch());
+		SmartDashboard.putNumber("yaw", gyro.getYaw());
+		SmartDashboard.putNumber("roll", gyro.getRoll());
 
 		m_odometry.update(gyro.getRotation2d(),
 				new SwerveModulePosition[] {

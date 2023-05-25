@@ -44,13 +44,14 @@ public class SetArmPresetState extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    au.setArmState(armState);
+   // au.setArmState(armState);
+    System.out.println(desiredArmAngle);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    au.setArmState(armState);
+   // au.operateArm(0);
   }
 
   // Called once the command ends or is interrupted.

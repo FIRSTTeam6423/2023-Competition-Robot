@@ -4,21 +4,46 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants;
+import frc.robot.subsystems.DriveUtil;
+import edu.wpi.first.wpilibj.Timer;
+
 
 public class AutoBalance extends CommandBase {
-  /** Creates a new AutoBalance. */
-  public AutoBalance() {
+  private DriveUtil du;
+  private Timer timer;
+  public AutoBalance(DriveUtil du) {
+    this.du = du;
+    addRequirements(this.du);
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    timer=new Timer();
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+    double currentPitchDeg = du.getRoll();
+    double error = -currentPitchDeg;
+
+    double output = error * Constants.AUTO_BALANCE_P;
+    if(Math.abs(error)<Constants.AUTO_BALANCE_DEADBAND){
+      timer.start();
+      output=0;
+    }
+    else {
+      timer.reset();
+    }
+    du.setChassisSpeeds(ChassisSpeeds.fromFieldRelativeSpeeds(output, 0, 0, du.getPose().getRotation()));
+
+  }
 
   // Called once the command ends or is interrupted.
   @Override
@@ -27,6 +52,6 @@ public class AutoBalance extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return (timer.get()>Constants.AUTO_BALANCE_TIME);
   }
 }

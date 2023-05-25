@@ -25,7 +25,7 @@ public class ArmUtil extends SubsystemBase{
 
     private CANSparkMax armMotor1, armMotor2, wristMotor;
 
-    private PIDController armPIDController, wristPIDController; //both positional pid controllers
+    private PIDController armPIDController, armVelPIDController, wristPIDController; //both positional pid controllers
     private ArmFeedforward armFeedForwardController, wristFeedForwardController;
 
     private RelativeEncoder arm1Encoder, arm2Encoder, wristEncoder;
@@ -34,6 +34,7 @@ public class ArmUtil extends SubsystemBase{
     private TrapezoidProfile armProfile;
 
     private double holdAngle = 0;
+    private double armSetpointDeg = -15;
     private boolean holding = false;
     private boolean foldWristOut = false;
 
@@ -151,16 +152,16 @@ public class ArmUtil extends SubsystemBase{
             MathUtil.clamp(
                 armFeedForwardController.calculate(Math.toRadians(degrees), 0)
                 +  armPIDController.calculate(getArmAngleRelativeToGround(), degrees), 
-                -0.3, 
-                0.3
+                -0.5,//-0.3, 
+                0.5//0.3
             ) 
         );       
         armMotor2.set(
             MathUtil.clamp(
                 armFeedForwardController.calculate(Math.toDegrees(degrees), 0) 
                 + armPIDController.calculate(getArmAngleRelativeToGround(), degrees), 
-                -0.3, 
-                0.3
+                -0.5,//-0.3, 
+                0.5//0.3
             ) 
         );
     }
@@ -168,18 +169,20 @@ public class ArmUtil extends SubsystemBase{
      * setArmVelocity will set the arm's velocity - should be used for operator manual control
     */
     public void setArmVelocity(double degPerSec){ //I'm not sure if you can use the same pid for velocity and position
+        System.out.println("thing" + armPIDController.calculate(arm1Encoder.getVelocity(), degPerSec));
+
         armMotor1.set(
             MathUtil.clamp(armFeedForwardController.calculate(
-                Math.toRadians(getArmAngleRelativeToGround()), 0)
-                + armPIDController.calculate(arm1Encoder.getVelocity(), degPerSec),
+                Math.toRadians(getArmAngleRelativeToGround()), 0),
+                //+ armPIDController.calculate(arm1Encoder.getVelocity(), degPerSec),
                 -0.5,
                 0.5
             )
         );
         armMotor2.set(
             MathUtil.clamp(armFeedForwardController.calculate(
-                Math.toRadians(getArmAngleRelativeToGround()), 0)
-                + armPIDController.calculate(arm1Encoder.getVelocity(), degPerSec),
+                Math.toRadians(getArmAngleRelativeToGround()), 0),
+                //+ armPIDController.calculate(arm1Encoder.getVelocity(), degPerSec),
                 -0.5, 
                 0.5
             )
@@ -203,8 +206,8 @@ public class ArmUtil extends SubsystemBase{
     public void operateArmPreset() {
         //feedforward controller with only kg
         //pid controller for arm position
-        wristState = WristState.PARALLEL_TO_GROUND;
-        operateWrist();
+        //wristState = WristState.PARALLEL_TO_GROUND;
+        //operateWrist();
         State setpoint = armProfile.calculate(armStateTimeElapsed); // should generate a nice curve for our position - we don't care about velocity because we cannot
         // work with velocity, as we are not able to find kV efficiently. PID should handle velocity nicely
         SmartDashboard.putNumber("setpoint", setpoint.position);
@@ -224,6 +227,13 @@ public class ArmUtil extends SubsystemBase{
                 0.4
             )
         );
+        if(Math.abs(armProfile.calculate(armProfile.totalTime()).position - getArmAngleRelativeToGround()) < 5) {
+            wristState = WristState.PARALLEL_TO_GROUND;
+            System.out.println("bruh!!!!");
+        } else {
+            wristState = WristState.RETRACTED;
+        }
+        //operateWrist();
     }
 
 
@@ -273,8 +283,30 @@ public class ArmUtil extends SubsystemBase{
                 break;
             case CONTROL: //In control, the user has full control over the arm.
                 double input = joystickInput;
+                double deltaSetpoint = (input * 5) / 20; // 5 degrees per secong maximum
 
-                if (Math.abs(joystickInput) < Constants.ARM_JOYSTICK_INPUT_DEADBAND) {
+                if(armSetpointDeg + deltaSetpoint > 0) {
+                    armSetpointDeg = 0;
+                } else if (armSetpointDeg + deltaSetpoint < -15) {
+                    armSetpointDeg = -10;
+                }
+                armSetpointDeg += deltaSetpoint;
+                
+                System.out.println("Setpoint: " + armSetpointDeg);
+
+                /*armMotor1.set(MathUtil.clamp(
+                    armFeedForwardController.calculate(Math.toRadians(armSetpointDeg), 0)
+                    + armPIDController.calculate(getArmAngleRelativeToGround(), armSetpointDeg),
+                    -0.3,
+                    0.4
+                ));
+                armMotor2.set(MathUtil.clamp(
+                    armFeedForwardController.calculate(Math.toRadians(armSetpointDeg), 0)
+                    + armPIDController.calculate(getArmAngleRelativeToGround(), armSetpointDeg),
+                    -0.3,
+                    0.4
+                ));*/
+                /*if (Math.abs(joystickInput) < Constants.ARM_JOYSTICK_INPUT_DEADBAND) {
                     if(!holding) {
                         input = 0;
                         holding = true;
@@ -287,10 +319,12 @@ public class ArmUtil extends SubsystemBase{
                     holding = false;
                     if(joystickInput > 0 && getArmAngleRelativeToGround() >= 10) {
                         setArmVelocity(0);
+                        System.out.println("EeEEUUUEURUHHJAKHJHUUGGHGGHG");
                     } else {
                         setArmVelocity(joystickInput * Constants.ARM_VELOCITY);
+                        System.out.println(joystickInput * Constants.ARM_VELOCITY);
                     }
-                }
+                }*/
 
                 SmartDashboard.putBoolean("Holding?", holding);
 
@@ -347,9 +381,9 @@ public class ArmUtil extends SubsystemBase{
                 break;
             case CONTROL:
                 if(Math.abs(RobotContainer.getOperatorSlider()) >= 0.2){
-                    wristMotor.set(-RobotContainer.getOperatorSlider() * 0.3);
+                    //wristMotor.set(-RobotContainer.getOperatorSlider() * 0.3);
                 } else {
-                    wristMotor.set(0);
+                    //wristMotor.set(0);
                 }
                 break;
         }
@@ -398,6 +432,7 @@ public class ArmUtil extends SubsystemBase{
 
         SmartDashboard.putNumber("Wrist Encoder", wristEncoder.getPosition());
         SmartDashboard.putBoolean("Wrist Switch", wristLimitSwitch.get());
+        SmartDashboard.putBoolean("Arm Switch", armLimitSwitch.get());
         SmartDashboard.putNumber("Wrist Relative Angle", arm1Encoder.getPosition() + wristEncoder.getPosition() + 99);
         SmartDashboard.putNumber("arm angle", getArmAngleRelativeToGround());
     }

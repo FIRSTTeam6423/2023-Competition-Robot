@@ -29,18 +29,23 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.AlignToNearestGridTag;
+import frc.robot.commands.AlignToPointWithTag;
+import frc.robot.commands.AutoBalance;
 import frc.robot.commands.AutoFollowTrajectorySwerve;
 import frc.robot.commands.BottomGoalThenLeave;
-import frc.robot.commands.OperateArm;
+import frc.robot.commands.ExitAndBalance;
 import frc.robot.commands.OperateDrive;
 import frc.robot.commands.OperateGrab;
 import frc.robot.commands.SetArmPresetState;
+import frc.robot.commands.SpitCubeThenPush;
+import frc.robot.commands.SpitSeconds;
 import frc.robot.subsystems.ArmUtil;
 import frc.robot.subsystems.DriveUtil;
 import frc.robot.subsystems.GrabUtil;
 import frc.robot.util.ArmState;
 import frc.robot.util.WristState;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.commands.OperateArm;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -95,16 +100,18 @@ public class RobotContainer {
     configureButtonBindings();
     configureDefaultCommands();
 
-    autoChooser.setDefaultOption("Low goal arm state", new SetArmPresetState(armUtil, ArmState.LOW_GOAL));
-    autoChooser.setDefaultOption("Middle goal arm state", new SetArmPresetState(armUtil, ArmState.MIDDLE_GOAL));
+    // autoChooser.setDefaultOption("Low goal arm state", new SetArmPresetState(armUtil, ArmState.LOW_GOAL));
+    // autoChooser.setDefaultOption("Middle goal arm state", new SetArmPresetState(armUtil, ArmState.MIDDLE_GOAL));
     autoChooser.addOption("Align to grid tag", new AlignToNearestGridTag(driveUtil));
-    autoChooser.addOption("Bottom Goal Then Leave", new BottomGoalThenLeave(grabUtil, driveUtil, armUtil));
+    // autoChooser.addOption("Bottom Goal Then Leave", new BottomGoalThenLeave(grabUtil, driveUtil, armUtil));
     autoChooser.addOption("Leave", new AutoFollowTrajectorySwerve(driveUtil, 
       PathPlanner.loadPath("Exit", new PathConstraints(
       Constants.ALIGN_TO_TAG_MAX_VELOCITY, Constants.ALIGN_TO_TAG_MAX_ACCELERATION))));
-
+    autoChooser.addOption("align ot thing", new ExitAndBalance(driveUtil));
+    autoChooser.addOption("spit 1 sec", new SpitCubeThenPush(grabUtil, driveUtil, 0.25));
+    autoChooser.addOption("Balance Test", new AutoBalance(driveUtil));
     SmartDashboard.putData("Autonomous Command", autoChooser);
-
+    
   }
 
   /**

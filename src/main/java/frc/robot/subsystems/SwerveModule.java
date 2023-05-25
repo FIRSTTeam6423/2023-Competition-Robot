@@ -86,6 +86,15 @@ public class SwerveModule extends SubsystemBase {
 		pivotMotor.set(pivotPIDController.calculate(curRotDeg, state.angle.getDegrees()));
 	}
 
+	public void setDesiredStateFromPathPlanner(SwerveModuleState desiredState) {
+		// Optimize the reference state to avoid spinning further than 90 degrees
+		double curRotDeg = pivotEncoder.getAbsolutePosition() * Constants.DEGREES_PER_ROTATION - Constants.ABS_ENCODER_OFFSETS[this.encoderID];//-pivotEncoder.getAbsolutePosition() * 360 - Constants.ABS_ENCODER_OFFSETS[this.encoderID];
+		state = SwerveModuleState.optimize(desiredState, Rotation2d.fromDegrees(curRotDeg));
+		// Different constant need for drivePIDController, convert m/s to rpm
+		driveMotor.set(drivePIDController.calculate(driveEncoder.getVelocity(), state.speedMetersPerSecond));
+		pivotMotor.set(pivotPIDController.calculate(curRotDeg, state.angle.getDegrees()));
+	}
+
 	public void stopModule() {
 		driveMotor.set(0);
 		pivotMotor.set(0);

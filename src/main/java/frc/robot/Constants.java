@@ -45,7 +45,7 @@ public final class Constants {
     public static final double WRIST_LOWER_LIMIT=0;//this is not the actual value
     public static final double WRIST_UPPER_LIMIT=0;
      
-    public static final Constraints ARM_PROFILE_CONSTRAINTS = new Constraints(10, 5);
+    public static final Constraints ARM_PROFILE_CONSTRAINTS = new Constraints(10, 10);
 
     public static final double ARM_OSCIL_DEADBAND = 10; //degrees
     public static final double WRIST_RETRACT_DEADBAND = 15;
@@ -80,7 +80,7 @@ public final class Constants {
     public static final double GROUND_PICK_WRIST = -150;
 
     //Feedforward constants - arbitrary values
-    public static final double ARM_kG = 1; //0.58;//
+    public static final double ARM_kG = 1.1; //0.58;//
     public static final double ARM_kV = 0;//0.00765858;
     public static final double ARM_kS = 0;//0.23125;
     public static final double ARM_kA = 0;//0.00086773;
@@ -90,7 +90,7 @@ public final class Constants {
     public static final double WRIST_kS = 0;//-0.6777;
     public static final double WRIST_kA = 0;//0.0098395;
 
-    public static final double ARM_VELOCITY = 50;
+    public static final double ARM_VELOCITY = 1;
     public static final double ARM_ACCELERATION = 0;
 
     public static final double WRIST_VELOCITY = 0;
@@ -135,7 +135,7 @@ public final class Constants {
     };
 
     public static final double WHEEL_RADIUS = 0.5;
-    public static final double MAX_ANGULAR_SPEED = 2000; //
+    public static final double MAX_ANGULAR_SPEED = 2500; //
     public static final double MAX_LINEAR_SPEED = 29.5; //meters per second
 
     public static final double ALIGN_TO_TAG_MAX_VELOCITY = 2;
@@ -147,6 +147,10 @@ public final class Constants {
     public static final double MODULEPIVOT_P = 0.005;//0.01;
     public static final double MODULEPIVOT_I = 0;
     public static final double MODULEPIVOT_D = 0;
+
+    public static final double AUTO_BALANCE_P = .005;
+    public static final double AUTO_BALANCE_DEADBAND = 1.6;
+    public static final double AUTO_BALANCE_TIME = 2;
 
     public static final double XDIR_P = 0;
     public static final double YDIR_P = 0;

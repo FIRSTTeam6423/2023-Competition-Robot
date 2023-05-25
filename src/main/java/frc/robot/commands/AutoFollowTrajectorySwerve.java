@@ -26,19 +26,22 @@ public class AutoFollowTrajectorySwerve extends SequentialCommandGroup {
 	public AutoFollowTrajectorySwerve(DriveUtil driveUtil, PathPlannerTrajectory traj) {
 	// Add your commands in the addCommands() call, e.g.
 	// addCommands(new FooCommand(), new BarCommand());
+		PIDController thetaController = new PIDController(.3, 0, 0);
+		thetaController.enableContinuousInput(-Math.PI, Math.PI);
 		addCommands(
 			new InstantCommand(()->{
 				driveUtil.start();
-				//driveUtil.resetPose(traj.getInitialPose());
+				driveUtil.resetPose(traj.getInitialPose());
 			}),
 			new PPSwerveControllerCommand(
             	traj, 
             	driveUtil::getPose, // Pose supplier
+				driveUtil.kinematics,
             	new PIDController(9, 0, 0), // X controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
             	new PIDController(9, 0, 0), // Y controller (usually the same values as X controller)
-            	new PIDController(.4, 0, 0), // Rotation controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
-            	driveUtil::setChassisSpeeds, // Module states consumer
-            	true, // Should the path be automatically mirrored depending on alliance color. Optional, defaults to true
+            	thetaController, // Rotation controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
+            	driveUtil::setSwerveModuleStatesFromPathPlanner, // Module states consumer
+            	false, // Should the path be automatically mirrored depending on alliance color. Optional, defaults to true
             	driveUtil // Requires thuis drive subsystem
         	)
 		);
