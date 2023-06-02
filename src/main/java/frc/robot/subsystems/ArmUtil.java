@@ -283,12 +283,12 @@ public class ArmUtil extends SubsystemBase{
                 break;
             case CONTROL: //In control, the user has full control over the arm.
                 double input = joystickInput;
-                double deltaSetpoint = (input * 5) / 20; // 5 degrees per secong maximum
+                double deltaSetpoint = (input * 5) / 50; // 5 degrees per second maximum
 
                 if(armSetpointDeg + deltaSetpoint > 0) {
                     armSetpointDeg = 0;
                 } else if (armSetpointDeg + deltaSetpoint < -15) {
-                    armSetpointDeg = -10;
+                    armSetpointDeg = -15;
                 }
                 armSetpointDeg += deltaSetpoint;
                 
