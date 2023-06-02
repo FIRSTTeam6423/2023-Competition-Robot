@@ -58,7 +58,7 @@ public class RobotContainer {
   private final DriveUtil driveUtil = new DriveUtil();
   private static final PhotonCamera camera = new PhotonCamera("johncam");
   
-  private final GrabUtil grabUtil = new GrabUtil();
+  private static final GrabUtil grabUtil = new GrabUtil();
   private final OperateGrab operateGrab = new OperateGrab(grabUtil);
 
   private final OperateDrive operateDrive = new OperateDrive(driveUtil);
@@ -74,7 +74,7 @@ public class RobotContainer {
 
   private static JoystickButton parallelToggleButton;
   private static JoystickButton retractWristButton;
-  private static JoystickButton extendWristButton;
+  private static JoystickButton cargoRetractButton;
 
   private static JoystickButton controlToggleButton;
   private SendableChooser<Command> autoChooser = new SendableChooser<>();
@@ -95,7 +95,7 @@ public class RobotContainer {
     retractWristButton = new JoystickButton(operator, 4);
     parallelToggleButton = new JoystickButton(operator, 5);
     controlToggleButton = new JoystickButton(operator, 3);
-    extendWristButton = new JoystickButton(operator, 6);
+    cargoRetractButton = new JoystickButton(operator, 6);
     // Configure the button bindings
     configureButtonBindings();
     configureDefaultCommands();
@@ -141,6 +141,9 @@ public class RobotContainer {
     }));
     retractWristButton.onTrue(new InstantCommand(()->{
       armUtil.setWristState(WristState.RETRACTED);
+    }));
+    cargoRetractButton.onTrue(new InstantCommand(()->{
+      armUtil.setWristState(WristState.CARGO_RETRACT);
     }));
   }
 
@@ -274,6 +277,10 @@ public class RobotContainer {
 
   public static boolean getOperator12Button(){
     return operator.getRawButton(12);
+  }
+
+  public static boolean getClawIntakeLimitSwitch() {
+    return grabUtil.getIntakeLimitSwitch();
   }
 
   public static Pose3d getTagPose3dFromId(int id) {

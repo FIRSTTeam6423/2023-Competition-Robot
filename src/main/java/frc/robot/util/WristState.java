@@ -1,6 +1,6 @@
 package frc.robot.util;
 
 public enum WristState {
-    RETRACTED, PARALLEL_TO_GROUND, OUT, CONTROL;
+    RETRACTED, CARGO_RETRACT, PARALLEL_TO_GROUND, OUT, CONTROL;
 
 }

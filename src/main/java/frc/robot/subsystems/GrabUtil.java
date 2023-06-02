@@ -32,6 +32,10 @@ public class GrabUtil extends SubsystemBase {
     state = newState;
   }
 
+  public boolean getIntakeLimitSwitch(){
+    return intakeLimitSwitch.get();
+  }
+
   public void operateGrabber(boolean intake, boolean spitting){
     SmartDashboard.putString("GRABBER STATE", state.name());
     switch(state){

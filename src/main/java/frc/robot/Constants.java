@@ -51,7 +51,7 @@ public final class Constants {
     public static final double WRIST_RETRACT_DEADBAND = 15;
 
     public static final double DEADBAND = 3.5;
-    public static final double ARM_P = 0.0075;
+    public static final double ARM_P = 0.009;
     public static final double ARM_I = 0;
     public static final double ARM_D = 0;
 
@@ -81,6 +81,7 @@ public final class Constants {
 
     //Feedforward constants - arbitrary values
     public static final double ARM_kG = 1.1; //0.58;//
+    public static final double ARM_kG_CLAW_OUT = 1.75;
     public static final double ARM_kV = 0;//0.00765858;
     public static final double ARM_kS = 0;//0.23125;
     public static final double ARM_kA = 0;//0.00086773;
