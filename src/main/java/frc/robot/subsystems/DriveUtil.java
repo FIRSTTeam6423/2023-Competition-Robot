@@ -102,10 +102,10 @@ public class DriveUtil extends SubsystemBase {
 
 	public void driveRobot(boolean fieldRelative) {
 		int xSign = (int)Math.signum(RobotContainer.getDriverLeftXboxY());
-		double xSpeed = xSign * Math.pow(RobotContainer.getDriverLeftXboxY(), 2) * Constants.MAX_LINEAR_SPEED * Math.cos(Math.toRadians(RobotContainer.allianceOrientation)); //reversed x and y so that up on controller is
+		double xSpeed = xSign * Math.pow(RobotContainer.getDriverLeftXboxY(), 4) * Constants.MAX_LINEAR_SPEED * Math.cos(Math.toRadians(RobotContainer.allianceOrientation)); //reversed x and y so that up on controller is
 
 		int ySign = (int)Math.signum(RobotContainer.getDriverLeftXboxX());
-		double ySpeed = ySign * Math.pow(RobotContainer.getDriverLeftXboxX(), 2) * Constants.MAX_LINEAR_SPEED * Math.cos(Math.toRadians(RobotContainer.allianceOrientation)); //reversed x and y so that up on controller is
+		double ySpeed = ySign * Math.pow(RobotContainer.getDriverLeftXboxX(), 4) * Constants.MAX_LINEAR_SPEED * Math.cos(Math.toRadians(RobotContainer.allianceOrientation)); //reversed x and y so that up on controller is
 
 
 		var swerveModuleStates = kinematics.toSwerveModuleStates(

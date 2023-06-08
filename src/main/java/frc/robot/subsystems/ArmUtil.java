@@ -1,4 +1,6 @@
 package frc.robot.subsystems;
+import java.nio.channels.WritableByteChannel;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
@@ -37,6 +39,9 @@ public class ArmUtil extends SubsystemBase{
     private double armSetpointDeg = -75;
     private boolean holding = false;
     private boolean foldWristOut = false;
+    private boolean armLocked = false; 
+
+    private double armLimitHitAng = -80;
 
     private double armStateTimeElapsed = 0;
     private boolean previousWristToggleButtonState = false;
@@ -249,7 +254,7 @@ public class ArmUtil extends SubsystemBase{
     }
 
     public void setWristAngleRelativeToGround(double degrees) {
-        //degrees is angle with 0 being parallel to x axis, positive increase in angle is counter-clockwise.
+        //degrees is angle with 0 being parallel to x axis, positive increase go towards heaven
         //arm1Encoder.getPosition() + wristEncoder.getPosition() + 122
         double curWristDegsRelGround = arm1Encoder.getPosition() + wristEncoder.getPosition() + 78;
         wristMotor.set(
@@ -285,28 +290,46 @@ public class ArmUtil extends SubsystemBase{
                 break;
             case CONTROL: //In control, the user has full control over the arm.
                 double input = joystickInput;
-                double deltaSetpoint = (input * 30) / 50; // 5 degrees per second maximum
+                double deltaSetpoint = (input * 75) / 50; // 5 degrees per second maximum
 
-                if(armSetpointDeg + deltaSetpoint > 7) {
-                    armSetpointDeg = 7;
+                armLocked = false;
+
+                if(armSetpointDeg + deltaSetpoint > 10) {
+                    armSetpointDeg = 10;
                 } else if (armSetpointDeg + deltaSetpoint < -75) {
-                    armSetpointDeg = -75;
+                    if((wristState == WristState.CARGO_RETRACT || wristState == WristState.RETRACTED) && joystickInput < 0) {
+                        //armSetpointDeg = -90;
+                        armLocked = true;
+                    } else {
+                        armSetpointDeg = -75;
+                    }
                 }
-                armSetpointDeg += deltaSetpoint;
+                armSetpointDeg = !armLocked ? armSetpointDeg + deltaSetpoint : armLimitHitAng;
                 double feeedForwardValue = RobotContainer.getClawIntakeLimitSwitch() == false//wristState == WristState.PARALLEL_TO_GROUND 
                 ? armFeedForwardControllerClawOut.calculate(Math.toRadians(armSetpointDeg), 0)  
                 : armFeedForwardController.calculate(Math.toRadians(armSetpointDeg), 0);
 
                 System.out.println("Setpoint: " + armSetpointDeg);
+                if(armLimitSwitch.get()){ //limit switch is not triggered
+                    // if(!armLocked) {
+                    //     armMotor1.setIdleMode(IdleMode.kCoast);
+                    //     armMotor2.setIdleMode(IdleMode.kCoast);
+                    // }
 
-                armMotor1.set(
-                    feeedForwardValue
-                    + armPIDController.calculate(getArmAngleRelativeToGround(), armSetpointDeg)
-                );
-                armMotor2.set(
-                    feeedForwardValue
-                    + armPIDController.calculate(getArmAngleRelativeToGround(), armSetpointDeg)
-                );
+                    armMotor1.set(
+                        feeedForwardValue
+                        + armPIDController.calculate(getArmAngleRelativeToGround(), armSetpointDeg)
+                    );
+                    armMotor2.set(
+                        feeedForwardValue
+                        + armPIDController.calculate(getArmAngleRelativeToGround(), armSetpointDeg)
+                    );
+                } else {
+                    armMotor1.set(0);
+                    armMotor2.set(0);
+                    armLimitHitAng = getArmAngleRelativeToGround();
+                }
+                
                 /*if (Math.abs(joystickInput) < Constants.ARM_JOYSTICK_INPUT_DEADBAND) {
                     if(!holding) {
                         input = 0;
@@ -360,11 +383,18 @@ public class ArmUtil extends SubsystemBase{
         return false;
     }
 
-    public boolean operateWristToCargoRetract(){
+    public void operateWristToCargoRetract(){
+        wristMotor.set(MathUtil.clamp(
+            wristFeedForwardController.calculate(
+               Math.toRadians(-13) + arm1Encoder.getPosition() + 68,
+               0
+            ) +
+            wristPIDController.calculate(wristEncoder.getPosition(), -13),
+            -1, 1));
         if(!wristLimitSwitch.get()){
             wristMotor.set(0);
-            return true;
         }
+        
         //if(wristEncoder.getPosition() <)
     }
 
@@ -382,12 +412,13 @@ public class ArmUtil extends SubsystemBase{
                 operateWristToLimitSwitch();
                 break;
             case CARGO_RETRACT:
-                operateWristToCargoRetract();
+                setWristAngleRelativeToGround(75);
+                break;
             case OUT:
                 lowerWrist();
                 break;
             case PARALLEL_TO_GROUND:
-                setWristAngleRelativeToGround(-10); // "0" should be parallel to the ground
+                setWristAngleRelativeToGround(-13); // "0" should be parallel to the ground
                 //wristMotor.set(-RobotContainer.getOperatorSlider()/10);
                 break;
             case CONTROL:
