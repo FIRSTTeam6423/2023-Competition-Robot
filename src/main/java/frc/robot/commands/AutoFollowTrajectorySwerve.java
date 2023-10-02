@@ -26,7 +26,7 @@ public class AutoFollowTrajectorySwerve extends SequentialCommandGroup {
 	public AutoFollowTrajectorySwerve(DriveUtil driveUtil, PathPlannerTrajectory traj) {
 	// Add your commands in the addCommands() call, e.g.
 	// addCommands(new FooCommand(), new BarCommand());
-		PIDController thetaController = new PIDController(.3, 0, 0);
+		PIDController thetaController = new PIDController(1, 0, 0);
 		thetaController.enableContinuousInput(-Math.PI, Math.PI);
 		addCommands(
 			new InstantCommand(()->{

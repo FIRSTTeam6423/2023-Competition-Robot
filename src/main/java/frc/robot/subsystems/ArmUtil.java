@@ -292,30 +292,22 @@ public class ArmUtil extends SubsystemBase{
                 double input = joystickInput;
                 double deltaSetpoint = (input * 75) / 50; // 5 degrees per second maximum
 
-                armLocked = false;
-
                 if(armSetpointDeg + deltaSetpoint > 10) {
                     armSetpointDeg = 10;
                 } else if (armSetpointDeg + deltaSetpoint < -75) {
                     if((wristState == WristState.CARGO_RETRACT || wristState == WristState.RETRACTED) && joystickInput < 0) {
                         //armSetpointDeg = -90;
-                        armLocked = true;
                     } else {
                         armSetpointDeg = -75;
                     }
                 }
-                armSetpointDeg = !armLocked ? armSetpointDeg + deltaSetpoint : armLimitHitAng;
-                double feeedForwardValue = RobotContainer.getClawIntakeLimitSwitch() == false//wristState == WristState.PARALLEL_TO_GROUND 
+                //armSetpointDeg = !armLocked ? armSetpointDeg + deltaSetpoint : armLimitHitAng;
+                double feeedForwardValue = RobotContainer.getClawIntakeLimitSwitch() == false //wristState == WristState.PARALLEL_TO_GROUND 
                 ? armFeedForwardControllerClawOut.calculate(Math.toRadians(armSetpointDeg), 0)  
                 : armFeedForwardController.calculate(Math.toRadians(armSetpointDeg), 0);
 
                 System.out.println("Setpoint: " + armSetpointDeg);
                 if(armLimitSwitch.get()){ //limit switch is not triggered
-                    // if(!armLocked) {
-                    //     armMotor1.setIdleMode(IdleMode.kCoast);
-                    //     armMotor2.setIdleMode(IdleMode.kCoast);
-                    // }
-
                     armMotor1.set(
                         feeedForwardValue
                         + armPIDController.calculate(getArmAngleRelativeToGround(), armSetpointDeg)
