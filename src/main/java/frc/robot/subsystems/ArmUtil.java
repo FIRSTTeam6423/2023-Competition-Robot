@@ -177,14 +177,14 @@ public class ArmUtil extends SubsystemBase{
         switch(state) {
             case CARGO_RETRACT:
                 wristProfile = new TrapezoidProfile( //Note: high goal arm and initial position both have to assume same angle is zero
-                    Constants.ARM_PROFILE_CONSTRAINTS, 
+                    Constants.WRIST_PROFILE_CONSTRAINTS, 
                     new State(75, 0),
                     new State(getWristAngleRelativeToGround(),0)
                 );
                 break;
             case PARALLEL_TO_GROUND:
                 wristProfile = new TrapezoidProfile( //Note: high goal arm and initial position both have to assume same angle is zero
-                    Constants.ARM_PROFILE_CONSTRAINTS, 
+                    Constants.WRIST_PROFILE_CONSTRAINTS, 
                     new State(-13, 0),
                     new State(getWristAngleRelativeToGround(),0)
                 );
@@ -304,14 +304,15 @@ public class ArmUtil extends SubsystemBase{
                     curWristDegsRelGround, 
                     degrees
                 ),
-                -0.2,
-                !wristLimitSwitch.get() ? 0 : 0.2
+                -1,
+                !wristLimitSwitch.get() ? 0 : 1
             )
         );
         
     }
 
     public void operateArm(double joystickInput) {
+        System.out.println(armState);
         switch(armState) {
             case INITIALIZE: //In initialize, the user cannot move the arm and it is zeroing itself.
                 boolean armAtLimitSwitch = operateArmToLimitSwitch();
@@ -415,7 +416,7 @@ public class ArmUtil extends SubsystemBase{
 
     public void periodic() {
         armStateTimeElapsed += .02; //assumes periodic rate is 20ms = .02s
-
+        wristStateTimeElapsed += .02;
         if(!armLimitSwitch.get()){
             arm1Encoder.setPosition(0);
             arm2Encoder.setPosition(0);
