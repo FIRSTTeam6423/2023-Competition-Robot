@@ -25,7 +25,7 @@ public final class Constants {
     public static final int ARM2 = 10;
     public static final int WRIST = 11;
 
-    public static final int WRIST_LIMIT_SWITCH = 4;
+    public static final int WRIST_LIMIT_SWITCH = 8;
     public static final int ARM_LIMIT_SWITCH = 5;
     public static final int GRABBER_LIMIT_SWITCH_ID = 6;
     
@@ -37,6 +37,7 @@ public final class Constants {
     public static final double WRIST_UPPER_LIMIT=0;
      
     public static final Constraints ARM_PROFILE_CONSTRAINTS = new Constraints(10, 10);
+    public static final Constraints WRIST_PROFILE_CONSTRAINTS = new Constraints(500, 400);
 
     public static final double ARM_OSCIL_DEADBAND = 10; //degrees
     public static final double WRIST_RETRACT_DEADBAND = 15;
