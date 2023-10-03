@@ -27,32 +27,72 @@ public class ArmUtil extends SubsystemBase{
 
     private CANSparkMax armMotor1, armMotor2, wristMotor;
 
-    private PIDController armPIDController, armVelPIDController, wristPIDController; //both positional pid controllers
+    private PIDController armPIDController, wristPIDController; //both positional pid controllers
     private ArmFeedforward armFeedForwardController, armFeedForwardControllerClawOut, wristFeedForwardController;
 
     private RelativeEncoder arm1Encoder, arm2Encoder, wristEncoder;
     private DigitalInput armLimitSwitch, wristLimitSwitch;
 
-    private TrapezoidProfile armProfile;
+    private TrapezoidProfile armProfile, wristProfile;
 
-    private double holdAngle = 0;
-    private double armSetpointDeg = -75;
-    private boolean holding = false;
-    private boolean foldWristOut = false;
-    private boolean armLocked = false; 
+    private double armSetpointDeg = -75;    //Setpoint of arm relative to the ground
+    private double armStateTimeElapsed = 0; //Time elapsed since last arm state change
 
-    private double armLimitHitAng = -80;
-
-    private double armStateTimeElapsed = 0;
-    private boolean previousWristToggleButtonState = false;
-
+    private double wristSetpointDeg = 0;
+    private double wristStateTimeElapsed = 0;
 
     public ArmUtil() {
-        armProfile = new TrapezoidProfile(new Constraints(0, 0), new State(0, 0));
+        //Trapezoid Profile for preset states
+        armProfile = new TrapezoidProfile(
+            new Constraints(0, 0), 
+            new State(0, 0)
+        );
+
+        wristProfile = new TrapezoidProfile(
+            new Constraints(0, 0), 
+            new State(0,0)
+        );
 
         armState = ArmState.INITIALIZE;
         wristState = WristState.RETRACTED;
 
+        initMotors();
+
+        initControlSystems();        
+
+        //====Sensors====//
+        armLimitSwitch = new DigitalInput(Constants.ARM_LIMIT_SWITCH);  
+        wristLimitSwitch = new DigitalInput(Constants.WRIST_LIMIT_SWITCH);
+    }
+
+    private void initControlSystems() {
+        //====Control Systems====//
+        armPIDController = new PIDController(Constants.ARM_P, Constants.ARM_I, Constants.ARM_D);
+        wristPIDController = new PIDController(Constants.WRIST_P, Constants.WRIST_I, Constants.WRIST_D);
+        
+        armFeedForwardController = new ArmFeedforward(
+            Constants.ARM_kS, 
+            Constants.ARM_kG/12, 
+            Constants.ARM_kV, 
+            Constants.ARM_kA
+        ); //is the kg/12 because volts and using set vs setvolatage?
+        
+        armFeedForwardControllerClawOut = new ArmFeedforward(
+            Constants.ARM_kS, 
+            Constants.ARM_kG_CLAW_OUT/12, 
+            Constants.ARM_kV, 
+            Constants.ARM_kA
+        ); 
+        
+        wristFeedForwardController = new ArmFeedforward(
+            Constants.WRIST_kS, 
+            Constants.WRIST_kG, 
+            Constants.WRIST_kV, 
+            Constants.WRIST_kA
+        );
+    }
+
+    private void initMotors() {
         armMotor1 = new CANSparkMax(Constants.ARM1, MotorType.kBrushless);
         armMotor2 = new CANSparkMax(Constants.ARM2, MotorType.kBrushless);
         wristMotor = new CANSparkMax(Constants.WRIST,MotorType.kBrushless);
@@ -76,17 +116,6 @@ public class ArmUtil extends SubsystemBase{
         arm2Encoder.setVelocityConversionFactor(Constants.ARM_CONVERSION_FACTOR/60);
         
         wristEncoder.setPositionConversionFactor(Constants.WRIST_CONVERSION_FACTOR); //Me personally, i would test moving arm on own, then add on wrist once code to make sure it doesnt hit bumper exists
-
-        armPIDController = new PIDController(Constants.ARM_P, Constants.ARM_I, Constants.ARM_D);
-        wristPIDController = new PIDController(Constants.WRIST_P, Constants.WRIST_I, Constants.WRIST_D);
-        
-        armFeedForwardController = new ArmFeedforward(Constants.ARM_kS, Constants.ARM_kG/12, Constants.ARM_kV, Constants.ARM_kA); //is the kg/12 because volts and using set vs setvolatage?
-        armFeedForwardControllerClawOut = new ArmFeedforward(Constants.ARM_kS, Constants.ARM_kG_CLAW_OUT/12, Constants.ARM_kV, Constants.ARM_kA); 
-        
-        wristFeedForwardController = new ArmFeedforward(Constants.WRIST_kS, Constants.WRIST_kG, Constants.WRIST_kV, Constants.WRIST_kA);
-        
-        armLimitSwitch = new DigitalInput(Constants.ARM_LIMIT_SWITCH);  
-        wristLimitSwitch = new DigitalInput(Constants.WRIST_LIMIT_SWITCH);
     }
 
     public void resetEncoders() {
@@ -143,35 +172,34 @@ public class ArmUtil extends SubsystemBase{
     }
 
     public void setWristState(WristState state) {
-        if(armState != ArmState.INITIALIZE) wristState = state; 
+        if (armState == ArmState.INITIALIZE) return;
+        wristState = state;
+        switch(state) {
+            case CARGO_RETRACT:
+                wristProfile = new TrapezoidProfile( //Note: high goal arm and initial position both have to assume same angle is zero
+                    Constants.ARM_PROFILE_CONSTRAINTS, 
+                    new State(75, 0),
+                    new State(getWristAngleRelativeToGround(),0)
+                );
+                break;
+            case PARALLEL_TO_GROUND:
+                wristProfile = new TrapezoidProfile( //Note: high goal arm and initial position both have to assume same angle is zero
+                    Constants.ARM_PROFILE_CONSTRAINTS, 
+                    new State(-13, 0),
+                    new State(getWristAngleRelativeToGround(),0)
+                );
+                break;
+            
+            case OUT:
+
+                break;
+            case RETRACTED:
+
+                break;
+        }
+        wristStateTimeElapsed = 0;
     }
 
-    // everything is in degrees
-    //0 degrees is the limit switch
-
-    /**
-     * holdArm will hold the arm at whatever degrees is inputted - should be used when the operator lets go of the joystick
-    */
-    public void holdArm(double degrees) {
-        SmartDashboard.putNumber("desired hold", degrees);
-        SmartDashboard.putNumber("actual angle", arm1Encoder.getPosition()-60);
-        armMotor1.set(
-            MathUtil.clamp(
-                armFeedForwardController.calculate(Math.toRadians(degrees), 0)
-                +  armPIDController.calculate(getArmAngleRelativeToGround(), degrees), 
-                -0.5,//-0.3, 
-                0.5//0.3
-            ) 
-        );       
-        armMotor2.set(
-            MathUtil.clamp(
-                armFeedForwardController.calculate(Math.toDegrees(degrees), 0) 
-                + armPIDController.calculate(getArmAngleRelativeToGround(), degrees), 
-                -0.5,//-0.3, 
-                0.5//0.3
-            ) 
-        );
-    }
     /**
      * setArmVelocity will set the arm's velocity - should be used for operator manual control
     */
@@ -196,6 +224,11 @@ public class ArmUtil extends SubsystemBase{
         );
     }
 
+    /**
+     * Moves arm down towards limit switch
+     * 
+     * @return limit switch triggered
+     */
     public boolean operateArmToLimitSwitch() {
         if(!armLimitSwitch.get()) {
             armMotor1.set(0);
@@ -245,17 +278,22 @@ public class ArmUtil extends SubsystemBase{
 
 
     /**
-     * degrees is angle with 0 being parallel to x axis, positive increase in raising arm
+     * 0 degrees is parallel to the x axis, 
+     * and a positive increase in angle is
+     * raising the arm.
 
-     * @return double degrees
+     * @return arm angle relative to the horizontal
      */
     public double getArmAngleRelativeToGround(){
         return arm1Encoder.getPosition() - 82;
     }
 
+    public double getWristAngleRelativeToGround() {
+        return arm1Encoder.getPosition() + wristEncoder.getPosition() + 78;
+    }
+
     public void setWristAngleRelativeToGround(double degrees) {
         //degrees is angle with 0 being parallel to x axis, positive increase go towards heaven
-        //arm1Encoder.getPosition() + wristEncoder.getPosition() + 122
         double curWristDegsRelGround = arm1Encoder.getPosition() + wristEncoder.getPosition() + 78;
         wristMotor.set(
             MathUtil.clamp(
@@ -274,7 +312,6 @@ public class ArmUtil extends SubsystemBase{
     }
 
     public void operateArm(double joystickInput) {
-        previousWristToggleButtonState = RobotContainer.getOperator5Button();
         switch(armState) {
             case INITIALIZE: //In initialize, the user cannot move the arm and it is zeroing itself.
                 boolean armAtLimitSwitch = operateArmToLimitSwitch();
@@ -284,24 +321,25 @@ public class ArmUtil extends SubsystemBase{
                     wristState = WristState.RETRACTED;
                 }
                 break;
-            case RETRACT:
+            case RETRACT: //Arm is being brought down, but will be controllable when user moves joystick
                 operateArmToLimitSwitch();
-                if(Math.abs(joystickInput) < Constants.ARM_JOYSTICK_INPUT_DEADBAND) armState = ArmState.CONTROL;
+                if(joystickInput > Constants.ARM_JOYSTICK_INPUT_DEADBAND) armState = ArmState.CONTROL;
                 break;
             case CONTROL: //In control, the user has full control over the arm.
                 double input = joystickInput;
-                double deltaSetpoint = (input * 75) / 50; // 5 degrees per second maximum
+                double deltaSetpoint = (input * 75) / 50; // change in setpoint per periodic tick
 
                 if(armSetpointDeg + deltaSetpoint > 10) {
                     armSetpointDeg = 10;
                 } else if (armSetpointDeg + deltaSetpoint < -75) {
                     if((wristState == WristState.CARGO_RETRACT || wristState == WristState.RETRACTED) && joystickInput < 0) {
-                        //armSetpointDeg = -90;
-                    } else {
+                        //setArmState(ArmState.RETRACT);
                         armSetpointDeg = -75;
                     }
+                } else {
+                    armSetpointDeg += deltaSetpoint;
                 }
-                //armSetpointDeg = !armLocked ? armSetpointDeg + deltaSetpoint : armLimitHitAng;
+
                 double feeedForwardValue = RobotContainer.getClawIntakeLimitSwitch() == false //wristState == WristState.PARALLEL_TO_GROUND 
                 ? armFeedForwardControllerClawOut.calculate(Math.toRadians(armSetpointDeg), 0)  
                 : armFeedForwardController.calculate(Math.toRadians(armSetpointDeg), 0);
@@ -319,36 +357,8 @@ public class ArmUtil extends SubsystemBase{
                 } else {
                     armMotor1.set(0);
                     armMotor2.set(0);
-                    armLimitHitAng = getArmAngleRelativeToGround();
                 }
-                
-                /*if (Math.abs(joystickInput) < Constants.ARM_JOYSTICK_INPUT_DEADBAND) {
-                    if(!holding) {
-                        input = 0;
-                        holding = true;
-                        holdAngle = getArmAngleRelativeToGround();
-                        System.out.println(input);
-                        System.out.println(joystickInput);
-                    }
-                    holdArm(holdAngle);
-                } else {
-                    holding = false;
-                    if(joystickInput > 0 && getArmAngleRelativeToGround() >= 10) {
-                        setArmVelocity(0);
-                        System.out.println("EeEEUUUEURUHHJAKHJHUUGGHGGHG");
-                    } else {
-                        setArmVelocity(joystickInput * Constants.ARM_VELOCITY);
-                        System.out.println(joystickInput * Constants.ARM_VELOCITY);
-                    }
-                }*/
 
-                SmartDashboard.putBoolean("Holding?", holding);
-
-                //if(arm1Encoder.getPosition() <= Constants.WRIST_RETRACT_DEADBAND){
-                //    wristState = WristState.RETRACTED;
-                //} else if(wristState == WristState.RETRACTED) { //this way it won't stop the user from making claw parallel
-                //    wristState = WristState.OUT;
-                //}
                 operateWrist();
 
                 break;
@@ -375,21 +385,6 @@ public class ArmUtil extends SubsystemBase{
         return false;
     }
 
-    public void operateWristToCargoRetract(){
-        wristMotor.set(MathUtil.clamp(
-            wristFeedForwardController.calculate(
-               Math.toRadians(-13) + arm1Encoder.getPosition() + 68,
-               0
-            ) +
-            wristPIDController.calculate(wristEncoder.getPosition(), -13),
-            -1, 1));
-        if(!wristLimitSwitch.get()){
-            wristMotor.set(0);
-        }
-        
-        //if(wristEncoder.getPosition() <)
-    }
-
     public void lowerWrist(){
         if(wristEncoder.getPosition() <= Constants.WRIST_PHYSICAL_STOP + Constants.WRIST_STOP_DEADBAND) {
             wristMotor.set(0);
@@ -399,57 +394,22 @@ public class ArmUtil extends SubsystemBase{
     }
 
     public void operateWrist() {
+        State setpoint = wristProfile.calculate(wristStateTimeElapsed);
         switch(wristState) {
             case RETRACTED:
                 operateWristToLimitSwitch();
                 break;
             case CARGO_RETRACT:
-                setWristAngleRelativeToGround(75);
+                setWristAngleRelativeToGround(setpoint.position);
+                //setWristAngleRelativeToGround(75);
                 break;
             case OUT:
                 lowerWrist();
                 break;
             case PARALLEL_TO_GROUND:
-                setWristAngleRelativeToGround(-13); // "0" should be parallel to the ground
-                //wristMotor.set(-RobotContainer.getOperatorSlider()/10);
+                setWristAngleRelativeToGround(setpoint.position); // "0" should be parallel to the ground, offset slightly to make intake easier
+                //setWristAngleRelativeToGround(-15);
                 break;
-            case CONTROL:
-                if(Math.abs(RobotContainer.getOperatorSlider()) >= 0.2){
-                    //wristMotor.set(-RobotContainer.getOperatorSlider() * 0.3);
-                } else {
-                    //wristMotor.set(0);
-                }
-                break;
-        }
-    }
-
-    public void toggleWristState(){
-        if(wristState==WristState.OUT){
-            wristState=WristState.PARALLEL_TO_GROUND;
-        } else if(wristState==WristState.PARALLEL_TO_GROUND){
-            wristState=WristState.OUT;
-        } else if(wristState == WristState.CONTROL) {
-            wristState = WristState.PARALLEL_TO_GROUND;
-        }
-    }
-
-    public void toggleWristControl(){
-        if(wristState==WristState.OUT){
-            wristState=WristState.CONTROL;
-        } else if(wristState==WristState.PARALLEL_TO_GROUND){
-            wristState=WristState.CONTROL;
-        } else if(wristState==WristState.CONTROL){
-            wristState=WristState.RETRACTED;
-        }
-    }
-
-    public void toggleWristRetract(){
-        if(wristState == WristState.OUT) {
-            wristState = WristState.RETRACTED;
-        } else if (wristState == WristState.RETRACTED) {
-            wristState = WristState.OUT;
-        } else if (wristState == WristState.CONTROL) {
-            wristState = WristState.RETRACTED;
         }
     }
 
