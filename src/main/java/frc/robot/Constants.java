@@ -81,7 +81,7 @@ public final class Constants {
     public static final double GROUND_PICK_WRIST = -150;
 
     //Feedforward constants - arbitrary values
-    public static final double ARM_kG = 1.1; //0.58;//
+    public static final double ARM_kG = 1.05; //0.58;//
     public static final double ARM_kG_CLAW_OUT = 1.75;
     public static final double ARM_kV = 0;//0.00765858;
     public static final double ARM_kS = 0;//0.23125;
