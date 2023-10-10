@@ -16,10 +16,14 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
+
+import java.lang.reflect.Field;
+
 import com.kauailabs.navx.frc.AHRS;
 
 public class DriveUtil extends SubsystemBase {
@@ -29,6 +33,7 @@ public class DriveUtil extends SubsystemBase {
 	private final Translation2d m_backLeftLoc = new Translation2d(Constants.BOTTOMLEFT_X, Constants.TOPLEFT_Y);
 	private final Translation2d m_backRightLoc = new Translation2d(Constants.BOTTOMRIGHT_X, Constants.BOTTOMRIGHT_Y);
 	private boolean started = false;
+	private Field2d f2d = new Field2d();
 	private AHRS gyro = new AHRS();
 
 	private final SwerveModule m_frontLeft = new SwerveModule(
@@ -102,17 +107,17 @@ public class DriveUtil extends SubsystemBase {
 
 	public void driveRobot(boolean fieldRelative) {
 		int xSign = (int)Math.signum(RobotContainer.getDriverLeftXboxY());
-		double xSpeed = xSign * Math.pow(RobotContainer.getDriverLeftXboxY(), 4) * Constants.MAX_LINEAR_SPEED * Math.cos(Math.toRadians(RobotContainer.allianceOrientation)); //reversed x and y so that up on controller is
+		double xSpeed = xSign * Math.pow(deadzone(RobotContainer.getDriverLeftXboxY()), 2) * Constants.MAX_LINEAR_SPEED * Math.cos(Math.toRadians(RobotContainer.allianceOrientation)); //reversed x and y so that up on controller is
 
 		int ySign = (int)Math.signum(RobotContainer.getDriverLeftXboxX());
-		double ySpeed = ySign * Math.pow(RobotContainer.getDriverLeftXboxX(), 4) * Constants.MAX_LINEAR_SPEED * Math.cos(Math.toRadians(RobotContainer.allianceOrientation)); //reversed x and y so that up on controller is
+		double ySpeed = ySign * Math.pow(deadzone(RobotContainer.getDriverLeftXboxX()), 2) * Constants.MAX_LINEAR_SPEED * Math.cos(Math.toRadians(RobotContainer.allianceOrientation)); //reversed x and y so that up on controller is
 
 
 		var swerveModuleStates = kinematics.toSwerveModuleStates(
 				fieldRelative
 						? ChassisSpeeds.fromFieldRelativeSpeeds(
-								deadzone(xSpeed), //reversed x and y so that up on controller is
-								deadzone(ySpeed), //forward from driver pov
+								xSpeed, //reversed x and y so that up on controller is
+								ySpeed, //forward from driver pov
 								deadzone(RobotContainer.getDriverRightXboxX()) * Math.toRadians(Constants.MAX_ANGULAR_SPEED), 
 								m_odometry.getPoseMeters().getRotation())
 						: new ChassisSpeeds(RobotContainer.getDriverLeftXboxY() * Constants.MAX_LINEAR_SPEED,
@@ -193,10 +198,16 @@ public class DriveUtil extends SubsystemBase {
 		SmartDashboard.putNumber("yaw", gyro.getYaw());
 		SmartDashboard.putNumber("roll", gyro.getRoll());
 
+		
+
 		m_odometry.update(gyro.getRotation2d(),
 				new SwerveModulePosition[] {
 						m_frontLeft.getPosition(), m_frontRight.getPosition(),
 						m_backLeft.getPosition(), m_backRight.getPosition()
 				});
+
+		
+		f2d.setRobotPose(getPose());
+		SmartDashboard.putData(f2d);
 	}
 }
