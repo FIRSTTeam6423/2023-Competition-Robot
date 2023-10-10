@@ -312,7 +312,6 @@ public class ArmUtil extends SubsystemBase{
     }
 
     public void operateArm(double joystickInput) {
-        System.out.println(armState);
         switch(armState) {
             case INITIALIZE: //In initialize, the user cannot move the arm and it is zeroing itself.
                 boolean armAtLimitSwitch = operateArmToLimitSwitch();
@@ -345,7 +344,7 @@ public class ArmUtil extends SubsystemBase{
                 ? armFeedForwardControllerClawOut.calculate(Math.toRadians(armSetpointDeg), 0)  
                 : armFeedForwardController.calculate(Math.toRadians(armSetpointDeg), 0);
 
-                System.out.println("Setpoint: " + armSetpointDeg);
+                //System.out.println("Setpoint: " + armSetpointDeg);
                 if(armLimitSwitch.get()){ //limit switch is not triggered
                     armMotor1.set(
                         feeedForwardValue
