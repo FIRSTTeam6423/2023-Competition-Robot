@@ -51,14 +51,6 @@ public class AlignToNearestGridTag extends CommandBase {
       )
     );
     
-    SmartDashboard.putNumber("start X", traj.getInitialState().poseMeters.getX());
-    SmartDashboard.putNumber("start Y", traj.getInitialState().poseMeters.getY());
-    SmartDashboard.putNumber("start rot", traj.getInitialState().poseMeters.getRotation().getDegrees());
-
-    SmartDashboard.putNumber("end X", traj.getEndState().poseMeters.getX());
-    SmartDashboard.putNumber("end Y", traj.getEndState().poseMeters.getY());
-    SmartDashboard.putNumber("end rot", traj.getEndState().poseMeters.getRotation().getDegrees());
-
     driveUtil.resetPose(traj.getInitialPose());
 
     new PPSwerveControllerCommand(

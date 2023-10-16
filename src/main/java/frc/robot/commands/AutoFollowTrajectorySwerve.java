@@ -5,17 +5,11 @@
 package frc.robot.commands;
 
 import com.pathplanner.lib.PathPlannerTrajectory;
-import com.pathplanner.lib.auto.PIDConstants;
-import com.pathplanner.lib.auto.SwerveAutoBuilder;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
-import frc.robot.Constants;
 import frc.robot.subsystems.DriveUtil;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
