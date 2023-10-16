@@ -22,38 +22,23 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.AlignToNearestGridTag;
-import frc.robot.commands.AlignToPointWithTag;
 import frc.robot.commands.AutoBalance;
 import frc.robot.commands.AutoFollowTrajectorySwerve;
-import frc.robot.commands.BottomGoalThenLeave;
 import frc.robot.commands.ExitAndBalance;
 import frc.robot.commands.OperateDrive;
-<<<<<<< HEAD
 import frc.robot.commands.OperateGrab;
-import frc.robot.commands.SetArmPresetState;
 import frc.robot.commands.SpitCubeThenPush;
-import frc.robot.commands.SpitSeconds;
-import frc.robot.commands.TwoConeAuto;
+import frc.robot.commands.TwoScoreAuto;
 import frc.robot.subsystems.ArmUtil;
-=======
-//import frc.robot.subsystems.ArmUtil;
->>>>>>> 29241c6 (Revert "Merge pull request #4 from FIRSTTeam6423/rollerGrab")
 import frc.robot.subsystems.DriveUtil;
-import frc.robot.util.ArmState;
-<<<<<<< HEAD
+import frc.robot.subsystems.GrabUtil;
 import frc.robot.util.WristState;
-=======
-import frc.robot.subsystems.ClawUtil;
-import frc.robot.commands.OperateClaw;
->>>>>>> 29241c6 (Revert "Merge pull request #4 from FIRSTTeam6423/rollerGrab")
-import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.OperateArm;
 
 /**
@@ -65,18 +50,10 @@ import frc.robot.commands.OperateArm;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final DriveUtil driveUtil = new DriveUtil();
-<<<<<<< HEAD
   private static final PhotonCamera camera = new PhotonCamera("johncam");
   
   private static final GrabUtil grabUtil = new GrabUtil();
   private final OperateGrab operateGrab = new OperateGrab(grabUtil);
-=======
-  private final ClawUtil clawUtil = new ClawUtil();
-  private static final PhotonCamera camera = new PhotonCamera("johncam");
-  
-  private final OperateDrive operateDrive = new OperateDrive(driveUtil);
-  private final OperateClaw operateClaw = new OperateClaw(clawUtil);
->>>>>>> 29241c6 (Revert "Merge pull request #4 from FIRSTTeam6423/rollerGrab")
 
   private final OperateDrive operateDrive = new OperateDrive(driveUtil);
 
@@ -86,24 +63,12 @@ public class RobotContainer {
 
   private static XboxController driver;
   private static Joystick operator;
-  private static JoystickButton middleGoalButton, lowGoalButton, highGoalButton, groundPickupButton, highPickupButton;
-
 
   private static JoystickButton parallelToggleButton;
   private static JoystickButton retractWristButton;
   private static JoystickButton cargoRetractButton;
 
-  private static JoystickButton controlToggleButton;
   private SendableChooser<Command> autoChooser = new SendableChooser<>();
-<<<<<<< HEAD
-=======
-
-  private JoystickButton highButton;
-  private JoystickButton middleButton;
-  private JoystickButton lowButton;
-  private JoystickButton highPButton;
-  private JoystickButton groundPButton;
->>>>>>> 29241c6 (Revert "Merge pull request #4 from FIRSTTeam6423/rollerGrab")
   
   public static double allianceOrientation = 0; 
 
@@ -113,14 +78,9 @@ public class RobotContainer {
     operator = new Joystick(Constants.JOYSTICK_OPERATOR);
 
 
-    middleGoalButton = new JoystickButton(operator, 9);
-    highGoalButton = new JoystickButton(operator, 7);
-    lowGoalButton = new JoystickButton(operator, 11);
-    groundPickupButton = new JoystickButton(operator, 12);
-    highPickupButton = new JoystickButton(operator, 10);
+   
     retractWristButton = new JoystickButton(operator, 4);
     parallelToggleButton = new JoystickButton(operator, 5);
-    controlToggleButton = new JoystickButton(operator, 3);
     cargoRetractButton = new JoystickButton(operator, 6);
     // Configure the button bindings
     configureButtonBindings();
@@ -136,9 +96,9 @@ public class RobotContainer {
     autoChooser.addOption("align ot thing", new ExitAndBalance(driveUtil));
     autoChooser.addOption("spit 1 sec", new SpitCubeThenPush(grabUtil, driveUtil, 0.25));
     autoChooser.addOption("Balance Test", new AutoBalance(driveUtil));
-    autoChooser.addOption("Two Cone Auto", new TwoConeAuto(
+    autoChooser.addOption("Two Cone Auto", new TwoScoreAuto(
       PathPlanner.loadPath("autoPickupAndAlign", new PathConstraints(Constants.ALIGN_TO_TAG_MAX_VELOCITY, Constants.ALIGN_TO_TAG_MAX_ACCELERATION)), 
-      driveUtil, grabUtil));
+      driveUtil, grabUtil, armUtil));
     SmartDashboard.putData("Autonomous Command", autoChooser);
     
   }
@@ -150,22 +110,6 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-<<<<<<< HEAD
-    middleGoalButton.onTrue(new InstantCommand(()->{
-      armUtil.setArmState(ArmState.MIDDLE_GOAL);
-    }));
-    highGoalButton.onTrue(new InstantCommand(()->{
-      armUtil.setArmState(ArmState.HIGH_GOAL);
-    }));    
-    lowGoalButton.onTrue(new InstantCommand(()->{
-      armUtil.setArmState(ArmState.LOW_GOAL);
-    }));    
-    groundPickupButton.onTrue(new InstantCommand(()->{
-      armUtil.setArmState(ArmState.GROUND_PICK);
-    }));    
-    highPickupButton.onTrue(new InstantCommand(()->{
-      armUtil.setArmState(ArmState.HIGH_PICK);
-    }));
     parallelToggleButton.onTrue(new InstantCommand(()->{
       armUtil.setWristState(WristState.PARALLEL_TO_GROUND);
     }));
@@ -175,9 +119,6 @@ public class RobotContainer {
     cargoRetractButton.onTrue(new InstantCommand(()->{
       armUtil.setWristState(WristState.CARGO_RETRACT);
     }));
-=======
-
->>>>>>> 29241c6 (Revert "Merge pull request #4 from FIRSTTeam6423/rollerGrab")
   }
 
   /**
@@ -192,13 +133,8 @@ public class RobotContainer {
 
   private void configureDefaultCommands(){
     driveUtil.setDefaultCommand(operateDrive);
-<<<<<<< HEAD
     armUtil.setDefaultCommand(operateArm);
     grabUtil.setDefaultCommand(operateGrab);
-=======
-    //armUtil.setDefaultCommand(operateArm);
-    clawUtil.setDefaultCommand(operateClaw);
->>>>>>> 29241c6 (Revert "Merge pull request #4 from FIRSTTeam6423/rollerGrab")
   }
 
   public static double getDriverLeftXboxX(){
