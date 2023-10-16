@@ -8,8 +8,6 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.GrabUtil;
 import frc.robot.util.GrabberState;
 
-import java.util.Timer;
-
 public class SpitSeconds extends CommandBase {
   /** Creates a new SpitOneSecond. */
   private double ticker = 0;

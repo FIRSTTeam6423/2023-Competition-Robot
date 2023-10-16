@@ -1,5 +1,4 @@
 package frc.robot.subsystems;
-import java.nio.channels.WritableByteChannel;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
@@ -16,7 +15,6 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.util.ArmState;
 import frc.robot.util.WristState;
@@ -38,7 +36,6 @@ public class ArmUtil extends SubsystemBase{
     private double armSetpointDeg = -75;    //Setpoint of arm relative to the ground
     private double armStateTimeElapsed = 0; //Time elapsed since last arm state change
 
-    private double wristSetpointDeg = 0;
     private double wristStateTimeElapsed = 0;
 
     public ArmUtil() {
@@ -146,24 +143,10 @@ public class ArmUtil extends SubsystemBase{
                     new State(getArmAngleRelativeToGround(),0)
                 );
                 break;
-            case LOW_GOAL: 
+            case LOW: 
                 armProfile = new TrapezoidProfile( //Note: middle goal arm and initial position both have to assume same angle is zero
                     Constants.ARM_PROFILE_CONSTRAINTS, 
                     new State(Constants.LOW_GOAL_ARM, 0),
-                    new State(getArmAngleRelativeToGround(),0)
-                );
-                break;
-            case GROUND_PICK: // preset for a ground pickup
-                armProfile = new TrapezoidProfile( //Note: middle goal arm and initial position both have to assume same angle is zero
-                    Constants.ARM_PROFILE_CONSTRAINTS, 
-                    new State(Constants.GROUND_PICK_ARM, 0),
-                    new State(getArmAngleRelativeToGround(),0)
-                );
-                break;
-            case HIGH_PICK: // preset for a player pickup
-                armProfile = new TrapezoidProfile( //Note: middle goal arm and initial position both have to assume same angle is zero
-                    Constants.ARM_PROFILE_CONSTRAINTS, 
-                    new State(Constants.HIGH_PICK_ARM, 0),
                     new State(getArmAngleRelativeToGround(),0)
                 );
                 break;
@@ -364,15 +347,7 @@ public class ArmUtil extends SubsystemBase{
                 break;
             case HIGH_GOAL: //preset for high goal
             case MIDDLE_GOAL: //preset for middle goal
-            case LOW_GOAL: // preset for the low goal
-            case GROUND_PICK: // preset for a ground pickup
-            case HIGH_PICK: // preset for a player pickup
-                if(Math.abs(joystickInput)>Constants.ARM_JOYSTICK_INPUT_DEADBAND){
-                    setArmState(ArmState.CONTROL);
-                }else {
-                    operateArmPreset();
-                }
-                break;
+            case LOW: // preset for the low goal
         }
     }
 
