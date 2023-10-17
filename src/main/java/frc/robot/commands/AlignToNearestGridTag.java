@@ -15,7 +15,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
@@ -45,25 +44,15 @@ public class AlignToNearestGridTag extends CommandBase {
         robotPos.getRotation() //Camera rotation not same as rogot
       ),
       new PathPoint(
-        new Translation2d(tagPose.getX()+5, robotPos.getY()),
+        new Translation2d(tagPose.getX()+5, robotPos.getY()), //Change + or - depending on team color
         new Rotation2d(tagPose.getRotation().getZ()),
-        new Rotation2d(tagPose.getRotation().getZ() + Math.PI)
+        new Rotation2d(tagPose.getRotation().getZ()
+        + Math.PI)
       )
     );
-    
+
     driveUtil.resetPose(traj.getInitialPose());
 
-    new PPSwerveControllerCommand(
-            	traj, 
-            	driveUtil::getPose, // Pose supplier
-            	driveUtil.kinematics, // SwerveDriveKinematics
-            	new PIDController(0, 0, 0), // X controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
-            	new PIDController(0, 0, 0), // Y controller (usually the same values as X controller)
-            	new PIDController(0, 0, 0), // Rotation controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
-              //Only using feedforwards should be fine for this, we are already using pid in the set module states
-            	driveUtil::setSwerveModuleStates, // Module states consumer
-            	false, // This should always work regardless of alliance color
-            	driveUtil // Requires this drive subsystem
-        	).schedule();
+    new AutoFollowTrajectorySwerve(driveUtil, traj).schedule();
   }
 }
