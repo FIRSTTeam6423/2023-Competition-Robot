@@ -5,11 +5,10 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.DriveUtil;
 
 public class AutoAlignForScore extends CommandBase {
   /** Creates a new AutoAlignForScore. */
-  public AutoAlignForScore(DriveUtil du) {
+  public AutoAlignForScore() {
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
