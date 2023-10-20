@@ -8,7 +8,6 @@ import java.util.HashMap;
 
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.FollowPathWithEvents;
-
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.ArmUtil;
@@ -36,7 +35,7 @@ public class TwoScoreAuto extends SequentialCommandGroup {
         path.getMarkers(),
         eventMap
       ),
-      new AutoAlignForScore(du)
+      new AutoAlignForScore(du) 
     );
   }
 }
