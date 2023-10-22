@@ -6,6 +6,7 @@ package frc.robot.commands;
 
 import java.util.HashMap;
 
+import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.FollowPathWithEvents;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -14,6 +15,8 @@ import frc.robot.subsystems.ArmUtil;
 import frc.robot.subsystems.DriveUtil;
 import frc.robot.subsystems.GrabUtil;
 import frc.robot.util.ArmState;
+import frc.robot.Constants;
+import frc.robot.commands.AutoFollowTrajectorySwerve;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
@@ -30,11 +33,11 @@ public class TwoScoreAuto extends SequentialCommandGroup {
       new SetArmState(au, ArmState.LOW),
       new SpitSeconds(gu, 1),
       new SetArmState(au, ArmState.RETRACT),
-      new FollowPathWithEvents(
-        new AutoFollowTrajectorySwerve(du, path),
-        path.getMarkers(),
-        eventMap
-      ),
+      new AutoFollowTrajectorySwerve(du, path, new PathConstraints( Constants.ALIGN_TO_TAG_MAX_VELOCITY, Constants.ALIGN_TO_TAG_MAX_ACCELERATION)),
+      new SpitSeconds(gu, 2),//does something
+      //follows path back
+      new AutoFollowTrajectorySwerve(du, path, new PathConstraints(
+        Constants.ALIGN_TO_TAG_MAX_VELOCITY, Constants.ALIGN_TO_TAG_MAX_ACCELERATION)),
       new AutoAlignForScore(du) 
     );
   }
