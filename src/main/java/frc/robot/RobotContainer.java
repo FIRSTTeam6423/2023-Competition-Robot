@@ -30,7 +30,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.AlignToNearestGridTag;
 import frc.robot.commands.AutoBalance;
 import frc.robot.commands.AutoFollowTrajectorySwerve;
-import frc.robot.commands.ExitAndBalance;
+//import frc.robot.commands.ExitAndBalance;
 import frc.robot.commands.OperateDrive;
 import frc.robot.commands.OperateGrab;
 import frc.robot.commands.SpitCubeThenPush;
@@ -93,12 +93,14 @@ public class RobotContainer {
     autoChooser.addOption("Grab and move back", new AutoFollowTrajectorySwerve(driveUtil, 
       PathPlanner.loadPath("autoPickupAndAlign", new PathConstraints(
       Constants.ALIGN_TO_TAG_MAX_VELOCITY, Constants.ALIGN_TO_TAG_MAX_ACCELERATION))));
-    autoChooser.addOption("align ot thing", new ExitAndBalance(driveUtil));
+    //autoChooser.addOption("align ot thing", new ExitAndBalance(driveUtil));
     autoChooser.addOption("spit 1 sec", new SpitCubeThenPush(grabUtil, driveUtil, 0.25));
     autoChooser.addOption("Balance Test", new AutoBalance(driveUtil));
-    autoChooser.addOption("Two Cone Auto", new TwoScoreAuto(
-      PathPlanner.loadPath("autoPickupAndAlign", new PathConstraints(Constants.ALIGN_TO_TAG_MAX_VELOCITY, Constants.ALIGN_TO_TAG_MAX_ACCELERATION)), 
-      driveUtil, grabUtil, armUtil));
+    autoChooser.addOption("Two Cone Auto", new TwoScoreAuto( 
+      driveUtil, 
+      grabUtil, 
+      armUtil
+    ));
     SmartDashboard.putData("Autonomous Command", autoChooser);
     
   }
