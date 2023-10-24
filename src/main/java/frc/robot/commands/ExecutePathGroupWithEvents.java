@@ -34,7 +34,8 @@ public class ExecutePathGroupWithEvents extends SequentialCommandGroup {
       addCommands(new AutoFollowTrajectorySwerve(du,traj));
       for(String name : traj.getEndStopEvent().names){
         Command c=eventMap.get(name);
-        if(c == null) addCommands(c);
+        if(c != null) addCommands(c);
+        else System.err.println("Command "+name+" not defined!");
       }
 
     }
