@@ -314,10 +314,10 @@ public class ArmUtil extends SubsystemBase{
 
                 if(armSetpointDeg + deltaSetpoint > 10) {
                     armSetpointDeg = 10;
-                } else if (armSetpointDeg + deltaSetpoint < -75) {
+                } else if (armSetpointDeg + deltaSetpoint < -77) {
                     if((wristState == WristState.CARGO_RETRACT || wristState == WristState.RETRACTED) && joystickInput < 0) {
                         //setArmState(ArmState.RETRACT);
-                        armSetpointDeg = -75;
+                        armSetpointDeg = -77;
                     }
                 } else {
                     armSetpointDeg += deltaSetpoint;
