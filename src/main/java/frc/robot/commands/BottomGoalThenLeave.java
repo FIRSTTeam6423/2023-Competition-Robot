@@ -26,11 +26,8 @@ public class BottomGoalThenLeave extends SequentialCommandGroup {
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
       new SequentialCommandGroup(
-        new SetArmState(au, ArmState.RETRACT),
-        new InstantCommand(()->{
-
-        }),
-        new AutoFollowTrajectorySwerve(du, PathPlanner.loadPath("Exit", new PathConstraints(
+        new SpitSeconds(gu, 1),
+        new AutoFollowTrajectorySwerve(du, PathPlanner.loadPath("spitThenLeave", new PathConstraints(
         Constants.ALIGN_TO_TAG_MAX_VELOCITY, Constants.ALIGN_TO_TAG_MAX_ACCELERATION)))
       )
       
