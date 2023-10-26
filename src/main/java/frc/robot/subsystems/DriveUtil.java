@@ -102,18 +102,27 @@ public class DriveUtil extends SubsystemBase {
 
 	public void driveRobot(boolean fieldRelative) {
 		int xSign = (int)Math.signum(RobotContainer.getDriverLeftXboxY());
-		double xSpeed = xSign * Math.pow(deadzone(RobotContainer.getDriverLeftXboxY()), 2) * Constants.MAX_LINEAR_SPEED * Math.cos(Math.toRadians(RobotContainer.allianceOrientation)); //reversed x and y so that up on controller is
+		double xSpeed = xSign * Math.pow(deadzone(RobotContainer.getDriverLeftXboxY()), 2) 
+						* Constants.MAX_LINEAR_SPEED 
+						* Math.cos(Math.toRadians(RobotContainer.allianceOrientation))
+						* ((RobotContainer.getDriverRightXboxTrigger() > .5) ? .25 : 1); //reversed x and y so that up on controller is
 
 		int ySign = (int)Math.signum(RobotContainer.getDriverLeftXboxX());
-		double ySpeed = ySign * Math.pow(deadzone(RobotContainer.getDriverLeftXboxX()), 2) * Constants.MAX_LINEAR_SPEED * Math.cos(Math.toRadians(RobotContainer.allianceOrientation)); //reversed x and y so that up on controller is
+		double ySpeed = ySign * Math.pow(deadzone(RobotContainer.getDriverLeftXboxX()), 2) 
+						* Constants.MAX_LINEAR_SPEED 
+						* Math.cos(Math.toRadians(RobotContainer.allianceOrientation))
+						* ((RobotContainer.getDriverRightXboxTrigger() > .5) ? .25 : 1); //reversed x and y so that up on controller is
 
+		double omega = deadzone(RobotContainer.getDriverRightXboxX()) 
+						* Math.toRadians(Constants.MAX_ANGULAR_SPEED) 
+						* ((RobotContainer.getDriverRightXboxTrigger() > .5) ? .25 : 1);
 
 		var swerveModuleStates = kinematics.toSwerveModuleStates(
 				fieldRelative
 						? ChassisSpeeds.fromFieldRelativeSpeeds(
 								xSpeed, //reversed x and y so that up on controller is
 								ySpeed, //forward from driver pov
-								deadzone(RobotContainer.getDriverRightXboxX()) * Math.toRadians(Constants.MAX_ANGULAR_SPEED), 
+								omega, 
 								m_odometry.getPoseMeters().getRotation())
 						: new ChassisSpeeds(RobotContainer.getDriverLeftXboxY() * Constants.MAX_LINEAR_SPEED,
 								RobotContainer.getDriverLeftXboxX() * Constants.MAX_LINEAR_SPEED,//Note y and x swapped for first 2 arguments is not intuitive, x is "forward"
