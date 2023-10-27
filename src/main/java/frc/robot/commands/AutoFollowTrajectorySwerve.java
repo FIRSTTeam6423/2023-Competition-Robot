@@ -5,9 +5,11 @@
 package frc.robot.commands;
 
 import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.DriveUtil;
@@ -25,7 +27,14 @@ public class AutoFollowTrajectorySwerve extends SequentialCommandGroup {
 		addCommands(
 			new InstantCommand(()->{
 				driveUtil.start();
-				driveUtil.resetPose(traj.getInitialPose());
+				// driveUtil.resetPose(traj.getInitialPose());
+				//PathPlannerTrajectory pTrajectory = (PathPlannerTrajectory)trajectory;
+				PathPlannerState pInitialState = (PathPlannerState)traj.sample(0);
+				Pose2d initialPose = new Pose2d(
+					traj.getInitialPose().getTranslation(),
+					pInitialState.holonomicRotation
+				);
+				driveUtil.resetPose(initialPose);
 			}),
 			new PPSwerveControllerCommand(
             	traj, 

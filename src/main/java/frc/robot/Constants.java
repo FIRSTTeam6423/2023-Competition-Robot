@@ -56,7 +56,7 @@ public final class Constants {
     public static final double ARM_I = 0;
     public static final double ARM_D = 0;
 
-    public static final double WRIST_P = 0.075;
+    public static final double WRIST_P = 0.070;
     public static final double WRIST_I = 0;
     public static final double WRIST_D = 0;
 
@@ -124,10 +124,10 @@ public final class Constants {
     public static final double DRIVECONVERSIONFACTOR = (1/7.13) * .096 * Math.PI;
     public static final double DEGREES_PER_ROTATION = 360;
 
-    public static final double TOPLEFT_ABS_ENCODER_OFFSET = 35.6;
-    public static final double TOPRIGHT_ABS_ENCODER_OFFSET = 158.2;
-    public static final double BOTTOMLEFT_ABS_ENCODER_OFFSET = 152.5;
-    public static final double BOTTOMRIGHT_ABS_ENCODER_OFFSET = 105.7;
+    public static final double TOPLEFT_ABS_ENCODER_OFFSET = 116.233;
+    public static final double TOPRIGHT_ABS_ENCODER_OFFSET = 77.01;
+    public static final double BOTTOMLEFT_ABS_ENCODER_OFFSET = 73.7016 + 180;
+    public static final double BOTTOMRIGHT_ABS_ENCODER_OFFSET = 131.52;
 
     public static final double[] ABS_ENCODER_OFFSETS = {
         TOPLEFT_ABS_ENCODER_OFFSET,
@@ -142,6 +142,9 @@ public final class Constants {
 
     public static final double ALIGN_TO_TAG_MAX_VELOCITY = 2;
     public static final double ALIGN_TO_TAG_MAX_ACCELERATION = 1;
+
+    public static final double MAX_PATH_VELOCITY = 2;
+    public static final double MAX_PATH_ACCELERATION = 1;
 
     public static final double MODULEDRIVE_P = 0.039753;//0.0024
     public static final double MODULEDRIVE_I = 0;

@@ -24,12 +24,39 @@
     },
     {
       "anchorPoint": {
-        "x": 2.503576631084886,
-        "y": 0.8450184421736366
+        "x": 7.0484055498025535,
+        "y": 2.649247007895725
       },
       "prevControl": {
-        "x": 5.0728894620182405,
-        "y": 0.8107609377611926
+        "x": 8.612831584637537,
+        "y": 2.706342848583132
+      },
+      "nextControl": {
+        "x": 5.483979514967578,
+        "y": 2.5921511672083173
+      },
+      "holonomicAngle": 0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": true,
+      "stopEvent": {
+        "names": [
+          "adsfadsf"
+        ],
+        "executionBehavior": "sequential",
+        "waitBehavior": "after",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 2.652025816872147,
+        "y": 2.238156954946388
+      },
+      "prevControl": {
+        "x": 5.221338647805504,
+        "y": 2.203899450533944
       },
       "nextControl": null,
       "holonomicAngle": 180.0,
@@ -45,5 +72,13 @@
       }
     }
   ],
-  "markers": []
+  "markers": [
+    {
+      "position": 0.6981818181817951,
+      "names": [
+        "event",
+        "spit"
+      ]
+    }
+  ]
 }

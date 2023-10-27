@@ -2,15 +2,15 @@
   "waypoints": [
     {
       "anchorPoint": {
-        "x": 1.944037392348289,
-        "y": 4.78463144960478
+        "x": 5.803716222817061,
+        "y": 2.649247007895725
       },
       "prevControl": null,
       "nextControl": {
-        "x": 9.035570656430384,
-        "y": 4.78463144960478
+        "x": 4.5249132115671395,
+        "y": 2.626925418303957
       },
-      "holonomicAngle": 180.0,
+      "holonomicAngle": 0.0,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
@@ -24,40 +24,42 @@
     },
     {
       "anchorPoint": {
-        "x": 6.260482948316324,
-        "y": 3.0
+        "x": 3.8738768075826755,
+        "y": 2.9804028838826913
       },
       "prevControl": {
-        "x": 7.607993173976092,
-        "y": 3.0
+        "x": 4.692639922466713,
+        "y": 2.9804028838826913
       },
       "nextControl": {
-        "x": 4.912972722656556,
-        "y": 3.0
+        "x": 4.692639922466713,
+        "y": 2.9804028838826913
       },
-      "holonomicAngle": 180.0,
-      "isReversal": false,
+      "holonomicAngle": -90.0,
+      "isReversal": true,
       "velOverride": null,
       "isLocked": false,
       "isStopPoint": true,
       "stopEvent": {
-        "names": [],
-        "executionBehavior": "parallel",
-        "waitBehavior": "none",
-        "waitTime": 0
+        "names": [
+          "spit"
+        ],
+        "executionBehavior": "sequential",
+        "waitBehavior": "before",
+        "waitTime": 3.0
       }
     },
     {
       "anchorPoint": {
-        "x": 4.068002665919861,
-        "y": 3.0
+        "x": 5.79229705467958,
+        "y": 3.4714271137943995
       },
       "prevControl": {
-        "x": 5.455325857556408,
-        "y": 3.0
+        "x": 4.4790927188691985,
+        "y": 3.3800737686945475
       },
       "nextControl": null,
-      "holonomicAngle": 180.0,
+      "holonomicAngle": 90.5729386976835,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,

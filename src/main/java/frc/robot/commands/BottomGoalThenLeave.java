@@ -7,6 +7,7 @@ package frc.robot.commands;
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
 
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants;
@@ -24,9 +25,9 @@ public class BottomGoalThenLeave extends SequentialCommandGroup {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
-      new ParallelCommandGroup(
-        new SetArmState(au, ArmState.RETRACT),
-        new AutoFollowTrajectorySwerve(du, PathPlanner.loadPath("Exit", new PathConstraints(
+      new SequentialCommandGroup(
+        new SpitSeconds(gu, 1),
+        new AutoFollowTrajectorySwerve(du, PathPlanner.loadPath("spitThenLeave", new PathConstraints(
         Constants.ALIGN_TO_TAG_MAX_VELOCITY, Constants.ALIGN_TO_TAG_MAX_ACCELERATION)))
       )
       

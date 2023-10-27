@@ -69,27 +69,27 @@ public class DriveUtil extends SubsystemBase {
 			}, new Pose2d(0.0, 0.0, new Rotation2d()));
 
 	public void start() {
-		if (started){
-			return;
-		}
-		started = true;		
-		// calibrateGyro();
-		//Pose2d robotPose = RobotContainer.getFieldPosed2dFromNearestCameraTarget();
-		//if (robotPose == null){
+		// if (started){
+		// 	return;
+		// }
+		// started = true;		
+		// // calibrateGyro();
+		// //Pose2d robotPose = RobotContainer.getFieldPosed2dFromNearestCameraTarget();
+		// //if (robotPose == null){
 			if(DriverStation.getAlliance() == Alliance.Red){
 				RobotContainer.allianceOrientation = 180;
-				//resetPose(new Pose2d(new Translation2d(14.5, 5), Rotation2d.fromDegrees(0)));
-				System.out.println("Reset Pose");
-			} else {
-				RobotContainer.allianceOrientation = 180;//180 because blue controls are backwards. test to make sure
-				//resetPose(new Pose2d(new Translation2d(2.00, 5.00), Rotation2d.fromDegrees(180)));
-				System.out.println("Reset Pose");
+		// 		//resetPose(new Pose2d(new Translation2d(14.5, 5), Rotation2d.fromDegrees(0)));
+		// 		System.out.println("Reset Pose");
+		 	} else {
+		 		RobotContainer.allianceOrientation = 180;//180 because blue controls are backwards. test to make sure
+		// 		//resetPose(new Pose2d(new Translation2d(2.00, 5.00), Rotation2d.fromDegrees(180)));
+		// 		System.out.println("Reset Pose");
 
-			}
-		//} else {
-		//	resetPose(robotPose);
-		//	System.out.println("Reset Pose");
-		//}
+		 	}
+		// //} else {
+		// //	resetPose(robotPose);
+		// //	System.out.println("Reset Pose");
+		// //}
 	}
 
 	public double deadzone(double input){
@@ -102,18 +102,27 @@ public class DriveUtil extends SubsystemBase {
 
 	public void driveRobot(boolean fieldRelative) {
 		int xSign = (int)Math.signum(RobotContainer.getDriverLeftXboxY());
-		double xSpeed = xSign * Math.pow(deadzone(RobotContainer.getDriverLeftXboxY()), 2) * Constants.MAX_LINEAR_SPEED * Math.cos(Math.toRadians(RobotContainer.allianceOrientation)); //reversed x and y so that up on controller is
+		double xSpeed = xSign * Math.pow(deadzone(RobotContainer.getDriverLeftXboxY()), 2) 
+						* Constants.MAX_LINEAR_SPEED 
+						* Math.cos(Math.toRadians(RobotContainer.allianceOrientation))
+						* ((RobotContainer.getDriverRightXboxTrigger() > .5) ? .25 : 1); //reversed x and y so that up on controller is
 
 		int ySign = (int)Math.signum(RobotContainer.getDriverLeftXboxX());
-		double ySpeed = ySign * Math.pow(deadzone(RobotContainer.getDriverLeftXboxX()), 2) * Constants.MAX_LINEAR_SPEED * Math.cos(Math.toRadians(RobotContainer.allianceOrientation)); //reversed x and y so that up on controller is
+		double ySpeed = ySign * Math.pow(deadzone(RobotContainer.getDriverLeftXboxX()), 2) 
+						* Constants.MAX_LINEAR_SPEED 
+						* Math.cos(Math.toRadians(RobotContainer.allianceOrientation))
+						* ((RobotContainer.getDriverRightXboxTrigger() > .5) ? .25 : 1); //reversed x and y so that up on controller is
 
+		double omega = deadzone(RobotContainer.getDriverRightXboxX()) 
+						* Math.toRadians(Constants.MAX_ANGULAR_SPEED) 
+						* ((RobotContainer.getDriverRightXboxTrigger() > .5) ? .25 : 1);
 
 		var swerveModuleStates = kinematics.toSwerveModuleStates(
 				fieldRelative
 						? ChassisSpeeds.fromFieldRelativeSpeeds(
 								xSpeed, //reversed x and y so that up on controller is
 								ySpeed, //forward from driver pov
-								deadzone(RobotContainer.getDriverRightXboxX()) * Math.toRadians(Constants.MAX_ANGULAR_SPEED), 
+								omega, 
 								m_odometry.getPoseMeters().getRotation())
 						: new ChassisSpeeds(RobotContainer.getDriverLeftXboxY() * Constants.MAX_LINEAR_SPEED,
 								RobotContainer.getDriverLeftXboxX() * Constants.MAX_LINEAR_SPEED,//Note y and x swapped for first 2 arguments is not intuitive, x is "forward"
@@ -151,6 +160,11 @@ public class DriveUtil extends SubsystemBase {
 
 	public Pose2d getPose() {
 		return m_odometry.getPoseMeters();
+	}
+
+	public Pose2d getAngleNegatedPose(){
+		Pose2d p=getPose();
+		return new Pose2d(p.getTranslation(), p.getRotation().times(-1));
 	}
 
 	public double getHeading() {
