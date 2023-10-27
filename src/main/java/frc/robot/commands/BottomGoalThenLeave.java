@@ -28,7 +28,7 @@ public class BottomGoalThenLeave extends SequentialCommandGroup {
       new SequentialCommandGroup(
         new SpitSeconds(gu, 1),
         new AutoFollowTrajectorySwerve(du, PathPlanner.loadPath("spitThenLeave", new PathConstraints(
-        Constants.ALIGN_TO_TAG_MAX_VELOCITY, Constants.ALIGN_TO_TAG_MAX_ACCELERATION)))
+        Constants.MAX_PATH_VELOCITY, Constants.MAX_PATH_ACCELERATION)))
       )
       
     );
