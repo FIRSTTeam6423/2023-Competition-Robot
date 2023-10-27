@@ -26,10 +26,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.AlignToNearestGridTag;
 import frc.robot.commands.AutoBalance;
 import frc.robot.commands.AutoFollowTrajectorySwerve;
+import frc.robot.commands.BottomGoalThenLeave;
 //import frc.robot.commands.ExitAndBalance;
 import frc.robot.commands.OperateDrive;
 import frc.robot.commands.OperateGrab;
@@ -62,6 +64,7 @@ public class RobotContainer {
   private final OperateArm operateArm = new OperateArm(armUtil);
 
   private static XboxController driver;
+  private static CommandXboxController driverCommandController;
   private static Joystick operator;
 
   private static JoystickButton parallelToggleButton;
@@ -75,6 +78,7 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     driver = new XboxController(Constants.XBOX_DRIVER);
+    driverCommandController= new CommandXboxController(Constants.XBOX_DRIVER);
     operator = new Joystick(Constants.JOYSTICK_OPERATOR);
 
 
@@ -82,20 +86,21 @@ public class RobotContainer {
     retractWristButton = new JoystickButton(operator, 4);
     parallelToggleButton = new JoystickButton(operator, 5);
     cargoRetractButton = new JoystickButton(operator, 6);
+
     // Configure the button bindings
     configureButtonBindings();
     configureDefaultCommands();
 
     // autoChooser.setDefaultOption("Low goal arm state", new SetArmPresetState(armUtil, ArmState.LOW_GOAL));
     // autoChooser.setDefaultOption("Middle goal arm state", new SetArmPresetState(armUtil, ArmState.MIDDLE_GOAL));
-    autoChooser.addOption("Align to grid tag", new AlignToNearestGridTag(driveUtil));
+    ///autoChooser.addOption("Align to grid tag", new AlignToNearestGridTag(driveUtil));
     // autoChooser.addOption("Bottom Goal Then Leave", new BottomGoalThenLeave(grabUtil, driveUtil, armUtil));
-    autoChooser.addOption("Grab and move back", new AutoFollowTrajectorySwerve(driveUtil, 
-      PathPlanner.loadPath("autoPickupAndAlign", new PathConstraints(
-      Constants.ALIGN_TO_TAG_MAX_VELOCITY, Constants.ALIGN_TO_TAG_MAX_ACCELERATION))));
+    //autoChooser.addOption("Grab and move back", new AutoFollowTrajectorySwerve(driveUtil, 
+      //PathPlanner.loadPath("autoPickupAndAlign", new PathConstraints(
+      //Constants.ALIGN_TO_TAG_MAX_VELOCITY, Constants.ALIGN_TO_TAG_MAX_ACCELERATION))));
     //autoChooser.addOption("align ot thing", new ExitAndBalance(driveUtil));
-    autoChooser.addOption("spit 1 sec", new SpitCubeThenPush(grabUtil, driveUtil, 0.25));
-    autoChooser.addOption("Balance Test", new AutoBalance(driveUtil));
+    //autoChooser.addOption("spit 1 sec", new SpitCubeThenPush(grabUtil, driveUtil, 0.25));
+    autoChooser.addOption("Spit + Exit", new BottomGoalThenLeave(grabUtil, driveUtil, armUtil));
     autoChooser.addOption("Two Cone Auto", new TwoScoreAuto( 
       driveUtil, 
       grabUtil, 
@@ -120,6 +125,9 @@ public class RobotContainer {
     }));
     cargoRetractButton.onTrue(new InstantCommand(()->{
       armUtil.setWristState(WristState.CARGO_RETRACT);
+    }));
+    driverCommandController.x().onTrue(new InstantCommand(()->{
+      driveUtil.flipOrientation();
     }));
   }
 
