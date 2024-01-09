@@ -201,17 +201,20 @@ public final class Constants {
      * y-values can be track/2
      * keep signs
      */
+    //NOTE:
+    //X IS FORWARD/BACKWARD NOT LEFT RIGHT
+    //Y IS LEFT/RIGHT
     public static final double TOPLEFT_X = 0.224;
-    public static final double TOPLEFT_Y = 0.224;
+    public static final double TOPLEFT_Y = 0.224; //swap to negative
     public static final double TOPLEFT_ANGLE = 45;
     public static final double TOPRIGHT_X = 0.224;
-    public static final double TOPRIGHT_Y = -0.224;
+    public static final double TOPRIGHT_Y = -0.224; //swap to positive
     public static final double TOPRIGHT_ANGLE = 315;
     public static final double BOTTOMLEFT_X = -0.224;
-    public static final double BOTTOMLEFT_Y = 0.224;
+    public static final double BOTTOMLEFT_Y = 0.224; //swap to negative
     public static final double BOTTOMLEFT_ANGLE = 135;
     public static final double BOTTOMRIGHT_X = -0.224;
-    public static final double BOTTOMRIGHT_Y = -0.224;
+    public static final double BOTTOMRIGHT_Y = -0.224; //swap to positve
     public static final double BOTTOMRIGHT_ANGLE = 225;
     /**
      * Controller Input Device Mapping
