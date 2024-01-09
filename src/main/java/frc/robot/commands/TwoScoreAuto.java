@@ -28,18 +28,6 @@ public class TwoScoreAuto extends SequentialCommandGroup {
     // addCommands(new FooCommand(), new BarCommand());
     HashMap<String, Command> eventMap = new HashMap<String, Command>();
     eventMap.put("spit", new SpitSeconds(gu, 3));
-    //System.out.println("EAGHHHHHH"+path.getMarkers());
-    // addCommands(
-    //   new SetArmState(au, ArmState.LOW),
-    //   new SpitSeconds(gu, 1),
-    //   new SetArmState(au, ArmState.RETRACT),
-    //   new AutoFollowTrajectorySwerve(du, path, new PathConstraints( Constants.ALIGN_TO_TAG_MAX_VELOCITY, Constants.ALIGN_TO_TAG_MAX_ACCELERATION)),
-    //   new SpitSeconds(gu, 2),//does something
-    //   //follows path back
-    //   new AutoFollowTrajectorySwerve(du, path, new PathConstraints(
-    //     Constants.ALIGN_TO_TAG_MAX_VELOCITY, Constants.ALIGN_TO_TAG_MAX_ACCELERATION)),
-    //   new AutoAlignForScore(du) 
-    // );
     addCommands(
       new ExecutePathGroupWithEvents(du, "TwoScoreAuto", eventMap)
     );

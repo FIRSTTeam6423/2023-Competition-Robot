@@ -12,6 +12,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
@@ -76,15 +78,8 @@ public class SwerveModule extends SubsystemBase {
 	public void setDesiredState(SwerveModuleState desiredState) {
 		// Optimize the reference state to avoid spinning further than 90 degrees
 		double curRotDeg = pivotEncoder.getAbsolutePosition() * Constants.DEGREES_PER_ROTATION - Constants.ABS_ENCODER_OFFSETS[this.encoderID];//-pivotEncoder.getAbsolutePosition() * 360 - Constants.ABS_ENCODER_OFFSETS[this.encoderID];
-		state = SwerveModuleState.optimize(desiredState, Rotation2d.fromDegrees(curRotDeg));
-		// Different constant need for drivePIDController, convert m/s to rpm
-		driveMotor.set(drivePIDController.calculate(driveEncoder.getVelocity(), state.speedMetersPerSecond));
-		pivotMotor.set(pivotPIDController.calculate(curRotDeg, state.angle.getDegrees()));
-	}
-
-	public void setDesiredStateFromPathPlanner(SwerveModuleState desiredState) {
-		// Optimize the reference state to avoid spinning further than 90 degrees
-		double curRotDeg = pivotEncoder.getAbsolutePosition() * Constants.DEGREES_PER_ROTATION - Constants.ABS_ENCODER_OFFSETS[this.encoderID];//-pivotEncoder.getAbsolutePosition() * 360 - Constants.ABS_ENCODER_OFFSETS[this.encoderID];
+		//if(this.encoderID == 7) {
+		//}"
 		state = SwerveModuleState.optimize(desiredState, Rotation2d.fromDegrees(curRotDeg));
 		// Different constant need for drivePIDController, convert m/s to rpm
 		driveMotor.set(drivePIDController.calculate(driveEncoder.getVelocity(), state.speedMetersPerSecond));
@@ -123,6 +118,6 @@ public class SwerveModule extends SubsystemBase {
 
 	@Override
 	public void periodic() {
-		
+
 	}
 }

@@ -70,6 +70,7 @@ public class RobotContainer {
   private static JoystickButton parallelToggleButton;
   private static JoystickButton retractWristButton;
   private static JoystickButton cargoRetractButton;
+  private static JoystickButton armFixButton;
 
   private SendableChooser<Command> autoChooser = new SendableChooser<>();
   
@@ -86,6 +87,8 @@ public class RobotContainer {
     retractWristButton = new JoystickButton(operator, 4);
     parallelToggleButton = new JoystickButton(operator, 5);
     cargoRetractButton = new JoystickButton(operator, 6);
+    armFixButton = new JoystickButton(operator, 11);
+
 
     // Configure the button bindings
     configureButtonBindings();
@@ -128,6 +131,9 @@ public class RobotContainer {
     }));
     driverCommandController.x().onTrue(new InstantCommand(()->{
       driveUtil.flipOrientation();
+    }));
+    armFixButton.onTrue(new InstantCommand(()->{
+      armUtil.cancelArmInitialize();
     }));
   }
 
