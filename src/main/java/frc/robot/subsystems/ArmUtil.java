@@ -37,6 +37,7 @@ public class ArmUtil extends SubsystemBase{
     private double armStateTimeElapsed = 0; //Time elapsed since last arm state change
 
     private double wristStateTimeElapsed = 0;
+    private double timeWristInRetract = 0;
 
     public ArmUtil() {
         //Trapezoid Profile for preset states
@@ -52,6 +53,7 @@ public class ArmUtil extends SubsystemBase{
 
         armState = ArmState.INITIALIZE;
         wristState = WristState.RETRACTED;
+        timeWristInRetract = 0;
 
         initMotors();
 
@@ -154,6 +156,14 @@ public class ArmUtil extends SubsystemBase{
         armStateTimeElapsed = 0;
     }
 
+    public void cancelArmInitialize() {
+        wristEncoder.setPosition(0);
+        //arm1Encoder.setPosition(0);
+        //arm2Encoder.setPosition(0);
+        armState = ArmState.CONTROL;
+        setWristState(WristState.CARGO_RETRACT);
+    }
+
     public void setWristState(WristState state) {
         if (armState == ArmState.INITIALIZE) return;
         wristState = state;
@@ -177,7 +187,7 @@ public class ArmUtil extends SubsystemBase{
 
                 break;
             case RETRACTED:
-
+                timeWristInRetract = 0;
                 break;
         }
         wristStateTimeElapsed = 0;
@@ -352,11 +362,17 @@ public class ArmUtil extends SubsystemBase{
     }
 
     public boolean operateWristToLimitSwitch(){
+        if (timeWristInRetract > 2) {
+            System.out.println("TIMEOUT FOR REACH SWITCH");
+            wristEncoder.setPosition(10); //MAGIC OFFSET
+            return true;
+        }
         if(!wristLimitSwitch.get()) {
             wristMotor.set(0);
             return true;
         }
         wristMotor.set(0.25);
+        timeWristInRetract += .02;
         return false;
     }
 
