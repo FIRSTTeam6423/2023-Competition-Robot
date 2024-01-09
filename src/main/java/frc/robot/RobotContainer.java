@@ -87,11 +87,8 @@ public class RobotContainer {
     retractWristButton = new JoystickButton(operator, 4);
     parallelToggleButton = new JoystickButton(operator, 5);
     cargoRetractButton = new JoystickButton(operator, 6);
-<<<<<<< HEAD
     armFixButton = new JoystickButton(operator, 11);
 
-=======
->>>>>>> 54ee4f0 (Controller button to invert controls)
 
     // Configure the button bindings
     configureButtonBindings();
@@ -135,12 +132,9 @@ public class RobotContainer {
     driverCommandController.x().onTrue(new InstantCommand(()->{
       driveUtil.flipOrientation();
     }));
-<<<<<<< HEAD
     armFixButton.onTrue(new InstantCommand(()->{
       armUtil.cancelArmInitialize();
     }));
-=======
->>>>>>> 54ee4f0 (Controller button to invert controls)
   }
 
   /**
