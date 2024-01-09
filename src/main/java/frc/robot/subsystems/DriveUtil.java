@@ -104,13 +104,13 @@ public class DriveUtil extends SubsystemBase {
 		int xSign = (int)Math.signum(RobotContainer.getDriverLeftXboxY());
 		double xSpeed = xSign * Math.pow(deadzone(RobotContainer.getDriverLeftXboxY()), 2) 
 						* Constants.MAX_LINEAR_SPEED 
-						* Math.cos(Math.toRadians(RobotContainer.allianceOrientation))
+						//* Math.cos(Math.toRadians(RobotContainer.allianceOrientation))
 						* ((RobotContainer.getDriverRightXboxTrigger() > .5) ? .25 : 1); //reversed x and y so that up on controller is
 
 		int ySign = (int)Math.signum(RobotContainer.getDriverLeftXboxX());
 		double ySpeed = ySign * Math.pow(deadzone(RobotContainer.getDriverLeftXboxX()), 2) 
 						* Constants.MAX_LINEAR_SPEED 
-						* Math.cos(Math.toRadians(RobotContainer.allianceOrientation))
+						//* Math.cos(Math.toRadians(RobotContainer.allianceOrientation))
 						* ((RobotContainer.getDriverRightXboxTrigger() > .5) ? .25 : 1); //reversed x and y so that up on controller is
 
 		double omega = deadzone(RobotContainer.getDriverRightXboxX()) 
@@ -147,14 +147,8 @@ public class DriveUtil extends SubsystemBase {
 		m_backRight.setDesiredState(states[3]);
 	}
 
-	public void setSwerveModuleStatesFromPathPlanner(SwerveModuleState[] states) {
-		m_frontLeft.setDesiredStateFromPathPlanner(states[0]);
-		m_frontRight.setDesiredStateFromPathPlanner(states[1]);
-		m_backLeft.setDesiredStateFromPathPlanner(states[2]);
-		m_backRight.setDesiredStateFromPathPlanner(states[3]);
-	}
-
 	public Rotation2d getHeading2d() {
+		//return Rotation2d.fromDegrees(-gyro.getAngle());
 		return gyro.getRotation2d();
 	}
 
@@ -184,7 +178,7 @@ public class DriveUtil extends SubsystemBase {
 	}
 
 	public void resetPose(Pose2d pose) {
-		m_odometry.resetPosition(gyro.getRotation2d(), new SwerveModulePosition[] {
+		m_odometry.resetPosition(getHeading2d(), new SwerveModulePosition[] {
 			m_frontLeft.getPosition(),
 			m_frontRight.getPosition(),
 			m_backLeft.getPosition(),
@@ -206,7 +200,8 @@ public class DriveUtil extends SubsystemBase {
 		// This method will be called once per scheduler run
 		SmartDashboard.putNumber("x pos",m_odometry.getPoseMeters().getX());
 		SmartDashboard.putNumber("y pos",m_odometry.getPoseMeters().getY());
-		SmartDashboard.putNumber("odo angle",m_odometry.getPoseMeters().getRotation().getDegrees());
+		SmartDashboard.putNumber("odo angle",getPose().getRotation().getDegrees());
+		
 
 		SmartDashboard.putNumber("pitch", gyro.getPitch());
 		SmartDashboard.putNumber("yaw", gyro.getYaw());
@@ -214,7 +209,7 @@ public class DriveUtil extends SubsystemBase {
 
 		
 
-		m_odometry.update(gyro.getRotation2d(),
+		m_odometry.update(getHeading2d(),
 				new SwerveModulePosition[] {
 						m_frontLeft.getPosition(), m_frontRight.getPosition(),
 						m_backLeft.getPosition(), m_backRight.getPosition()
