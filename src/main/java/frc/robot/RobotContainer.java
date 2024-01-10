@@ -32,6 +32,7 @@ import frc.robot.commands.AlignToNearestGridTag;
 import frc.robot.commands.AutoBalance;
 import frc.robot.commands.AutoFollowTrajectorySwerve;
 import frc.robot.commands.BottomGoalThenLeave;
+import frc.robot.commands.LockOntoNote;
 //import frc.robot.commands.ExitAndBalance;
 import frc.robot.commands.OperateDrive;
 import frc.robot.commands.OperateGrab;
@@ -132,9 +133,11 @@ public class RobotContainer {
     driverCommandController.x().onTrue(new InstantCommand(()->{
       driveUtil.flipOrientation();
     }));
+    driverCommandController.rightBumper().onTrue(new LockOntoNote(driveUtil));
     armFixButton.onTrue(new InstantCommand(()->{
       armUtil.cancelArmInitialize();
     }));
+
   }
 
   /**
