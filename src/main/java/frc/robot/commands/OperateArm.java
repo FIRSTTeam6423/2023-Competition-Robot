@@ -11,9 +11,6 @@ import frc.robot.subsystems.ArmUtil;
 public class OperateArm extends CommandBase {
   /** Creates a new OperateDrive. */
   private ArmUtil au;
-  private RetractArm initializeCommand;
-  private boolean wristZeroed;
-  private boolean armZeroed;
 
   public OperateArm(ArmUtil au) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -29,7 +26,7 @@ public class OperateArm extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-      au.operateArm(-RobotContainer.getOperatorJoystickY());
+    au.operateArm(-RobotContainer.getOperatorJoystickY());
   }
 
 
