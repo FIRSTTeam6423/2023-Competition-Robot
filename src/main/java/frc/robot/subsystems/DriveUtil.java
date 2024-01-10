@@ -4,22 +4,23 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import com.kauailabs.navx.frc.AHRS;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
-import com.kauailabs.navx.frc.AHRS;
 
 public class DriveUtil extends SubsystemBase {
 	// P denotes Pivoting, D driving
@@ -116,13 +117,13 @@ public class DriveUtil extends SubsystemBase {
 		double omega = deadzone(RobotContainer.getDriverRightXboxX()) 
 						* Math.toRadians(Constants.MAX_ANGULAR_SPEED) 
 						* ((RobotContainer.getDriverRightXboxTrigger() > .5) ? .25 : 1);
-		//varible bruh = (imgood == ture) ? somevalue : someothervalue
+		
 		var swerveModuleStates = kinematics.toSwerveModuleStates(
 				fieldRelative
 						? ChassisSpeeds.fromFieldRelativeSpeeds(
 								xSpeed, //reversed x and y so that up on controller is
 								ySpeed, //forward from driver pov
-								var objLock = (RobotContainer.getDriverRightBumper() = true) ? omega * -1 : omega, 
+								(RobotContainer.getDriverRightBumper() == true ? omega : omega),
 								m_odometry.getPoseMeters().getRotation())
 						: new ChassisSpeeds(RobotContainer.getDriverLeftXboxY() * Constants.MAX_LINEAR_SPEED,
 								RobotContainer.getDriverLeftXboxX() * Constants.MAX_LINEAR_SPEED,//Note y and x swapped for first 2 arguments is not intuitive, x is "forward"
@@ -140,6 +141,8 @@ public class DriveUtil extends SubsystemBase {
 		setSwerveModuleStates(kinematics.toSwerveModuleStates(chassisSpeeds));
 	}
 
+	
+	
 	public void setSwerveModuleStates(SwerveModuleState[] states) {
 		m_frontLeft.setDesiredState(states[0]);
 		m_frontRight.setDesiredState(states[1]);
