@@ -19,6 +19,11 @@ public class LockOntoNote extends CommandBase {
   private boolean hasTarget;
   private PhotonTrackedTarget target;
 
+  private double yaw;
+  private double pitch;
+  private double area;
+  private double skew;
+
   public double deadzone(double input){
 		if(Math.abs(input) >= Constants.XBOX_STICK_DEADZONE_WIDTH){
 			return input;
@@ -53,12 +58,19 @@ public class LockOntoNote extends CommandBase {
   public void initialize() {
     var result = JohnCam.getLatestResult();
     hasTarget = result.hasTargets();
+    if (hasTarget == false) return;
     target = result.getBestTarget();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    yaw = target.getYaw();
+    pitch = target.getPitch();
+    area = target.getArea();
+    skew = target.getSkew();
+
+    
   }
 
   // Called once the command ends or is interrupted.
