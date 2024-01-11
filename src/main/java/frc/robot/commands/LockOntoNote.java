@@ -4,6 +4,9 @@
 
 package frc.robot.commands;
 
+import org.photonvision.PhotonCamera;
+import org.photonvision.targeting.PhotonTrackedTarget;
+
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
@@ -12,6 +15,10 @@ import frc.robot.subsystems.DriveUtil;
 
 public class LockOntoNote extends CommandBase {
   /** Creates a new DriveRobot. */
+  public PhotonCamera JohnCam = new PhotonCamera("johncam");
+  private boolean hasTarget;
+  private PhotonTrackedTarget target;
+
   public double deadzone(double input){
 		if(Math.abs(input) >= Constants.XBOX_STICK_DEADZONE_WIDTH){
 			return input;
@@ -37,17 +44,22 @@ public class LockOntoNote extends CommandBase {
 		double omega = deadzone(RobotContainer.getDriverRightXboxX()) 
 						* Math.toRadians(Constants.MAX_ANGULAR_SPEED) 
 						* ((RobotContainer.getDriverRightXboxTrigger() > .5) ? .25 : 1);
-
-    du.setChassisSpeeds(ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, omega * -1, du.getHeading2d()));
+    
+    du.setChassisSpeeds(ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, omega, du.getHeading2d()));
   } 
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    var result = JohnCam.getLatestResult();
+    hasTarget = result.hasTargets();
+    target = result.getBestTarget();
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+  }
 
   // Called once the command ends or is interrupted.
   @Override
