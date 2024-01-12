@@ -8,6 +8,7 @@ package frc.robot.commands;
 import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -18,6 +19,7 @@ import frc.robot.subsystems.DriveUtil;
 public class LockOntoNote extends CommandBase {
   /** Creates a new DriveRobot. */
   public PhotonCamera JohnCam = new PhotonCamera("johncam");
+  private PIDController turnPID = new PIDController(0, 0, 0);
   private DriveUtil du;
   private PhotonTrackedTarget target;
 
@@ -34,6 +36,7 @@ public class LockOntoNote extends CommandBase {
   
   public LockOntoNote(DriveUtil du) {
     this.du = du;
+    turnPID.enableContinuousInput(-Math.PI, Math.PI);
 
   } 
 
@@ -46,13 +49,23 @@ public class LockOntoNote extends CommandBase {
   @Override
   public void execute() {
     var result = JohnCam.getLatestResult();
-    if (result.hasTargets() == false) return;
-    target = result.getBestTarget();
-    yaw = target.getYaw();
-    SmartDashboard.putNumber("X note position", yaw);
-    lockedRotation = (yaw <= 50) ? 25 : yaw * yaw * 0.01;
-    SmartDashboard.putNumber("new rotation", lockedRotation);
+    double omega = 0;
+    if (result.hasTargets() == false) {
+		  omega = deadzone(RobotContainer.getDriverRightXboxX())
+						* Math.toRadians(Constants.MAX_ANGULAR_SPEED) 
+						* ((RobotContainer.getDriverRightXboxTrigger() > .5) ? .25 : 1);
+    } else {
+      target = result.getBestTarget();
+      yaw = target.getYaw();
+      omega = turnPID.calculate(du.getHeading2d().getRadians(), 1);
+      //omega = -turnPID.calculate(yaw, 0);
+      SmartDashboard.putNumber("X note position", yaw);
+    }
+    
+    //rotation = //(yaw >= 50) ? 25 : yaw * yaw * 0.01;
+    //SmartDashboard.putNumber("new rotation", yaw);
     // Use addRequirements() here to declare subsystem dependencies.
+
     int xSign = (int)Math.signum(RobotContainer.getDriverLeftXboxY());
 		double xSpeed = xSign * Math.pow(deadzone(RobotContainer.getDriverLeftXboxY()), 2) 
 						* Constants.MAX_LINEAR_SPEED 
@@ -65,9 +78,6 @@ public class LockOntoNote extends CommandBase {
 						//* Math.cos(Math.toRadians(RobotContainer.allianceOrientation))
 						* ((RobotContainer.getDriverRightXboxTrigger() > .5) ? .25 : 1); //reversed x and y so that up on controller is
 
-		double omega = deadzone(RobotContainer.getDriverRightXboxX())
-						* Math.toRadians(Constants.MAX_ANGULAR_SPEED) 
-						* ((RobotContainer.getDriverRightXboxTrigger() > .5) ? .25 : 1);
     
     
     du.setChassisSpeeds(ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, omega, du.getHeading2d()));
