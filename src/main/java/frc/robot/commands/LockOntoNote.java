@@ -18,14 +18,11 @@ import frc.robot.subsystems.DriveUtil;
 public class LockOntoNote extends CommandBase {
   /** Creates a new DriveRobot. */
   public PhotonCamera JohnCam = new PhotonCamera("johncam");
-  private boolean hasTarget;
+  private DriveUtil du;
   private PhotonTrackedTarget target;
 
   private double yaw;
-  private double pitch;
-  private double area;
-  private double skew;
-  public double lockedRotatoin;
+  public double lockedRotation;
 
   public double deadzone(double input){
 		if(Math.abs(input) >= Constants.XBOX_STICK_DEADZONE_WIDTH){
@@ -36,6 +33,25 @@ public class LockOntoNote extends CommandBase {
 	}
   
   public LockOntoNote(DriveUtil du) {
+    this.du = du;
+
+  } 
+
+  // Called when the command is initially scheduled.
+  @Override
+  public void initialize() {
+  }
+
+  // Called every time the scheduler runs while the command is scheduled.
+  @Override
+  public void execute() {
+    var result = JohnCam.getLatestResult();
+    if (result.hasTargets() == false) return;
+    target = result.getBestTarget();
+    yaw = target.getYaw();
+    SmartDashboard.putNumber("X note position", yaw);
+    lockedRotation = (yaw <= 50) ? 25 : yaw * yaw * 0.01;
+    SmartDashboard.putNumber("new rotation", lockedRotation);
     // Use addRequirements() here to declare subsystem dependencies.
     int xSign = (int)Math.signum(RobotContainer.getDriverLeftXboxY());
 		double xSpeed = xSign * Math.pow(deadzone(RobotContainer.getDriverLeftXboxY()), 2) 
@@ -55,27 +71,6 @@ public class LockOntoNote extends CommandBase {
     
     
     du.setChassisSpeeds(ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, omega, du.getHeading2d()));
-  } 
-
-  // Called when the command is initially scheduled.
-  @Override
-  public void initialize() {
-    var result = JohnCam.getLatestResult();
-    hasTarget = result.hasTargets();
-    if (hasTarget == false) return;
-    target = result.getBestTarget();
-  }
-
-  // Called every time the scheduler runs while the command is scheduled.
-  @Override
-  public void execute() {
-    yaw = target.getYaw();
-    pitch = target.getPitch();
-    area = target.getArea();
-    skew = target.getSkew();
-    SmartDashboard.putNumber("X note position", yaw);
-    lockedRotatoin = (yaw <= 50) ? 25 : yaw * yaw * 0.01;
-    SmartDashboard.putNumber("new rotatoin", lockedRotatoin);
   }
 
   // Called once the command ends or is interrupted.
