@@ -25,7 +25,7 @@ public class LockOntoNote extends CommandBase {
   private double pitch;
   private double area;
   private double skew;
-  public double finalRot;
+  public double lockedRotatoin;
 
   public double deadzone(double input){
 		if(Math.abs(input) >= Constants.XBOX_STICK_DEADZONE_WIDTH){
@@ -49,9 +49,10 @@ public class LockOntoNote extends CommandBase {
 						//* Math.cos(Math.toRadians(RobotContainer.allianceOrientation))
 						* ((RobotContainer.getDriverRightXboxTrigger() > .5) ? .25 : 1); //reversed x and y so that up on controller is
 
-		double omega = deadzone(RobotContainer.getDriverRightXboxX()) 
+		double omega = deadzone(RobotContainer.getDriverRightXboxX())
 						* Math.toRadians(Constants.MAX_ANGULAR_SPEED) 
 						* ((RobotContainer.getDriverRightXboxTrigger() > .5) ? .25 : 1);
+    
     
     du.setChassisSpeeds(ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, omega, du.getHeading2d()));
   } 
@@ -73,8 +74,8 @@ public class LockOntoNote extends CommandBase {
     area = target.getArea();
     skew = target.getSkew();
     SmartDashboard.putNumber("X note position", yaw);
-    finalRot = yaw + 1;
-    
+    lockedRotatoin = (yaw <= 50) ? 25 : yaw * yaw * 0.01;
+    SmartDashboard.putNumber("new rotatoin", lockedRotatoin);
   }
 
   // Called once the command ends or is interrupted.
