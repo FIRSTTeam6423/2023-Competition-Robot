@@ -9,6 +9,7 @@ import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
@@ -24,6 +25,7 @@ public class LockOntoNote extends CommandBase {
   private double pitch;
   private double area;
   private double skew;
+  public double finalRot;
 
   public double deadzone(double input){
 		if(Math.abs(input) >= Constants.XBOX_STICK_DEADZONE_WIDTH){
@@ -70,7 +72,8 @@ public class LockOntoNote extends CommandBase {
     pitch = target.getPitch();
     area = target.getArea();
     skew = target.getSkew();
-    System.out.println(yaw);
+    SmartDashboard.putNumber("X note position", yaw);
+    finalRot = yaw + 1;
     
   }
 
