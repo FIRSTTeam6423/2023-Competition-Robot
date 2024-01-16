@@ -116,13 +116,13 @@ public class DriveUtil extends SubsystemBase {
 		double omega = deadzone(RobotContainer.getDriverRightXboxX()) 
 						* Math.toRadians(Constants.MAX_ANGULAR_SPEED) 
 						* ((RobotContainer.getDriverRightXboxTrigger() > .5) ? .25 : 1);
-
+		//varible bruh = (imgood == ture) ? somevalue : someothervalue
 		var swerveModuleStates = kinematics.toSwerveModuleStates(
 				fieldRelative
 						? ChassisSpeeds.fromFieldRelativeSpeeds(
 								xSpeed, //reversed x and y so that up on controller is
 								ySpeed, //forward from driver pov
-								omega, 
+								var objLock = (RobotContainer.getDriverRightBumper() = true) ? omega * -1 : omega, 
 								m_odometry.getPoseMeters().getRotation())
 						: new ChassisSpeeds(RobotContainer.getDriverLeftXboxY() * Constants.MAX_LINEAR_SPEED,
 								RobotContainer.getDriverLeftXboxX() * Constants.MAX_LINEAR_SPEED,//Note y and x swapped for first 2 arguments is not intuitive, x is "forward"
