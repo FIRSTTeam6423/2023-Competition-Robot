@@ -19,7 +19,7 @@ import frc.robot.subsystems.DriveUtil;
 public class LockOntoNote extends CommandBase {
   /** Creates a new DriveRobot. */
   public PhotonCamera JohnCam = new PhotonCamera("johncam");
-  private PIDController turnPID = new PIDController(0, 0, 0);
+  private PIDController turnPID = new PIDController(.01, 0, 0);
   private DriveUtil du;
   private PhotonTrackedTarget target;
 
@@ -57,8 +57,8 @@ public class LockOntoNote extends CommandBase {
     } else {
       target = result.getBestTarget();
       yaw = target.getYaw();
-      omega = turnPID.calculate(du.getHeading2d().getRadians(), 1);
-      //omega = -turnPID.calculate(yaw, 0);
+      //omega = turnPID.calculate(du.getHeading2d().getRadians(), );
+      omega = -turnPID.calculate(yaw, 0);
       SmartDashboard.putNumber("X note position", yaw);
     }
     
