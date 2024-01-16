@@ -5,6 +5,8 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -30,6 +32,8 @@ public class DriveUtil extends SubsystemBase {
 	private boolean started = false;
 	private Field2d f2d = new Field2d();
 	private AHRS gyro = new AHRS();
+
+	private static CommandXboxController driverCommandController;
 
 	private final SwerveModule m_frontLeft = new SwerveModule(
 			Constants.FRONTLEFT_DRIVE, 
