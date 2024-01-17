@@ -24,7 +24,7 @@ import frc.robot.subsystems.DriveUtil;
 public class LockOntoNote extends CommandBase {
   /** Creates a new DriveRobot. */
   public PhotonCamera JohnCam = new PhotonCamera("johncam");
-  private PIDController turnPID = new PIDController(25, 0, 0);
+  private PIDController turnPID = new PIDController(60, 0, 0);
   private DriveUtil du;
 
   private Timer timer = new Timer();
