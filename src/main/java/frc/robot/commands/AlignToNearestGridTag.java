@@ -53,6 +53,6 @@ public class AlignToNearestGridTag extends CommandBase {
 
     driveUtil.resetPose(traj.getInitialPose());
 
-    new AutoFollowTrajectorySwerve(driveUtil, traj).schedule();
+    //new AutoFollowTrajectorySwerve(driveUtil, traj).schedule();
   }
 }

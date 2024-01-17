@@ -11,6 +11,7 @@ import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
@@ -18,7 +19,9 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Robot;
+import frc.robot.RobotContainer;
 import frc.robot.subsystems.DriveUtil;
+import frc.robot.util.SwerveController;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
@@ -28,53 +31,78 @@ public class AutoFollowTrajectorySwerve extends CommandBase {
   /** Creates a new AutoFollowTrajectorySwerve. */
   	private DriveUtil du;
   	private PathPlannerTrajectory traj;
+	private SwerveController holonomicController;
 
 	//controlelrs
 	PIDController xController;
 	PIDController yController;
-	PIDController omegaController;
+	PIDController thetaController;
 
 	private Timer timer = new Timer();
-	@Override
- 	public void initialize() {
-		du.start();
-		timer.reset();
-		timer.start();
-		PathPlannerState pInitialState = (PathPlannerState)traj.sample(0);
-		Pose2d initialPose = new Pose2d(
-			traj.getInitialPose().getTranslation(),
-			pInitialState.holonomicRotation
-		);
-		System.out.println("END STATE THING: " + traj.getEndState().holonomicRotation);
-		du.resetPose(initialPose);
-  	}
 
 	public AutoFollowTrajectorySwerve(
 		DriveUtil du, 
 		PathPlannerTrajectory traj, 
 		PIDController xController, 
 		PIDController yController, 
-		PIDController omegaController
+		PIDController thetaController
 	) {
 		this.du = du;
 		this.traj = traj;
 		this.xController=xController;
 		this.yController=yController;
-		this.omegaController=omegaController;
+		this.thetaController = thetaController;
+
+		thetaController.enableContinuousInput(-Math.PI, Math.PI);
+
+		holonomicController = new SwerveController(xController, yController, thetaController);
 	}
+
+	@Override
+ 	public void initialize() {
+		du.start();
+		timer.reset();
+		timer.start();
+
+		PathPlannerState initialState = (PathPlannerState) traj.sample(0);
+		Pose2d initialPose = new Pose2d(
+			traj.getInitialPose().getTranslation(),
+			initialState.holonomicRotation
+		);
+
+		System.out.println("END STATE: " + traj.getEndState().holonomicRotation);
+		du.resetPose(initialPose);
+  	}
 
 	@Override
 	public void execute() {
 		PathPlannerState goal = (PathPlannerState) traj.sample(timer.get());
-		//Trajectory.State wpilibGoal = AllianceFlipUtil.apply(goal);
+		//====NEED TO FLIP TRAJECTORY BASED ON ALLIANCE=====
         Rotation2d swerveRot;
-        //if (Robot.alliance == DriverStation.Alliance.Red) {
-        //    swerveRot = new Rotation2d(
-        //        -goal.holonomicRotation.getCos(),
-        ///        goal.holonomicRotation.getSin());
-        //} else {
-        //    swerveRot = goal.holonomicRotation;
-        //}
+        if (DriverStation.getAlliance() == DriverStation.Alliance.Red) {
+            swerveRot = new Rotation2d(
+                -goal.holonomicRotation.getCos(),
+    	        goal.holonomicRotation.getSin());
+        } else {
+            swerveRot = goal.holonomicRotation;
+        }
+
+		ChassisSpeeds speeds = holonomicController.calculate(
+			du.getPose(), 
+			goal.poseMeters, 
+			goal.velocityMetersPerSecond, 
+			swerveRot
+		);
+		
+		du.setChassisSpeeds(speeds);
+	}
+
+	@Override
+	public void end(boolean interrupted) {}
+
+	@Override
+	public boolean isFinished() {
+		return false;
 	}
 
 	/*PIDController thetaController = new PIDController(.35, .035, 4.5);//new PIDController(4.5, 30, 5);

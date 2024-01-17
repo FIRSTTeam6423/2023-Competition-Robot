@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -18,6 +19,15 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+    /**
+     * GrabUtil Constants
+     */
+
+    public static final int GRAB_MOTOR = 12; 
+    public static final double GRAB_INTAKE_SPEED = 0.75;
+    public static final double GRAB_OUTPUT_SPEED = -0.25;
+    public static final double MIN_GRAB_INTAKE_VOLTAGE = 12.5;//probably wrong
+
     /**
      * ArmUtilConstants
      */
@@ -226,6 +236,17 @@ public final class Constants {
     
     public static final double ARM_JOYSTICK_INPUT_DEADBAND = .25;
 
-
     public static final double XBOX_STICK_DEADZONE_WIDTH=0.05;
+
+    public static final double AUTO_X_P = 9;
+    public static final double AUTO_X_I = 0;
+    public static final double AUTO_X_D = 0;
+
+    public static final double AUTO_Y_P = 9;
+    public static final double AUTO_Y_I = 0;
+    public static final double AUTO_Y_D = 0;
+
+    public static final double AUTO_THETA_P = .35;
+    public static final double AUTO_THETA_I = .035;
+    public static final double AUTO_THETA_D = 4.5;
 }

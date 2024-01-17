@@ -57,7 +57,7 @@ public class RobotContainer {
   private static final GrabUtil grabUtil = new GrabUtil();
   private final OperateGrab operateGrab = new OperateGrab(grabUtil);
 
-  private final OperateDrive operateDrive = new OperateDrive(driveUtil);
+  private final OperateDrive operateDrive = new OperateDrive(driveUtil, true);
 
   private final ArmUtil armUtil = new ArmUtil();
 

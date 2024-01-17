@@ -16,14 +16,12 @@ import frc.robot.util.GrabberState;
 
 public class GrabUtil extends SubsystemBase {
   private CANSparkMax grabMotor;
-  private RelativeEncoder grabEncoder;
   private GrabberState state=GrabberState.OFF;
   private DigitalInput intakeLimitSwitch;
 
   /** Creates a new GrabUtil. */
   public GrabUtil() {
     grabMotor = new CANSparkMax(Constants.GRAB_MOTOR, MotorType.kBrushless);
-    grabEncoder = grabMotor.getEncoder(); 
     intakeLimitSwitch = new DigitalInput(Constants.GRABBER_LIMIT_SWITCH_ID);
   }
   

@@ -11,6 +11,7 @@ import java.util.List;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -31,7 +32,15 @@ public class ExecutePathGroupWithEvents extends SequentialCommandGroup {
     );
     this.du = du;
     for(PathPlannerTrajectory traj : pathGroup){
-      addCommands(new AutoFollowTrajectorySwerve(du,traj));
+      addCommands(
+        new AutoFollowTrajectorySwerve(
+          du,
+          traj, 
+          new PIDController(Constants.AUTO_X_P, Constants.AUTO_X_I, Constants.AUTO_X_D),
+          new PIDController(Constants.AUTO_Y_P, Constants.AUTO_Y_I, Constants.AUTO_Y_D),
+          new PIDController(Constants.AUTO_THETA_P, Constants.AUTO_THETA_I, Constants.AUTO_THETA_D)
+        )
+      );
       for(String name : traj.getEndStopEvent().names){
         Command c=eventMap.get(name);
         if(c != null) addCommands(c);

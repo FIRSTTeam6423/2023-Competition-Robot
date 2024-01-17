@@ -6,6 +6,8 @@ package frc.robot.commands;
 
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
+
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants;
 import frc.robot.subsystems.DriveUtil;
@@ -21,8 +23,16 @@ public class SpitCubeThenPush extends SequentialCommandGroup {
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
       new SpitSeconds(gu, time),
-       new AutoFollowTrajectorySwerve(du, PathPlanner.loadPath("pushcube", new PathConstraints(
-       Constants.ALIGN_TO_TAG_MAX_VELOCITY, Constants.ALIGN_TO_TAG_MAX_ACCELERATION)))
+       new AutoFollowTrajectorySwerve(
+        du, 
+        PathPlanner.loadPath(
+          "pushcube", 
+          new PathConstraints(Constants.ALIGN_TO_TAG_MAX_VELOCITY, Constants.ALIGN_TO_TAG_MAX_ACCELERATION)
+        ),
+        new PIDController(Constants.AUTO_X_P, Constants.AUTO_X_I, Constants.AUTO_X_D),
+        new PIDController(Constants.AUTO_Y_P, Constants.AUTO_Y_I, Constants.AUTO_Y_D),
+        new PIDController(Constants.AUTO_THETA_P, Constants.AUTO_THETA_I, Constants.AUTO_THETA_D)
+      )
     );
   }
 }
