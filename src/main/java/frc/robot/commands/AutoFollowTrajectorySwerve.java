@@ -103,6 +103,7 @@ public class AutoFollowTrajectorySwerve extends CommandBase {
 	@Override
 	public boolean isFinished() {
 		return false;
+		//NEED AN END CONDITION
 	}
 
 	/*PIDController thetaController = new PIDController(.35, .035, 4.5);//new PIDController(4.5, 30, 5);
