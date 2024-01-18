@@ -5,6 +5,8 @@
 
 package frc.robot.commands;
 
+import java.util.List;
+
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonTrackedTarget;
@@ -66,7 +68,13 @@ public class LockOntoNote extends CommandBase {
         //       * ((RobotContainer.getDriverRightXboxTrigger() > .5) ? .25 : 1);
       } else {
         //omega = turnPID.calculate(du.getHeading2d().getRadians(), );
-        omega = turnPID.calculate(-Units.degreesToRadians(result.getBestTarget().getYaw()), 0);
+        List<PhotonTrackedTarget> targetList = result.getTargets();
+        PhotonTrackedTarget target = targetList.get(0);
+        
+        for(int i = 1; i < targetList.size(); i++){
+          if (Math.abs(targetList.get(i).getYaw()) < Math.abs(target.getYaw())) target = targetList.get(i);
+        }
+        omega = turnPID.calculate(-Units.degreesToRadians(target.getYaw()), 0);
         //angleTarget = du.getPose().getRotation().getDegrees() + result.getBestTarget().getYaw();
         //double yaw = result.getBestTarget().getYaw();
         //double yawRadians = Units.degreesToRadians(yaw);
