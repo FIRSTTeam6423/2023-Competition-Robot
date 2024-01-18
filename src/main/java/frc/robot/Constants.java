@@ -149,7 +149,7 @@ public final class Constants {
     public static final double MODULEDRIVE_P = 0.039753;//0.0024
     public static final double MODULEDRIVE_I = 0;
     public static final double MODULEDRIVE_D = 0;
-    public static final double MODULEPIVOT_P = 0.005;//0.01;
+    public static final double MODULEPIVOT_P = 0.0025;//0.01;
     public static final double MODULEPIVOT_I = 0;
     public static final double MODULEPIVOT_D = 0;
 
