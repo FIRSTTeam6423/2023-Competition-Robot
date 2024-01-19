@@ -57,7 +57,7 @@ public class SwerveModule extends SubsystemBase {
 		drivePIDController.setD(Constants.MODULEDRIVE_D);
 
 		pivotPIDController = new PIDController(Constants.MODULEPIVOT_P, Constants.MODULEPIVOT_I, Constants.MODULEPIVOT_D);
-		pivotPIDController.enableContinuousInput(-90, 90);
+		pivotPIDController.enableContinuousInput(-90,90);
 		pivotPIDController.setP(Constants.MODULEPIVOT_P);
 		pivotPIDController.setI(Constants.MODULEPIVOT_I);
 		pivotPIDController.setD(Constants.MODULEPIVOT_D);

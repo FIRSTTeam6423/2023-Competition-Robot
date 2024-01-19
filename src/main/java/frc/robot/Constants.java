@@ -238,7 +238,7 @@ public final class Constants {
 
     public static final double XBOX_STICK_DEADZONE_WIDTH=0.05;
 
-    public static final double AUTO_X_P = 9;
+    public static final double AUTO_X_P = 20;
     public static final double AUTO_X_I = 0;
     public static final double AUTO_X_D = 0;
 

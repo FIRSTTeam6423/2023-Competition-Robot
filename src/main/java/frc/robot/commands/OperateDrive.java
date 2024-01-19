@@ -34,7 +34,7 @@ public class OperateDrive extends CommandBase {
   @Override
   public void execute() {
 	double xInput = IronUtil.deadzone(RobotContainer.getDriverLeftXboxY(), Constants.XBOX_STICK_DEADZONE_WIDTH);
-	double yInput = IronUtil.deadzone(RobotContainer.getDriverLeftXboxY(), Constants.XBOX_STICK_DEADZONE_WIDTH);
+	double yInput = IronUtil.deadzone(RobotContainer.getDriverLeftXboxX(), Constants.XBOX_STICK_DEADZONE_WIDTH);
 	double omegaInput = IronUtil.deadzone(RobotContainer.getDriverRightXboxX(), Constants.XBOX_STICK_DEADZONE_WIDTH);
 
 	int xSign = (int)Math.signum(RobotContainer.getDriverLeftXboxY()); //Must keep sign because we are squaring input

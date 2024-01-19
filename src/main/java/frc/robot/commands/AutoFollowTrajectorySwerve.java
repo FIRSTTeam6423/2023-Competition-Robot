@@ -56,6 +56,7 @@ public class AutoFollowTrajectorySwerve extends CommandBase {
 		thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
 		holonomicController = new SwerveController(xController, yController, thetaController);
+		addRequirements(du);
 	}
 
 	@Override
@@ -79,14 +80,13 @@ public class AutoFollowTrajectorySwerve extends CommandBase {
 		PathPlannerState goal = (PathPlannerState) traj.sample(timer.get());
 		//====NEED TO FLIP TRAJECTORY BASED ON ALLIANCE=====
         Rotation2d swerveRot;
-        if (DriverStation.getAlliance() == DriverStation.Alliance.Red) {
-            swerveRot = new Rotation2d(
-                -goal.holonomicRotation.getCos(),
-    	        goal.holonomicRotation.getSin());
-        } else {
-            swerveRot = goal.holonomicRotation;
-        }
-
+		swerveRot = goal.holonomicRotation.times(-1);
+		if (DriverStation.getAlliance() == DriverStation.Alliance.Red) {
+			    swerveRot = new Rotation2d(
+			        -swerveRot.getCos(),
+			        swerveRot.getSin()
+				);
+		}
 		ChassisSpeeds speeds = holonomicController.calculate(
 			du.getPose(), 
 			goal.poseMeters, 
@@ -94,14 +94,22 @@ public class AutoFollowTrajectorySwerve extends CommandBase {
 			swerveRot
 		);
 		
+		//System.out.println(speeds.vxMetersPerSecond);
+
 		du.setChassisSpeeds(speeds);
 	}
 
 	@Override
-	public void end(boolean interrupted) {}
+	public void end(boolean interrupted) {
+		System.out.println("COMMAND OVER EEE\n\n\n\n");
+		du.setChassisSpeeds(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, 0, du.getHeading2d()));
+	}
 
 	@Override
 	public boolean isFinished() {
+		if (timer.get() > traj.getTotalTimeSeconds() + 1){
+			return true;
+		}
 		return false;
 		//NEED AN END CONDITION
 	}
