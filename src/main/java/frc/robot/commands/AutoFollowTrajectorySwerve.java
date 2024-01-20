@@ -12,6 +12,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
@@ -77,7 +78,18 @@ public class AutoFollowTrajectorySwerve extends CommandBase {
 
 	@Override
 	public void execute() {
-		PathPlannerState goal = (PathPlannerState) traj.sample(timer.get());
+		Trajectory.State goal = traj.sample(timer.get());
+		if (DriverStation.getAlliance() == DriverStation.Alliance.Red) {
+			goal = new Trajectory.State(
+				goal.timeSeconds, 
+				goal.velocityMetersPerSecond, 
+				goal.accelerationMetersPerSecondSq, 
+				new Pose2d(
+					Constants.
+				), 
+				-goal.curvatureRadPerMeter
+			);
+		}
 		//====NEED TO FLIP TRAJECTORY BASED ON ALLIANCE=====
         Rotation2d swerveRot;
 		swerveRot = goal.holonomicRotation.times(-1);
