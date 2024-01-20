@@ -14,12 +14,10 @@ import frc.robot.util.IronUtil;
 public class OperateDrive extends CommandBase {
   /** Creates a new OperateDrive. */
   private DriveUtil du;
-  private boolean fieldRelative;
 
   public OperateDrive(DriveUtil du, boolean fieldRelative) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.du = du;
-	this.fieldRelative = fieldRelative;
 	
     addRequirements(this.du);
   }

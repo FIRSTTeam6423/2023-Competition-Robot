@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.DriveUtil;
@@ -79,20 +80,26 @@ public class AutoFollowTrajectorySwerve extends CommandBase {
 	@Override
 	public void execute() {
 		Trajectory.State goal = traj.sample(timer.get());
+		PathPlannerState ppState = (PathPlannerState) goal;
 		if (DriverStation.getAlliance() == DriverStation.Alliance.Red) {
 			goal = new Trajectory.State(
 				goal.timeSeconds, 
 				goal.velocityMetersPerSecond, 
 				goal.accelerationMetersPerSecondSq, 
 				new Pose2d(
-					Constants.
+					Constants.FIELD_LENGTH_METERS - goal.poseMeters.getX(),
+					goal.poseMeters.getY(),
+					new Rotation2d(
+						-goal.poseMeters.getRotation().getCos(),
+						goal.poseMeters.getRotation().getSin()
+					)
 				), 
 				-goal.curvatureRadPerMeter
 			);
 		}
 		//====NEED TO FLIP TRAJECTORY BASED ON ALLIANCE=====
         Rotation2d swerveRot;
-		swerveRot = goal.holonomicRotation.times(-1);
+		swerveRot = ppState.holonomicRotation.times(-1);
 		if (DriverStation.getAlliance() == DriverStation.Alliance.Red) {
 			    swerveRot = new Rotation2d(
 			        -swerveRot.getCos(),
