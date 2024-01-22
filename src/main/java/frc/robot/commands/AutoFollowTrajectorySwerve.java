@@ -16,6 +16,7 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -67,10 +68,39 @@ public class AutoFollowTrajectorySwerve extends CommandBase {
 		timer.reset();
 		timer.start();
 
-		PathPlannerState initialState = (PathPlannerState) traj.sample(0);
+		Trajectory.State initialState = traj.sample(0);
+		PathPlannerState ppStateInitial = (PathPlannerState) initialState;
+
+		if (DriverStation.getAlliance() == DriverStation.Alliance.Red) {
+			initialState = new Trajectory.State(
+				initialState.timeSeconds, 
+				initialState.velocityMetersPerSecond, 
+				initialState.accelerationMetersPerSecondSq, 
+				new Pose2d(
+					Constants.FIELD_LENGTH_METERS - initialState.poseMeters.getX(),
+					initialState.poseMeters.getY(),
+					//new Rotation2d(
+					//	-initialState.poseMeters.getRotation().getCos(),
+					//	initialState.poseMeters.getRotation().getSin()
+					//)
+					initialState.poseMeters.getRotation()
+				), 
+				initialState.curvatureRadPerMeter //WAS NEGATED
+			);
+		}
+
+		Rotation2d swerveRot;
+		swerveRot = ppStateInitial.holonomicRotation;//.times(-1);
+		if (DriverStation.getAlliance() == DriverStation.Alliance.Blue) {
+			    swerveRot = new Rotation2d(
+			        -swerveRot.getCos(),
+			        swerveRot.getSin()
+				);
+		}
+
 		Pose2d initialPose = new Pose2d(
-			traj.getInitialPose().getTranslation(),
-			initialState.holonomicRotation
+			initialState.poseMeters.getTranslation(),
+			swerveRot
 		);
 
 		System.out.println("END STATE: " + traj.getEndState().holonomicRotation);
@@ -89,18 +119,20 @@ public class AutoFollowTrajectorySwerve extends CommandBase {
 				new Pose2d(
 					Constants.FIELD_LENGTH_METERS - goal.poseMeters.getX(),
 					goal.poseMeters.getY(),
-					new Rotation2d(
-						-goal.poseMeters.getRotation().getCos(),
-						goal.poseMeters.getRotation().getSin()
-					)
+					//new Rotation2d(
+					//	-goal.poseMeters.getRotation().getCos(),
+					//	goal.poseMeters.getRotation().getSin()
+					//)
+					goal.poseMeters.getRotation()
 				), 
-				-goal.curvatureRadPerMeter
+				goal.curvatureRadPerMeter //WAS NEGATED
 			);
 		}
 		//====NEED TO FLIP TRAJECTORY BASED ON ALLIANCE=====
+		
         Rotation2d swerveRot;
-		swerveRot = ppState.holonomicRotation.times(-1);
-		if (DriverStation.getAlliance() == DriverStation.Alliance.Red) {
+		swerveRot = ppState.holonomicRotation;//.times(-1);
+		if (DriverStation.getAlliance() == DriverStation.Alliance.Blue) {
 			    swerveRot = new Rotation2d(
 			        -swerveRot.getCos(),
 			        swerveRot.getSin()
@@ -126,9 +158,14 @@ public class AutoFollowTrajectorySwerve extends CommandBase {
 
 	@Override
 	public boolean isFinished() {
-		if (timer.get() > traj.getTotalTimeSeconds() + 1){
+		double dist = du.getPose().getTranslation().getDistance(traj.getEndState().poseMeters.getTranslation());
+		double angleErrorDegrees = Math.abs(du.getHeading2d().getDegrees() - traj.getEndState().holonomicRotation.getDegrees());
+
+		if (timer.get() > traj.getTotalTimeSeconds() && dist < .1 && angleErrorDegrees < .1){
 			return true;
 		}
+		SmartDashboard.putNumber("me", du.getHeading2d().getDegrees());
+		SmartDashboard.putNumber("goal", traj.getEndState().holonomicRotation.getDegrees());
 		return false;
 		//NEED AN END CONDITION
 	}

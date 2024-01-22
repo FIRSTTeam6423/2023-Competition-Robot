@@ -365,6 +365,7 @@ public class ArmUtil extends SubsystemBase{
         if (timeWristInRetract > 2) {
             System.out.println("TIMEOUT FOR REACH SWITCH");
             wristEncoder.setPosition(10); //MAGIC OFFSET
+            wristMotor.set(0);
             return true;
         }
         if(!wristLimitSwitch.get()) {

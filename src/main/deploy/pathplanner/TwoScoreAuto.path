@@ -2,13 +2,13 @@
   "waypoints": [
     {
       "anchorPoint": {
-        "x": 5.0,
-        "y": 2.649247007895725
+        "x": 4.970116948780905,
+        "y": 4.065223856943441
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.841014759143649,
-        "y": 2.06610853267839
+        "x": 4.811131707924554,
+        "y": 3.4820853817261064
       },
       "holonomicAngle": 90.0,
       "isReversal": false,
@@ -28,11 +28,61 @@
         "y": 1.2860581957097355
       },
       "prevControl": {
-        "x": 2.3893849497100703,
-        "y": 2.329510300046242
+        "x": 1.3678983177443802,
+        "y": 2.5134104424978454
+      },
+      "nextControl": {
+        "x": 6.885286777563175,
+        "y": 0.6431115446815701
+      },
+      "holonomicAngle": 0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": true,
+      "stopEvent": {
+        "names": [],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 4.966645087684475,
+        "y": 2.74190230090674
+      },
+      "prevControl": {
+        "x": 7.537178494784545,
+        "y": 2.751422795007111
+      },
+      "nextControl": {
+        "x": 2.396111680584406,
+        "y": 2.732381806806369
+      },
+      "holonomicAngle": 179.34893961977056,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": true,
+      "stopEvent": {
+        "names": [],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 4.9856860758852175,
+        "y": 4.065250980858257
+      },
+      "prevControl": {
+        "x": 7.489576024282692,
+        "y": 4.027169004456774
       },
       "nextControl": null,
-      "holonomicAngle": 0,
+      "holonomicAngle": 90.0,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
