@@ -151,7 +151,7 @@ public final class Constants {
     public static final double MAX_PATH_VELOCITY = 2;
     public static final double MAX_PATH_ACCELERATION = 1;
 
-    public static final double MODULEDRIVE_P = 0.039753;//0.0024
+    public static final double MODULEDRIVE_P = .039753;//0.0024
     public static final double MODULEDRIVE_I = 0;
     public static final double MODULEDRIVE_D = 0;
     public static final double MODULEPIVOT_P = 0.005;//0.01;
@@ -250,7 +250,7 @@ public final class Constants {
     public static final double AUTO_Y_I = 0;
     public static final double AUTO_Y_D = 0;
 
-    public static final double AUTO_THETA_P = 0.8;//1.8;//.35;
+    public static final double AUTO_THETA_P =  3;//1.8;//.35;
     public static final double AUTO_THETA_I = 0;//.035;
     public static final double AUTO_THETA_D = 0;//4.5;
 }

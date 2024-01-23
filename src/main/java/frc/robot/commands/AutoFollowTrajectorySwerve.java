@@ -7,6 +7,7 @@ package frc.robot.commands;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
+import com.pathplanner.lib.server.PathPlannerServer;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -64,6 +65,7 @@ public class AutoFollowTrajectorySwerve extends CommandBase {
 
 	@Override
  	public void initialize() {
+		PathPlannerServer.startServer(5811);
 		du.start();
 		timer.reset();
 		timer.start();
@@ -130,6 +132,8 @@ public class AutoFollowTrajectorySwerve extends CommandBase {
 		}
 		//====NEED TO FLIP TRAJECTORY BASED ON ALLIANCE=====
 		
+		PathPlannerServer.sendPathFollowingData(goal.poseMeters, du.getPose());
+
         Rotation2d swerveRot;
 		swerveRot = ppState.holonomicRotation;//.times(-1);
 		if (DriverStation.getAlliance() == DriverStation.Alliance.Blue) {
@@ -164,6 +168,8 @@ public class AutoFollowTrajectorySwerve extends CommandBase {
 		if (timer.get() > traj.getTotalTimeSeconds() && dist < .1 && angleErrorDegrees < .1){
 			return true;
 		}
+		
+
 		SmartDashboard.putNumber("me", du.getHeading2d().getDegrees());
 		SmartDashboard.putNumber("goal", traj.getEndState().holonomicRotation.getDegrees());
 		return false;
