@@ -16,7 +16,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkMaxAbsoluteEncoder;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
 
 public class SwerveModule extends SubsystemBase {
 	/** Creates a new SwerveModule. */
@@ -118,6 +120,6 @@ public class SwerveModule extends SubsystemBase {
 
 	@Override
 	public void periodic() {
-
+		SmartDashboard.putNumber("ID: " + encoderID, pivotValue());
 	}
 }

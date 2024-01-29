@@ -31,7 +31,7 @@ import frc.robot.util.SwerveController;
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class AutoFollowTrajectorySwerve extends CommandBase {
-	//NEEEDS TO BE RENAMED TO AUTOFOLLOWPATHGROUP SOON
+	//TODO: NEEEDS TO BE RENAMED TO AUTOFOLLOWPATHGROUP SOON
   /** Creates a new AutoFollowTrajectorySwerve. */
   	private DriveUtil du;
   	private PathPlannerTrajectory traj;

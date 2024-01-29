@@ -246,7 +246,7 @@ public final class Constants {
     public static final double AUTO_X_I = 0;
     public static final double AUTO_X_D = 0;
 
-    public static final double AUTO_Y_P = 9;
+    public static final double AUTO_Y_P = 20;
     public static final double AUTO_Y_I = 0;
     public static final double AUTO_Y_D = 0;
 
