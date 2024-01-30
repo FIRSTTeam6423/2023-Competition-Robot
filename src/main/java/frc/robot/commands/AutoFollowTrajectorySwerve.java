@@ -136,12 +136,16 @@ public class AutoFollowTrajectorySwerve extends CommandBase {
 
         Rotation2d swerveRot;
 		swerveRot = ppState.holonomicRotation;//.times(-1);
+		System.out.println("SWERVE BEFORE " + swerveRot.getDegrees());
 		if (DriverStation.getAlliance() == DriverStation.Alliance.Blue) {
 			    swerveRot = new Rotation2d(
 			        -swerveRot.getCos(),
 			        swerveRot.getSin()
 				);
 		}
+		System.out.println("SWERVE AFTER " + swerveRot.getDegrees());
+
+		
 		ChassisSpeeds speeds = holonomicController.calculate(
 			du.getPose(), 
 			goal.poseMeters, 
@@ -149,7 +153,7 @@ public class AutoFollowTrajectorySwerve extends CommandBase {
 			swerveRot
 		);
 		
-		//System.out.println(speeds.vxMetersPerSecond);
+		SmartDashboard.putNumber("RUNNING GOAL", swerveRot.getDegrees());
 
 		du.setChassisSpeeds(speeds);
 	}
@@ -170,10 +174,9 @@ public class AutoFollowTrajectorySwerve extends CommandBase {
 		}
 		
 
-		SmartDashboard.putNumber("me", du.getHeading2d().getDegrees());
+		SmartDashboard.putNumber("me", du.getPose().getRotation().getDegrees());
 		SmartDashboard.putNumber("goal", traj.getEndState().holonomicRotation.getDegrees());
 		return false;
-		//NEED AN END CONDITION
 	}
 
 	/*PIDController thetaController = new PIDController(.35, .035, 4.5);//new PIDController(4.5, 30, 5);

@@ -24,7 +24,7 @@ public class SwerveController {
     public ChassisSpeeds calculate(Pose2d curPose, Pose2d goalPose, double goalLinearVelocity, Rotation2d goalAngle) {
         Rotation2d curRot = curPose.getRotation();
         Rotation2d goalRot = goalPose.getRotation();
-        double xFeedForward = goalLinearVelocity * goalRot.getCos(); //isn't the desired x vel based on the GOAL pose? 
+        double xFeedForward = goalLinearVelocity * goalRot.getCos();
         double yFeedForward = goalLinearVelocity * goalRot.getSin();
 
         double xFeedback = xController.calculate(curPose.getX(), goalPose.getX());
