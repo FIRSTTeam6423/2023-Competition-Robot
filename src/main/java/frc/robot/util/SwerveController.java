@@ -29,7 +29,7 @@ public class SwerveController {
 
         double xFeedback = xController.calculate(curPose.getX(), goalPose.getX());
         double yFeedback = yController.calculate(curPose.getY(), goalPose.getY());
-        double thetaFeedback = thetaController.calculate(curRot.getRadians(), goalAngle.getRadians());
+        double thetaFeedback = -thetaController.calculate(curRot.getRadians(), goalAngle.getRadians());
 
         return ChassisSpeeds.fromFieldRelativeSpeeds(
             xFeedForward + xFeedback, 
